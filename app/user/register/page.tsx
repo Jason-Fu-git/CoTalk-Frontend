@@ -1,7 +1,7 @@
 'use client'
 import React, { useState } from 'react';
 import axios from 'axios';
-import Cookies from 'js-cookie';
+// import * as Cookies from "js-cookie";
 
 const RegisterPage = () => {
     const [username, setUsername] = useState('');
@@ -9,38 +9,41 @@ const RegisterPage = () => {
     const [email, setEmail] = useState('');
     const [avatar, setAvatar] = useState(null);
 
-    const handleFileChange = (event) => {
+
+    const handleFileChange = (event: { target: { files: any[]; }; }) => {
         const file = event.target.files[0];
         const reader = new FileReader();
-    
+
         reader.onloadend = () => {
-          setAvatar(reader.result);
+          // @ts-ignore
+            setAvatar(reader.result);
         };
-    
+
         if (file) {
           reader.readAsDataURL(file);
         }
       };
-    
-    const handleSubmit = async (event) => {
+
+    const handleSubmit = async (event: { preventDefault: () => void; }) => {
       event.preventDefault();
-  
+
       const user = {
         user_name: username,
         password: password,
         email: email,
         avatar: avatar,
       };
-  
+
       try {
         const response = await axios.post('/api/user/register', user);
         console.log(response.data);
-        Cookies.set('token', response.data.token);
+        // Cookies.set('token', response.data.token);
       } catch (error) {
         console.error(error);
       }
     };
-  
+
+    // @ts-ignore
     return (
       <form onSubmit={handleSubmit}>
         <label>
@@ -57,11 +60,11 @@ const RegisterPage = () => {
         </label>
         <label>
             头像:
-        <input type="file" onChange={handleFileChange} />
+        {/*<input type="file" onChange={handleFileChange} />*/}
       </label>
         <input type="submit" value="提交" />
       </form>
     );
   };
-  
+
   export default RegisterPage;
