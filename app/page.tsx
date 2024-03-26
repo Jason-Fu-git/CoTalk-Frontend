@@ -1,20 +1,36 @@
 import Link from 'next/link'
 import React from 'react'
-import { Button } from 'antd';
-import 'antd/dist/reset.css';  
+import 'bootstrap/dist/css/bootstrap.css'
 
 export default function Page() {
     return (
-      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100vh' }}>
-        <h1 style={{ fontSize: '2em' }}>cotalk</h1>
-        <div style={{ marginTop: '2em' }}>
-          <Link href="/user/login">
-            <Button type="primary" style={{ marginRight: '1em' }}>login</Button>
+    <html lang="en">
+      <body>
+        <nav className="navbar nacbar-expand-md nacbar-light bg-light mb-4 border">
+          <Link href="/">
+            CoTalk
           </Link>
-          <Link href="/user/register">
-            <Button type="primary">register</Button>
-          </Link>
-        </div>
-      </div>
-    )
+          <ul className="navbar-nav ml-auto">
+              <li className="nav-item">
+                <Link href="/user/login">
+                  Log in
+                </Link>
+              </li>
+          </ul>
+        </nav>
+        <main role="main" className="container">
+          <div className="pb-2 mb-2 border-bottom">
+            <div className="jumbotron">
+              <h1 className="display-3">Hello,</h1>
+
+              <p className="lead">Welcome to CoTalk.</p>
+
+              <a className="btn btn-lg btn-primary" href="/user/register"
+                role="button">Register &raquo;</a>
+            </div>
+          </div>
+        </main>
+      </body>
+    </html>
+    );
 }
