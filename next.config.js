@@ -8,10 +8,11 @@ const nextConfig = {
         return [{
             source: "/api/:path*",
             // Change to your backend URL in production
-            destination: "https://cotalkbackend-concord.app.secoder.net/:path*",
+            destination: "https://cotalkbackend-concord.app.secoder.net/api/:path*",
         }];
     }
 };
 
 // eslint-disable-next-line no-undef
 module.exports = nextConfig;
+

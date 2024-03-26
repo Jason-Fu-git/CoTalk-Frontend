@@ -2,8 +2,9 @@
 import React, { useState } from 'react';
 import { BACKEND_URL, FAILURE_PREFIX, LOGIN_FAILED, LOGIN_SUCCESS_PREFIX } from "../../constants/string";
 import { useRouter } from "next/navigation";
-import { setName, setToken } from "../../redux/auth";
+import { setName, setId,setToken } from "../../redux/auth";
 import store from "@/app/redux/store";
+import { NetworkError, request } from "../../utils/network";
 
 const RegisterPage = () => {
     const [username, setUsername] = useState('');
@@ -14,31 +15,22 @@ const RegisterPage = () => {
     const dispatch = store.dispatch;
     
     const register = () => {
-      fetch(`${BACKEND_URL}/api/user/register`, {
-            method: "POST",
-            body: JSON.stringify({
-                username,
-                password,
-                email,
-            }),
+        request(`${BACKEND_URL}/api/user/register`, "POST", false, {"user_name": username, "password": password})
+        .then((res) => {
+            if (Number(res.code) === 0) {
+                dispatch(setName(res.user_name));
+                alert(store.getState().auth.name);
+                dispatch(setToken(res.token));
+                dispatch(setId(res.user_id));
+                alert(store.getState().auth.id);
+                alert(LOGIN_SUCCESS_PREFIX + res.user_name);
+                router.push(`/user/${res.user_id}`);
+            }
+            else {
+                alert(LOGIN_FAILED);
+            }
         })
-            .then((res) => res.json())
-            .then((res) => {
-                if (Number(res.code) === 0) {
-                    dispatch(setName(username));
-                    dispatch(setToken(res.token));
-                    alert(LOGIN_SUCCESS_PREFIX + username);
-
-                    /**
-                     * @note 这里假定 login 页面不是首页面，大作业中这样写的话需要作分支判断
-                     */
-                    router.back();
-                }
-                else {
-                    alert(LOGIN_FAILED);
-                }
-            })
-            .catch((err) => alert(FAILURE_PREFIX + err));
+        
     };
 
     return (
