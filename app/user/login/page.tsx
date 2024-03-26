@@ -14,7 +14,7 @@ const LoginScreen = () => {
     const dispatch = store.dispatch;
 
     const login = () => {
-        fetch(`${BACKEND_URL}/api/login`, {
+        fetch(`${BACKEND_URL}/api/user/login`, {
             method: "POST",
             body: JSON.stringify({
                 user_name,
