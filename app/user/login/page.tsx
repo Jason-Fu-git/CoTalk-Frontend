@@ -4,6 +4,7 @@ import { BACKEND_URL, FAILURE_PREFIX, LOGIN_FAILED, LOGIN_SUCCESS_PREFIX } from 
 import { useRouter } from "next/navigation";
 import { setName, setToken } from "../../redux/auth";
 import store from "@/app/redux/store";
+import 'bootstrap/dist/css/bootstrap.css'
 
 
 const LoginScreen = () => {
@@ -42,19 +43,29 @@ const LoginScreen = () => {
 
     return (
         <>
+            <div className="input-group mb-3">
             <input
+                className="form-control"
                 type="text"
-                placeholder="username"
+                placeholder="用户名"
                 value={user_name}
                 onChange={(e) => setUserName(e.target.value)}
             />
+            </div>
+            <div className="input-group mb-3">
             <input
+                className="form-control"
                 type="password"
-                placeholder="password"
+                placeholder="密码"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
             />
-            <button onClick={login} disabled={user_name === "" || password === ""}>
+            </div>
+            <button 
+                name="submit"
+                className="btn btn-primary"
+                onClick={login} 
+                disabled={user_name === "" || password === ""}>
                 Login
             </button>
         </>
