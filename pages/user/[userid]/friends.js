@@ -1,10 +1,12 @@
 import {useEffect} from 'react';
 import Link from 'next/link';
-import axios from 'axios'
+import axios from 'axios';
+const BACKEND_URL = "https://cotalkbackend-concord.app.secoder.net";
 
-export async function getServerSideProps() {
+export async function getServerSideProps(ctx) {
     const { userid }=ctx.query;
-    const friends=await axios.get(`https://localhost:8000/api/user/${userid}/friends`);
+    const friends=await axios.get(`${BACKEND_URL}/api/user/${userid}/friends`);
+    
     return {
         props: {
             users: friends.data
