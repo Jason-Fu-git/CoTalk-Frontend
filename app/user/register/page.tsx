@@ -4,7 +4,7 @@ import { BACKEND_URL, FAILURE_PREFIX, LOGIN_FAILED, LOGIN_SUCCESS_PREFIX } from 
 import { useRouter } from "next/navigation";
 import { setName, setId,setToken } from "../../redux/auth";
 import store from "@/app/redux/store";
-import { NetworkError, request } from "../../utils/network";
+import 'bootstrap/dist/css/bootstrap.css'
 
 const RegisterPage = () => {
     const [username, setUsername] = useState('');
@@ -35,26 +35,40 @@ const RegisterPage = () => {
 
     return (
         <>
+            <p className="lead">请登录</p>
+            <div className="input-group mb-3">
             <input
+                className="form-control"
                 type="text"
-                placeholder="username"
+                placeholder="用户名"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
             />
+            </div>
+            <div className="input-group mb-3">           
             <input
+                className="form-control"
                 type="password"
-                placeholder="password"
+                placeholder="密码"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
             />
+            </div>
+            <div className="input-group mb-3">           
             <input
+                className="form-control"
                 type="email"
-                placeholder="email"
+                placeholder="邮箱"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
             />
-            <button onClick={register} disabled={username === "" || password === ""}>
-                Login
+            </div>
+            <button 
+                name="submit" 
+                className="btn btn-primary"
+                onClick={register} 
+                disabled={username === "" || password === ""}>
+                提交
             </button>
         </>
     );
