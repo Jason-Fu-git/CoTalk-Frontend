@@ -1,14 +1,28 @@
 import Link from 'next/link';
 import axios from 'axios';
+import 'bootstrap/dist/css/bootstrap.css'
+
 const BACKEND_URL = "https://cotalkbackend-concord.app.secoder.net";
 
 export async function getServerSideProps(ctx) {
     const { userid }=ctx.query;
-    const friends=await axios.get(`${BACKEND_URL}/api/user/${userid}/chats`);
+//    const chatsReq=await axios.get(`${BACKEND_URL}/api/user/${userid}/chats`);
     
+    const chatsReq={
+        "data": [
+            {
+                "user_id":1,
+                "chat_name":"群聊1",
+            },
+            {
+                "user_id":2,
+                "chat_name":"群聊2",
+            },
+        ]
+    }
     return {
         props: {
-            chats: friends.data
+            chats: chatsReq.data
         }
     }
 }

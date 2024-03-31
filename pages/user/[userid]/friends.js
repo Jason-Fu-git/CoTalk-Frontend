@@ -1,15 +1,27 @@
-import {useEffect} from 'react';
 import Link from 'next/link';
 import axios from 'axios';
+import 'bootstrap/dist/css/bootstrap.css'
+
 const BACKEND_URL = "https://cotalkbackend-concord.app.secoder.net";
 
 export async function getServerSideProps(ctx) {
     const { userid }=ctx.query;
-    const friends=await axios.get(`${BACKEND_URL}/api/user/${userid}/friends`);
-    
+//    const friendsReq=await axios.get(`${BACKEND_URL}/api/user/${userid}/friends`);
+    const friendsReq={
+        "data": [
+            {
+                "user_name":"Test1",
+                "user_id":1
+            },
+            {
+                "user_name":"Test2",
+                "user_id":2
+            },
+        ]
+    }
     return {
         props: {
-            users: friends.data
+            users: friendsReq.data
         }
     }
 }
@@ -21,14 +33,13 @@ function Friends({ users }) {
             <ul>
             {
                 users.map((user) =>
-                    <li key={user.id}>
-                        <Link
-                            href={'/users/${user.id}'}
-                            passHref
-                        >
-                        {user.username}
-                        </Link>
-                    </li>
+                    <div className="d-flex position-relative">
+                    <img src="..." class="flex-shrink-0 me-3" alt="..."/>
+                        <div>
+                        <h5 class="mt-0">{user.user_name}</h5>
+                        <p>邮箱：xxx</p>
+                        </div>
+                    </div>
                 )
             }
             </ul>
