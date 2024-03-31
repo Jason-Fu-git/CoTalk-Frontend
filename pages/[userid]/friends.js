@@ -3,7 +3,8 @@ import Link from 'next/link';
 import axios from 'axios'
 
 export async function getServerSideProps() {
-    const friends=await axios.get('https://localhost:8000/api/user/1/friends');
+    const { userid }=ctx.query;
+    const friends=await axios.get(`https://localhost:8000/api/user/${userid}/friends`);
     return {
         props: {
             users: friends.data
