@@ -35,7 +35,7 @@ const RegisterPage = () => {
 
     return (
         <>
-            <p className="lead">请登录</p>
+            <p className="lead">注册</p>
             <div className="input-group mb-3">
             <input
                 className="form-control"
