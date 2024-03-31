@@ -5,7 +5,7 @@ import axios from 'axios';
 export async function getServerSideProps(ctx) {
     const {userid}=ctx.query;
     const userReq=await axios.get(`https://localhost:8000/api/user/${userid}`);
-
+ 
     return {
         props: {
             user: userReq.data
