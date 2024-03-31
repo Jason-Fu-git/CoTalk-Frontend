@@ -8,7 +8,7 @@ const nextConfig = {
         return [{
             source: "/api/:path*",
             // Change to your backend URL in production
-            destination: process.env.NODE_ENV !== "production" ? "http://127.0.0.1:8000/:path*" : "https://cotalkbackend-concord.app.secoder.net/:path*",
+            destination: "https://cotalkbackend-concord.app.secoder.net/:path*",
         }];
     }
 };
