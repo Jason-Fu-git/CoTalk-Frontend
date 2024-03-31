@@ -50,52 +50,54 @@ export const request = async (
 
     const data = await response.json();
     const code = Number(data.code);
-
+    if(response.status === 200 && code === 0) {
+        return data;
+    }
     // HTTP status 401
-    if (response.status === 401 && code === 2) {
-        throw new NetworkError(
-            NetworkErrorType.UNAUTHORIZED,
-            "[401] " + data.info,
-        );
-    }
-    else if (response.status === 401) {
-        throw new NetworkError(
-            NetworkErrorType.CORRUPTED_RESPONSE,
-            "[401] " + data.info,
-        );
-    }
+    // if (response.status === 401 && code === 2) {
+    //     throw new NetworkError(
+    //         NetworkErrorType.UNAUTHORIZED,
+    //         "[401] " + data.info,
+    //     );
+    // }
+    // else if (response.status === 401) {
+    //     throw new NetworkError(
+    //         NetworkErrorType.CORRUPTED_RESPONSE,
+    //         "[401] " + data.info,
+    //     );
+    // }
 
-    // HTTP status 403
-    if (response.status === 403 && code === 3) {
-        throw new NetworkError(
-            NetworkErrorType.REJECTED,
-            "[403] " + data.info,
-        );
-    }
-    else if (response.status === 403) {
-        throw new NetworkError(
-            NetworkErrorType.CORRUPTED_RESPONSE,
-            "[403] " + data.info,
-        );
-    }
+    // // HTTP status 403
+    // if (response.status === 403 && code === 3) {
+    //     throw new NetworkError(
+    //         NetworkErrorType.REJECTED,
+    //         "[403] " + data.info,
+    //     );
+    // }
+    // else if (response.status === 403) {
+    //     throw new NetworkError(
+    //         NetworkErrorType.CORRUPTED_RESPONSE,
+    //         "[403] " + data.info,
+    //     );
+    // }
 
-    // HTTP status 200
-    if (response.status === 200 && code === 0) {
-        return { ...data, code: undefined };
-    }
-    else if (response.status === 200) {
-        throw new NetworkError(
-            NetworkErrorType.CORRUPTED_RESPONSE,
-            "[200] " + data.info,
-        );
-    }
+    // // HTTP status 200
+    // if (response.status === 200 && code === 0) {
+    //     return { ...data, code: undefined };
+    // }
+    // else if (response.status === 200) {
+    //     throw new NetworkError(
+    //         NetworkErrorType.CORRUPTED_RESPONSE,
+    //         "[200] " + data.info,
+    //     );
+    // }
 
-    /**
-     * @note 这里的错误处理显然是粗糙的，根据 HTTP status 和 code 的不同应该有更精细的处理
-     *       在大作业中，可以尝试编写更为精细的错误处理代码以理清网络请求逻辑
-     */
-    throw new NetworkError(
-        NetworkErrorType.UNKNOWN_ERROR,
-        `[${response.status}] ` + data.info,
-    );
+    // /**
+    //  * @note 这里的错误处理显然是粗糙的，根据 HTTP status 和 code 的不同应该有更精细的处理
+    //  *       在大作业中，可以尝试编写更为精细的错误处理代码以理清网络请求逻辑
+    //  */
+    // throw new NetworkError(
+    //     NetworkErrorType.UNKNOWN_ERROR,
+    //     `[${response.status}] ` + data.info,
+    // );
 };
