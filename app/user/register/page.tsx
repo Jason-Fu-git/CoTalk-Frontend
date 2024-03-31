@@ -44,6 +44,7 @@ const RegisterPage = () => {
 
     return (
         <>
+            <p className="lead">请登录</p>
             <div className="input-group mb-3">
             <input
                 className="form-control"
