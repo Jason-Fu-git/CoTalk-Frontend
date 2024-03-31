@@ -14,10 +14,10 @@ export default function LoginLayout({
             CoTalk
           </Link>
           <Link href="/chat" className={styles.link}>
-            chat
+            群聊
           </Link>
           <Link href="/friend" className={styles.link}>
-            friend
+            好友
           </Link>
         </div>
         <section className={styles.content}>{children}</section>
