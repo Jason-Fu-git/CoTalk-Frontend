@@ -4,8 +4,8 @@ import { BACKEND_URL, FAILURE_PREFIX, LOGIN_FAILED, LOGIN_SUCCESS_PREFIX } from 
 import { useRouter } from "next/navigation";
 import { setName, setToken } from "../../redux/auth";
 import store from "@/app/redux/store";
-import 'bootstrap/dist/css/bootstrap.css'
-
+import 'bootstrap/dist/css/bootstrap.css';
+import Link from 'next/link';
 
 const LoginScreen = () => {
     const [user_name, setUserName] = useState("");
@@ -43,6 +43,7 @@ const LoginScreen = () => {
 
     return (
         <>
+            <p className="lead">请登录</p>
             <div className="input-group mb-3">
             <input
                 className="form-control"
@@ -68,6 +69,10 @@ const LoginScreen = () => {
                 disabled={user_name === "" || password === ""}>
                 Login
             </button>
+            <p></p>
+            <p>没有账户?
+                <Link href="/user/register">注册</Link> 
+            </p>
         </>
     );
 };
