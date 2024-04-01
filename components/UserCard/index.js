@@ -1,5 +1,4 @@
 import Link from 'next/link';
-import Image from 'next/image';
 
 function UserCard(props) {
   return (
@@ -13,7 +12,7 @@ function UserCard(props) {
         <div className="mt-2 font-bold">
           {props.user_name}
         </div>
-        <div className="font-light">用户描述为空</div>
+        <div className="font-light">{props.user_email}</div>
       </div>
     </Link>
   );

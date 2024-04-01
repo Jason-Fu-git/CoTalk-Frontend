@@ -12,11 +12,13 @@ export async function getServerSideProps(ctx) {
         "data": [
             {
                 "user_name":"Test1",
-                "user_id":1
+                "user_id":1,
+                "user_email":"test1@xxx.com",
             },
             {
                 "user_name":"Test2",
-                "user_id":2
+                "user_id":2,
+                "user_email":"test2@xxx.com"
             },
         ]
     }
