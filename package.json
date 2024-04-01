@@ -9,12 +9,17 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@chakra-ui/icons": "^2.1.1",
+    "@chakra-ui/react": "^2.8.2",
+    "@emotion/react": "11",
+    "@emotion/styled": "11",
     "@popperjs/core": "^2.11.8",
     "@reduxjs/toolkit": "^2.2.2",
     "@types/js-cookie": "^3.0.5",
     "antd": "^5.15.3",
     "axios": "^1.6.8",
     "bootstrap": "^5.3.3",
+    "framer-motion": "4",
     "next": "14.1.4",
     "next-themes": "^0.3.0",
     "react": "^18.2.0",
