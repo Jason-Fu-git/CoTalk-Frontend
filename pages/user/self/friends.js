@@ -1,10 +1,9 @@
 import Link from 'next/link';
-import axios from 'axios';
 import 'bootstrap/dist/css/bootstrap.css'
 import UserCard from '../../../components/UserCard';
-
-const BACKEND_URL = "https://cotalkbackend-concord.app.secoder.net";
-
+import {BACKEND_URL} from '@/app/constants/string';
+import React, { useState } from "react";
+import {request} from "@/app/utils/network";
 export async function getServerSideProps(ctx) {
     const { userid }=ctx.query;
 //    const friendsReq=await axios.get(`${BACKEND_URL}/api/user/${userid}/friends`);
@@ -30,6 +29,23 @@ export async function getServerSideProps(ctx) {
 }
 
 function Friends({ users }) {
+    const [friends, setFriends] = useState([]);
+    const [query, setQuery] = useState("");
+    const [searchResult, setSearchResult] = useState([]);
+    const [hasSearched, setHasSearched] = useState(false);
+    request(`${BACKEND_URL}/api/user/${params.userid}/friends`, "GET", true)
+    .then((res) => {
+      setFriends(res.friends);
+    });
+
+  const handleSearch = () => {
+    setHasSearched(true);
+    request(`${BACKEND_URL}/api/user/?search_text=${query}`, "GET", false)
+      .then((res) => {
+        setSearchResult(res.friends);
+      });
+  };
+
     return (
         <>
             <div className="sm:w-9/12 sm:m-auto pt-16 pb-16">
@@ -39,7 +55,7 @@ function Friends({ users }) {
                 </h1>
                 <div className="grid gap-8 grid-cols-1 sm:grid-cols-3 mt-14
                             ml-8 mr-8 sm:mr-0 sm:ml-0">
-                    {users.map((user) => (
+                    {friends.map((user) => (
                         <div key={user.user_id}>
                             <UserCard {...user}/>
                         </div>
