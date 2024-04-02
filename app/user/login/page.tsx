@@ -2,9 +2,11 @@
 import { useState } from "react";
 import { BACKEND_URL, FAILURE_PREFIX, LOGIN_FAILED, LOGIN_SUCCESS_PREFIX } from "../../constants/string";
 import { useRouter } from "next/navigation";
-import { setName, setToken } from "../../redux/auth";
-import store from "@/app/redux/store";
-
+import { setName, setId,setToken } from "../../redux/auth";
+import {store} from "@/app/redux/store";
+import 'bootstrap/dist/css/bootstrap.css';
+import Link from 'next/link';
+import {request} from '@/app/utils/network'
 
 const LoginScreen = () => {
     const [user_name, setUserName] = useState("");
@@ -14,49 +16,53 @@ const LoginScreen = () => {
     const dispatch = store.dispatch;
 
     const login = () => {
-        fetch(`${BACKEND_URL}/api/login`, {
-            method: "POST",
-            body: JSON.stringify({
-                user_name,
-                password,
-            }),
+        request(`${BACKEND_URL}/api/user/login`, "POST", false, {"user_name": user_name, "password": password})
+        .then((res) => {
+            if (Number(res.code) === 0) {
+                dispatch(setName(res.user_name));
+                dispatch(setToken(res.token));
+                dispatch(setId(res.user_id));
+                alert(LOGIN_SUCCESS_PREFIX + res.user_name);
+                router.push(`/user/${res.user_id}`);
+            }
+            else {
+                alert(LOGIN_FAILED);
+            }
         })
-            .then((res) => res.json())
-            .then((res) => {
-                if (Number(res.code) === 0) {
-                    dispatch(setName(user_name));
-                    dispatch(setToken(res.token));
-                    alert(LOGIN_SUCCESS_PREFIX + user_name);
-
-                    /**
-                     * @note 这里假定 login 页面不是首页面，大作业中这样写的话需要作分支判断
-                     */
-                    router.back();
-                }
-                else {
-                    alert(LOGIN_FAILED);
-                }
-            })
-            .catch((err) => alert(FAILURE_PREFIX + err));
     };
 
     return (
         <>
+            <p className="lead">登录</p>
+            <div className="input-group mb-3">
             <input
+                className="form-control"
                 type="text"
-                placeholder="username"
+                placeholder="用户名"
                 value={user_name}
                 onChange={(e) => setUserName(e.target.value)}
             />
+            </div>
+            <div className="input-group mb-3">
             <input
+                className="form-control"
                 type="password"
-                placeholder="password"
+                placeholder="密码"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
             />
-            <button onClick={login} disabled={user_name === "" || password === ""}>
+            </div>
+            <button 
+                name="submit"
+                className="btn btn-primary"
+                onClick={login} 
+                disabled={user_name === "" || password === ""}>
                 Login
             </button>
+            <p></p>
+            <p>没有账户?
+                <Link href="/user/register">注册</Link> 
+            </p>
         </>
     );
 };

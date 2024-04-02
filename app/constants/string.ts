@@ -7,7 +7,6 @@ export const BACKEND_URL = "";
 
 
 export const FAILURE_PREFIX = "网络请求失败：";
-
 export const LOGIN_REQUIRED = "你需要登陆才能完成这一操作";
 export const LOGIN_SUCCESS_PREFIX = "登陆或注册成功，用户名：";
 export const LOGIN_FAILED = "登陆或注册失败";
