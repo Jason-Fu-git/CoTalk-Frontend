@@ -4,6 +4,9 @@ import UserCard from '../../../components/UserCard';
 import {BACKEND_URL} from '@/app/constants/string';
 import React, { useState } from "react";
 import {request} from "@/app/utils/network";
+import { store } from "@/app/redux/store";
+
+/*
 export async function getServerSideProps(ctx) {
     const { userid }=ctx.query;
 //    const friendsReq=await axios.get(`${BACKEND_URL}/api/user/${userid}/friends`);
@@ -23,28 +26,31 @@ export async function getServerSideProps(ctx) {
     }
     return {
         props: {
-            users: friendsReq.data
+            friends: friendsReq.data
         }
     }
 }
+*/
 
-function Friends({ users }) {
+function Friends() 
+{
+    console.log(store.getState().auth.token);
     const [friends, setFriends] = useState([]);
     const [query, setQuery] = useState("");
     const [searchResult, setSearchResult] = useState([]);
     const [hasSearched, setHasSearched] = useState(false);
-    request(`${BACKEND_URL}/api/user/${params.userid}/friends`, "GET", true)
+    request(`${BACKEND_URL}/api/user/${store.getState().auth.id}/friends`, "GET", true)
     .then((res) => {
       setFriends(res.friends);
     });
 
-  const handleSearch = () => {
-    setHasSearched(true);
-    request(`${BACKEND_URL}/api/user/?search_text=${query}`, "GET", false)
-      .then((res) => {
-        setSearchResult(res.friends);
-      });
-  };
+    const handleSearch = () => {
+        setHasSearched(true);
+        request(`${BACKEND_URL}/api/user/?search_text=${query}`, "GET", false)
+        .then((res) => {
+            setSearchResult(res.friends);
+        });
+    };
 
     return (
         <>

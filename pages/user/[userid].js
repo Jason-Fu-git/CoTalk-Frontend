@@ -5,23 +5,20 @@ import {BACKEND_URL} from '@/app/constants/string';
 import React, { useState } from "react";
 import {request} from "@/app/utils/network";
 
-export async function getServerSideProps({params:{userid}}) {
-
-request(`${BACKEND_URL}/api/user/${userid}`, "GET", false)
-.then((res)=>{
-  return(
-    {
-      props: {
-        user: res
-      }
-    }
-  )
-}
-)
+export async function getServerSideProps({params:{userid}}) 
+{
+	request(`${BACKEND_URL}/api/user/${userid}`, "GET", false)
+	.then((res)=>{
+		return({
+			props: {
+				user: res
+			}
+		})
+	})
 }
 
-function Account({user}) {
-  
+function Account({user}) 
+{
     return (
         <div className="pt-0 sm:pt-16">
           <div className="dark:bg-gray-800 text-white w-12/12 shadow-lg sm:w-9/12 sm:m-auto">
@@ -39,7 +36,7 @@ function Account({user}) {
                 />
                 <div>
                   <h1 className="font-bold text-3xl">
-                    {user.user_name}
+                    {user.user_name}的个人主页
                   </h1>
                   <p>{user.user_email}</p>
                 </div>
@@ -47,7 +44,7 @@ function Account({user}) {
             </div>
             <div className="p-8">
               <p className="text-black dark:text-white">本人无个人描述</p>
-              <Link href={`/user/${user.user_id}/friends`} passHref>
+              <Link href={`/user/self/friends`} passHref>
                 <button className="
                     dark:bg-green-400
                     dark:text-gray-800

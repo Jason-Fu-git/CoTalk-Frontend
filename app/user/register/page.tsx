@@ -23,7 +23,7 @@ const RegisterPage = () => {
                 dispatch(setToken(res.token));
                 dispatch(setId(res.user_id));
                 alert(LOGIN_SUCCESS_PREFIX + res.user_name);
-                router.push(`/user/${res.user_id}`);
+                router.push(`/user/self`);
             }
             else {
                 alert(LOGIN_FAILED);
