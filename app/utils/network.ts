@@ -3,7 +3,7 @@
  *       我们推荐你在大作业中也尝试写一个网络请求 wrapper，本文件可以用作参考
  */
 
-import store from "../redux/store";
+import {store} from "../redux/store";
 
 export enum NetworkErrorType {
     UNAUTHORIZED,
@@ -54,12 +54,12 @@ export const request = async (
         return data;
     }
     // HTTP status 401
-    // if (response.status === 401 && code === 2) {
-    //     throw new NetworkError(
-    //         NetworkErrorType.UNAUTHORIZED,
-    //         "[401] " + data.info,
-    //     );
-    // }
+    if (response.status === 401 && code === -2) {
+        throw new NetworkError(
+            NetworkErrorType.UNAUTHORIZED,
+            "[401] " + data.info,
+        );
+    }
     // else if (response.status === 401) {
     //     throw new NetworkError(
     //         NetworkErrorType.CORRUPTED_RESPONSE,
