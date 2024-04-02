@@ -3,9 +3,10 @@ import { useState } from "react";
 import { BACKEND_URL, FAILURE_PREFIX, LOGIN_FAILED, LOGIN_SUCCESS_PREFIX } from "../../constants/string";
 import { useRouter } from "next/navigation";
 import { setName, setId,setToken } from "../../redux/auth";
-import store from "@/app/redux/store";
+import {store} from "@/app/redux/store";
 import 'bootstrap/dist/css/bootstrap.css';
 import Link from 'next/link';
+import {request} from '@/app/utils/network'
 
 const LoginScreen = () => {
     const [user_name, setUserName] = useState("");
@@ -19,10 +20,8 @@ const LoginScreen = () => {
         .then((res) => {
             if (Number(res.code) === 0) {
                 dispatch(setName(res.user_name));
-                alert(store.getState().auth.name);
                 dispatch(setToken(res.token));
                 dispatch(setId(res.user_id));
-                alert(store.getState().auth.id);
                 alert(LOGIN_SUCCESS_PREFIX + res.user_name);
                 router.push(`/user/${res.user_id}`);
             }
