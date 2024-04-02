@@ -1,8 +1,8 @@
 import Link from 'next/link';
-import axios from 'axios';
+import {BACKEND_URL} from '@/app/constants/string';
+import React, { useState } from "react";
+import {request} from "@/app/utils/network";
 import 'bootstrap/dist/css/bootstrap.css'
-
-const BACKEND_URL = "https://cotalkbackend-concord.app.secoder.net";
 
 export async function getServerSideProps(ctx) {
     const { userid }=ctx.query;
