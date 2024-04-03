@@ -19,6 +19,7 @@
     "@popperjs/core": "^2.11.8",
     "@reduxjs/toolkit": "^2.2.2",
     "@types/js-cookie": "^3.0.5",
+    "@typescript-eslint/parser": "^7.5.0",
     "antd": "^5.15.3",
     "axios": "^1.6.8",
     "babel-jest": "^29.7.0",
