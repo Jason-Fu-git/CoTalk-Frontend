@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <testExecutions version="1">
   <file path="/root/CoTalkFrontend/tests/login.test.ts">
-    <testCase name="empty test" duration="4"/>
+    <testCase name="empty test" duration="7"/>
   </file>
 </testExecutions>
