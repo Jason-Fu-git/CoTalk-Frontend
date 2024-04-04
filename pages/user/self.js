@@ -1,12 +1,15 @@
 'use client'
-import React from "react";
+import React,{useState,useEffect} from "react";
 import { store } from "@/app/redux/store";
 import Link from "next/link";
 
 function Account() 
 {
-  	const current_name=store.getState().auth.name;
+  const [current_name, setCurrentName] = useState("");
 
+  useEffect(() => {
+      setCurrentName(store.getState().auth.name);
+  }, []);
     return (
         <div className="pt-0 sm:pt-16">
           <div className="dark:bg-gray-800 text-white w-12/12 shadow-lg sm:w-9/12 sm:m-auto">
@@ -55,6 +58,19 @@ function Account()
                     rounded-md
                     mt-6">
                   修改个人信息
+                </button>
+              </Link>
+              <Link href={`/user/login`} passHref>
+                <button className="
+                    dark:bg-green-400
+                    dark:text-gray-800
+                    bg-green-400
+                    text-white
+                    font-semibold
+                    p-2
+                    rounded-md
+                    mt-6">
+                  登出
                 </button>
               </Link>
             </div>
