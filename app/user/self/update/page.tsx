@@ -1,5 +1,5 @@
 'use client'
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { BACKEND_URL, UPDATE_SUCCESS,DELETE_SUCCESS} from "../../../constants/string";
 import { useRouter } from "next/navigation";
 import { setName, setEmail, setDescription} from "../../../redux/auth";
@@ -45,6 +45,16 @@ const Update = () => {
         })
     }
 
+    const [prev_name, setPrevName] = useState("");
+    const [prev_email, setPrevEmail] = useState("");
+    const [prev_description, setPrevDescription] = useState("");
+
+    useEffect(() => {
+        setPrevName(store.getState().auth.name);
+        setPrevEmail(store.getState().auth.email);
+        setPrevDescription(store.getState().auth.description);
+    }, []);
+
     return (
         <>
             <p className="lead">修改个人信息</p>
@@ -53,28 +63,18 @@ const Update = () => {
             <input
                 className="form-control"
                 type="text"
-                placeholder={user_name}
+                placeholder={prev_name}
                 value={user_name}
                 onChange={(e) => set_userName(e.target.value)}
             />
             </div>
 
             <div className="input-group mb-3">
-            <p>密码</p>
-            <input
-                className="form-control"
-                type="password"
-                placeholder={password}
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-            />
-            </div>
-            <div className="input-group mb-3">
             <p>邮箱</p>
             <input
                 className="form-control"
                 type="text"
-                placeholder={user_email}
+                placeholder={prev_email}
                 value={user_email}
                 onChange={(e) => set_email(e.target.value)}
             />
@@ -84,7 +84,7 @@ const Update = () => {
             <input
                 className="form-control"
                 type="text"
-                placeholder={description}
+                placeholder={prev_description}
                 value={description}
                 onChange={(e) => set_description(e.target.value)}
             />
