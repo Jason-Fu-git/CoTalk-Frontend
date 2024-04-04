@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { BACKEND_URL, FAILURE_PREFIX, LOGIN_FAILED, LOGIN_SUCCESS_PREFIX } from "../../constants/string";
 import { useRouter } from "next/navigation";
-import { setName, setId,setToken } from "../../redux/auth";
+import { setName, setId,setToken,resetAuth } from "../../redux/auth";
 import {store} from "@/app/redux/store";
 import 'bootstrap/dist/css/bootstrap.css';
 import Link from 'next/link';
@@ -26,12 +26,9 @@ const LoginScreen = () => {
                 alert(LOGIN_SUCCESS_PREFIX + res.user_name);
                 router.push(`/user/self`);
             }
-            else {
-                alert(LOGIN_FAILED);
-            }
         })
     };
-
+    dispatch(resetAuth());
     return (
         <>
             <p className="lead">登录</p>
@@ -58,7 +55,7 @@ const LoginScreen = () => {
                 className="btn btn-primary"
                 onClick={login} 
                 disabled={user_name === "" || password === ""}>
-                提交
+                登录
             </button>
             <p></p>
             <p>没有账户?

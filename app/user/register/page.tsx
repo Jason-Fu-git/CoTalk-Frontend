@@ -1,6 +1,6 @@
 'use client'
 import React, { useState } from 'react';
-import { BACKEND_URL, FAILURE_PREFIX, LOGIN_FAILED, LOGIN_SUCCESS_PREFIX } from "../../constants/string";
+import { BACKEND_URL, REGISTER_SUCCESS_PREFIX } from "../../constants/string";
 import { useRouter } from "next/navigation";
 import { setName, setId, setToken } from "../../redux/auth";
 import {store} from "@/app/redux/store";
@@ -22,11 +22,8 @@ const RegisterPage = () => {
                 dispatch(setName(res.user_name));
                 dispatch(setToken(res.token));
                 dispatch(setId(res.user_id));
-                alert(LOGIN_SUCCESS_PREFIX + res.user_name);
+                alert(REGISTER_SUCCESS_PREFIX + res.user_name);
                 router.push(`/user/self`);
-            }
-            else {
-                alert(LOGIN_FAILED);
             }
         })
         
