@@ -1,79 +1,27 @@
 import 'bootstrap/dist/css/bootstrap.css';
-import UserCard from '../../../components/UserCard';
+import UserCard from '@/components/UserCard';
 import {BACKEND_URL} from '@/app/constants/string';
 import React, { useState,useEffect } from "react";
 import {request} from "@/app/utils/network";
-import { store } from "@/app/redux/store"
+import { store } from "@/app/redux/store";
+import Link from 'next/link';
 
-/*
-export async function getServerSideProps(ctx) {
-    const { userid }=ctx.query;
-//    const friendsReq=await axios.get(`${BACKEND_URL}/api/user/${userid}/friends`);
-    const friendsReq={
-        "data": [
-            {
-                "user_name":"Test1",
-                "user_id":1,
-                "user_email":"test1@xxx.com",
-            },
-            {
-                "user_name":"Test2",
-                "user_id":2,
-                "user_email":"test2@xxx.com"
-            },
-        ]
-    }
-    return {
-        props: {
-            friends: friendsReq.data
-        }
-    }
-}
-*/
-
-function Friends() {
+function Friends() 
+{
     const [friends, setFriends] = useState([]);
-    const [query, setQuery] = useState("");
-    const [searchResult, setSearchResult] = useState([]);
-    const [hasSearched, setHasSearched] = useState(false);
+
     useEffect(() => {
-    request(`${BACKEND_URL}/api/user/${store.getState().auth.id}/friends`, "GET", true)
-    .then((res) => {
-      setFriends(res.friends);
-    });
-    }, []);
-    const handleSearch = () => {
-        setHasSearched(true);
-        request(`${BACKEND_URL}/api/user/?search_text=${query}`, "GET", false)
+        request(`${BACKEND_URL}/api/user/${store.getState().auth.id}/friends`, "GET", true)
         .then((res) => {
-            setSearchResult(res.friends);
+        setFriends(res.friends);
         });
-    };
+    }, []);
 
     return (
         <>
-            <div>
-            <input
-                type="text"
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-            />
-            <button onClick={handleSearch}>Search</button>
-            {hasSearched && (searchResult.length > 0 ? (
-                searchResult.map((result) => (
-                <div key={result.user_id}>
-                    <p>Name: {result.user_name}</p>
-                    <p>Email: {result.user_email}</p>
-                </div>
-                ))
-            ) : (
-                <p>没有搜索结果</p>
-            ))}
-
-            </div>
             <div className="sm:w-9/12 sm:m-auto pt-16 pb-16">
                 <h1 className="
-                    dark:text-white text-5xl font-bold text-center">
+                    dark:text-white text-4xl font-bold text-center">
                     所有好友
                 </h1>
                 <div className="grid gap-8 grid-cols-1 sm:grid-cols-3 mt-14
@@ -85,6 +33,19 @@ function Friends() {
                     ))}
                 </div>
             </div> 
+            <Link href={`/user/search`} passHref>
+                <button className="
+                    dark:bg-blue-400
+                    dark:text-gray-800
+                    bg-blue-400
+                    text-white
+                    font-semibold
+                    p-2
+                    rounded-md
+                    mt-6">
+                  搜索用户
+                </button>
+            </Link>
         </>
     )
 }

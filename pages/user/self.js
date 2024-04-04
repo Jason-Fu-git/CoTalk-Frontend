@@ -34,43 +34,17 @@ function Account()
             </div>
             <div className="p-8">
               <p className="text-black dark:text-white">本人无个人描述</p>
-              <Link href={`/user/self/friends`} passHref>
-                <button className="
-                    dark:bg-green-400
-                    dark:text-gray-800
-                    bg-green-400
-                    text-white
-                    font-semibold
-                    p-2
-                    rounded-md
-                    mt-6">
-                  所有好友
-                </button>
-              </Link>
               <Link href={`/user/self/update`} passHref>
                 <button className="
-                    dark:bg-green-400
+                    dark:bg-blue-400
                     dark:text-gray-800
-                    bg-green-400
+                    bg-blue-400
                     text-white
                     font-semibold
                     p-2
                     rounded-md
                     mt-6">
                   修改个人信息
-                </button>
-              </Link>
-              <Link href={`/user/login`} passHref>
-                <button className="
-                    dark:bg-green-400
-                    dark:text-gray-800
-                    bg-green-400
-                    text-white
-                    font-semibold
-                    p-2
-                    rounded-md
-                    mt-6">
-                  登出
                 </button>
               </Link>
             </div>

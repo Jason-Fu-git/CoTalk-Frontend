@@ -42,13 +42,13 @@ const LoginScreen = () => {
             />
             </div>
             <div className="input-group mb-3">
-            <input
+            <input 
                 className="form-control"
                 type="password"
                 placeholder="密码"
                 value={password}
-                onChange={(e) => setPassword(e.target.value)}
-            />
+                aria-describedby="passwordHelpBlock"
+                onChange={(e) => setPassword(e.target.value)} />
             </div>
             <button 
                 name="submit"
