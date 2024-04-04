@@ -3,7 +3,7 @@
  *       这么做可以提高核心代码可读性，不会因为过长的字符串导致主逻辑代码难以分析
  */
 
-export const BACKEND_URL = "https://CoTalkBackend-Concord.app.secoder.net";
+export const BACKEND_URL = "";
 
 
 export const FAILURE_PREFIX = "网络请求失败：";
