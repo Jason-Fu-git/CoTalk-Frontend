@@ -18,6 +18,7 @@ const LoginScreen = () => {
     const login = () => {
         request(`${BACKEND_URL}/api/user/login`, "POST", false, {"user_name": user_name, "password": password})
         .then((res) => {
+            console.log(res);
             if (Number(res.code) === 0) {
                 dispatch(setName(res.user_name));
                 dispatch(setToken(res.token));
@@ -57,7 +58,7 @@ const LoginScreen = () => {
                 className="btn btn-primary"
                 onClick={login} 
                 disabled={user_name === "" || password === ""}>
-                Login
+                提交
             </button>
             <p></p>
             <p>没有账户?
