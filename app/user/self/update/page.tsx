@@ -58,8 +58,8 @@ const Update = () => {
     return (
         <>
             <p className="lead">修改个人信息</p>
-            <div className="input-group mb-3">
-            <p>用户名</p>
+            <div className="mb-3">
+            <label htmlFor="exampleFormControlInput1" className="form-label">用户名</label>
             <input
                 className="form-control"
                 type="text"
@@ -69,8 +69,8 @@ const Update = () => {
             />
             </div>
 
-            <div className="input-group mb-3">
-            <p>邮箱</p>
+            <div className="mb-3">
+            <label htmlFor="exampleFormControlInput1" className="form-label">邮箱</label>
             <input
                 className="form-control"
                 type="text"
@@ -79,8 +79,8 @@ const Update = () => {
                 onChange={(e) => set_email(e.target.value)}
             />
             </div>
-            <div className="input-group mb-3">
-            <p>个人描述</p>
+            <div className="mb-3">
+            <label htmlFor="exampleFormControlInput1" className="form-label">个人描述</label>
             <input
                 className="form-control"
                 type="text"
@@ -93,7 +93,7 @@ const Update = () => {
                 name="submit"
                 className="btn btn-primary"
                 onClick={update} 
-                disabled={user_name === ""&&password===""&&description===""&&user_email===""}>
+                disabled={user_name === ""&&description===""&&user_email===""}>
                 确认修改
             </button>
             <button 
