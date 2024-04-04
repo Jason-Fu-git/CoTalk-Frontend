@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { BACKEND_URL, FAILURE_PREFIX, LOGIN_FAILED, LOGIN_SUCCESS_PREFIX } from "../../constants/string";
 import { useRouter } from "next/navigation";
-import { setName, setId,setToken } from "../../redux/auth";
+import { setName, setId, setToken } from "../../redux/auth";
 import {store} from "@/app/redux/store";
 import 'bootstrap/dist/css/bootstrap.css'
 import {request} from '@/app/utils/network'
