@@ -2,17 +2,15 @@
 import { useState } from "react";
 import { BACKEND_URL, UPDATE_SUCCESS, UPDATE_FAILED} from "../../../constants/string";
 import { useRouter } from "next/navigation";
-import { setName, setEmail, setDescription } from "../../../redux/auth";
+import { setName, setEmail, setDescription} from "../../../redux/auth";
 import {store} from "@/app/redux/store";
 import 'bootstrap/dist/css/bootstrap.css';
-import Link from 'next/link';
 import {request} from '@/app/utils/network'
 
 const Update = () => {
-    const [user_name, setUserName] = useState("");
-    const [password, setPassword] = useState("");
-    const [user_email, setEmail] = useState("");
-    const [description, setDescription] = useState("");
+    const [user_name, set_userName] = useState("");
+    const [user_email, set_email] = useState("");
+    const [description, set_description] = useState("");
 
     const router = useRouter();
     const dispatch = store.dispatch;
@@ -21,7 +19,6 @@ const Update = () => {
         request(`${BACKEND_URL}/api/user/`, "PUT", true, 
             {
                 "user_name": user_name,
-                "password": password,
                 "user_email": user_email,
                 "description": description,
             })
@@ -50,7 +47,7 @@ const Update = () => {
                 type="text"
                 placeholder={user_name}
                 value={user_name}
-                onChange={(e) => setUserName(e.target.value)}
+                onChange={(e) => set_userName(e.target.value)}
             />
             </div>
 
@@ -61,7 +58,7 @@ const Update = () => {
                 type="password"
                 placeholder={user_email}
                 value={user_email}
-                onChange={(e) => setPassword(e.target.value)}
+                onChange={(e) => set_email(e.target.value)}
             />
             </div>
 
@@ -70,16 +67,16 @@ const Update = () => {
             <input
                 className="form-control"
                 type="password"
-                placeholder={(description==="")? "目前还没有个人描述" : description}
+                placeholder={description}
                 value={description}
-                onChange={(e) => setPassword(e.target.value)}
+                onChange={(e) => set_description(e.target.value)}
             />
             </div>
             <button 
                 name="submit"
                 className="btn btn-primary"
                 onClick={update} 
-                disabled={user_name === "" || password === ""}>
+                disabled={user_name === ""}>
                 确认修改
             </button>
         </>
