@@ -35,6 +35,8 @@ export const authSlice = createSlice({
             state.token = "";
             state.name = "";
             state.id = 0;
+            state.email="";
+            state.description="目前还没有个人描述";
         },
         //以下为修改内容
         setEmail: (state, action: PayloadAction<string>) => {
