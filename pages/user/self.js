@@ -44,7 +44,7 @@ function Account()
                   所有好友
                 </button>
               </Link>
-              <Link href={`/user/self/chats`} passHref>
+              <Link href={`/user/self/update`} passHref>
                 <button className="
                     dark:bg-green-400
                     dark:text-gray-800
@@ -54,7 +54,7 @@ function Account()
                     p-2
                     rounded-md
                     mt-6">
-                  所有群聊
+                  修改个人信息
                 </button>
               </Link>
             </div>
