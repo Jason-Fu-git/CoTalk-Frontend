@@ -42,7 +42,7 @@ style-test:
  extends: .test
  script:
    - yarn lint
-  only:
+ only:
     - master
 deploy:
   stage: deploy
