@@ -13,4 +13,5 @@ export const LOGIN_FAILED = "登陆失败";
 export const REGISTER_SUCCESS_PREFIX = "注册成功，用户名：";
 export const REGUSTER_FAILED = "注册失败";
 export const UPDATE_SUCCESS = "更新个人信息成功";
-export const UPDATE_FAILED = "更新个人信息失败"
+export const UPDATE_FAILED = "更新个人信息失败";
+export const DELETE_SUCCESS = "注销成功";
