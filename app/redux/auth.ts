@@ -4,12 +4,18 @@ interface AuthState {
     token: string;
     name: string;
     id: number;
+    //以下为修改内容
+    email: string;
+    description: string;
 }
 
 const initialState: AuthState = {
     token: "",
     name: "",
     id: 0,
+    //以下为修改内容
+    email: "",
+    description: "目前还没有个人描述",
 };
 
 export const authSlice = createSlice({
@@ -30,8 +36,16 @@ export const authSlice = createSlice({
             state.name = "";
             state.id = 0;
         },
+        //以下为修改内容
+        setEmail: (state, action: PayloadAction<string>) => {
+            state.email = action.payload;
+        },
+        setDescription: (state, action: PayloadAction<string>) => {
+            state.description = action.payload;
+        },
     },
 });
 
-export const { setToken, setName, setId,resetAuth } = authSlice.actions;
+export const {setToken, setName, setId, resetAuth, 
+              setEmail, setDescription} = authSlice.actions;
 export default authSlice.reducer;
