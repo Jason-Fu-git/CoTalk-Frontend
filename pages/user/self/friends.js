@@ -5,43 +5,20 @@ import React, { useState,useEffect } from "react";
 import {request} from "@/app/utils/network";
 import { store } from "@/app/redux/store"
 
-/*
-export async function getServerSideProps(ctx) {
-    const { userid }=ctx.query;
-//    const friendsReq=await axios.get(`${BACKEND_URL}/api/user/${userid}/friends`);
-    const friendsReq={
-        "data": [
-            {
-                "user_name":"Test1",
-                "user_id":1,
-                "user_email":"test1@xxx.com",
-            },
-            {
-                "user_name":"Test2",
-                "user_id":2,
-                "user_email":"test2@xxx.com"
-            },
-        ]
-    }
-    return {
-        props: {
-            friends: friendsReq.data
-        }
-    }
-}
-*/
-
-function Friends() {
+function Friends() 
+{
     const [friends, setFriends] = useState([]);
     const [query, setQuery] = useState("");
     const [searchResult, setSearchResult] = useState([]);
     const [hasSearched, setHasSearched] = useState(false);
+
     useEffect(() => {
-    request(`${BACKEND_URL}/api/user/${store.getState().auth.id}/friends`, "GET", true)
-    .then((res) => {
-      setFriends(res.friends);
-    });
+        request(`${BACKEND_URL}/api/user/${store.getState().auth.id}/friends`, "GET", true)
+        .then((res) => {
+        setFriends(res.friends);
+        });
     }, []);
+    
     const handleSearch = () => {
         setHasSearched(true);
         request(`${BACKEND_URL}/api/user/?search_text=${query}`, "GET", false)
