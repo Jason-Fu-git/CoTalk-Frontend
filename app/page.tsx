@@ -11,7 +11,7 @@ export default function Page() {
             <h1 className="display-3">Hello,</h1>
             <p className="lead">Welcome to CoTalk.</p>
             <a className="btn btn-lg btn-primary" href="/user/login"
-              role="button">Login &raquo;</a>
+              role="button">进入 &raquo;</a>
           </div>
         </div>
       </main>
