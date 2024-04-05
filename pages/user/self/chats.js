@@ -40,6 +40,17 @@ function Chats({ chats })
                 </h1>
                 <div className="grid gap-8 grid-cols-1 sm:grid-cols-3 mt-14
                             ml-8 mr-8 sm:mr-0 sm:ml-0">
+                    <Link href={`/chat/create`} passHref>
+                        <div className="card" style={{width: "18rem"}}>
+                            <img 
+                                src="https://images.unsplash.com/photo-1605460375648-278bcbd579a6"
+                                className="card-img-top" 
+                                alt="search new users"/>
+                            <div className="card-body">
+                            <h5 className="card-title">创建群聊</h5>
+                            </div>
+                        </div>
+                    </Link>
                     {chats.map((chat) => (
                         <div key={chat.chat_id}>
                             <ChatCard {...chat}/>
