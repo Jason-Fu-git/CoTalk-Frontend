@@ -16,7 +16,21 @@ function TopBar()
                     rounded-md">
                   所有好友
                 </button>
-            </Link>
+      		</Link>
+		</div>
+		<div className="w-10/12 m-auto">
+			<Link href={`/user/self/chats`} passHref>
+                <button className="
+                    dark:bg-blue-400
+                    dark:text-gray-800
+                    bg-blue-400
+                    text-white
+                    font-semibold
+                    p-2
+                    rounded-md">
+                  所有群聊
+                </button>
+      		</Link>
 		</div>
 		<div className="w-10/12 m-auto">
 			<Link href={`/user/self`} passHref>
