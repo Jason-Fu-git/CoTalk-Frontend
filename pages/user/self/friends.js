@@ -33,7 +33,7 @@ function Friends()
                                 className="card-img-top" 
                                 alt="search new users"/>
                             <div className="card-body">
-                            <h5 class="card-title">搜索其他用户</h5>
+                            <h5 className="card-title">搜索其他用户</h5>
                             </div>
                         </div>
                     </Link>
