@@ -12,7 +12,7 @@ const initialState: AuthState = {
     token: "",
     name: "",
     id: 0,
-    email: "无",
+    email: "邮箱为空",
     description: "目前还没有个人描述",
 };
 
@@ -33,7 +33,7 @@ export const authSlice = createSlice({
             state.token = "";
             state.name = "";
             state.id = 0;
-            state.email="无";
+            state.email="邮箱为空";
             state.description="目前还没有个人描述";
         },
         //以下为修改内容
