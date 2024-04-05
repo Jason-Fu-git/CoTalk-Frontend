@@ -26,6 +26,17 @@ function Friends()
                 </h1>
                 <div className="grid gap-8 grid-cols-1 sm:grid-cols-3 mt-14
                             ml-8 mr-8 sm:mr-0 sm:ml-0">
+                    <Link href={`/user/search`} passHref>
+                        <div className="card" style={{width: "18rem"}}>
+                            <img 
+                                src="https://images.unsplash.com/photo-1605460375648-278bcbd579a6"
+                                className="card-img-top" 
+                                alt="search new users"/>
+                            <div className="card-body">
+                            <h5 class="card-title">搜索其他用户</h5>
+                            </div>
+                        </div>
+                    </Link>
                     {friends.map((user) => (
                         <div key={user.user_id}>
                             <UserCard {...user}/>
@@ -33,19 +44,6 @@ function Friends()
                     ))}
                 </div>
             </div> 
-            <Link href={`/user/search`} passHref>
-                <button className="
-                    dark:bg-blue-400
-                    dark:text-gray-800
-                    bg-blue-400
-                    text-white
-                    font-semibold
-                    p-2
-                    rounded-md
-                    mt-6">
-                  搜索用户
-                </button>
-            </Link>
         </>
     )
 }
