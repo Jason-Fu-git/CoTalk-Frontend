@@ -1,39 +1,26 @@
 import 'bootstrap/dist/css/bootstrap.css';
-import React, { useState,useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import Link from 'next/link';
 import Image from 'next/image';
 
 import ChatCard from '@/components/ChatCard';
-import {BACKEND_URL} from '@/app/constants/string';
-import {request} from "@/app/utils/network";
+import { BACKEND_URL } from '@/app/constants/string';
+import { request } from "@/app/utils/network";
 import { store } from "@/app/redux/store";
 import modern from "@/public/ModernArt.jpg"
 
-export async function getServerSideProps(ctx) {
-    const { userid }=ctx.query;
-//    const chatsReq=await axios.get(`${BACKEND_URL}/api/user/${userid}/chats`);
-    
-    const chatsReq={
-        "data": [
-            {
-                "chat_id":1,
-                "chat_name":"群聊1",
-            },
-            {
-                "chat_id":2,
-                "chat_name":"群聊2",
-            },
-        ]
-    }
-    return {
-        props: {
-            chats: chatsReq.data
-        }
-    }
-}
-
-function Chats({ chats }) 
+function Chats() 
 {
+    const [chats, setChats] = useState([]);
+
+    useEffect(() => {
+        console.log("Get "+store.getState().auth.name+"'s chats");
+        request(`${BACKEND_URL}/api/user/${store.getState().auth.id}/chats`, "GET", true)
+        .then((res) => {
+        setChats(res.chats);
+        });
+    }, []);
+
     return (
         <>
             <div className="sm:w-9/12 sm:m-auto pt-16 pb-16">

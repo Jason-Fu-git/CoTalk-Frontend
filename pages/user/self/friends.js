@@ -1,5 +1,5 @@
 import 'bootstrap/dist/css/bootstrap.css';
-import React, { useState,useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import Link from 'next/link';
 import Image from 'next/image';
 
@@ -14,6 +14,7 @@ function Friends()
     const [friends, setFriends] = useState([]);
 
     useEffect(() => {
+        console.log("Get "+store.getState().auth.name+"'s friends");
         request(`${BACKEND_URL}/api/user/${store.getState().auth.id}/friends`, "GET", true)
         .then((res) => {
         setFriends(res.friends);
