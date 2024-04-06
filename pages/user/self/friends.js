@@ -1,10 +1,13 @@
 import 'bootstrap/dist/css/bootstrap.css';
-import UserCard from '@/components/UserCard';
-import {BACKEND_URL} from '@/app/constants/string';
 import React, { useState,useEffect } from "react";
-import {request} from "@/app/utils/network";
-import { store } from "@/app/redux/store";
 import Link from 'next/link';
+import Image from 'next/image';
+
+import UserCard from '@/components/UserCard';
+import { BACKEND_URL } from '@/app/constants/string';
+import { request } from "@/app/utils/network";
+import { store } from "@/app/redux/store";
+import search from "@/public/Search.jpg";
 
 function Friends() 
 {
@@ -28,10 +31,11 @@ function Friends()
                             ml-8 mr-8 sm:mr-0 sm:ml-0">
                     <Link href={`/user/search`} passHref>
                         <div className="card" style={{width: "18rem"}}>
-                            <img 
-                                src="https://images.unsplash.com/photo-1605460375648-278bcbd579a6"
+                            <Image
+                                src={search}
                                 className="card-img-top" 
-                                alt="search new users"/>
+                                alt="search new users"
+                            />
                             <div className="card-body">
                             <h5 className="card-title">搜索用户</h5>
                             </div>
