@@ -1,24 +1,33 @@
 import 'bootstrap/dist/css/bootstrap.css';
+import React, { useState, useEffect } from "react";
+
 import UserCard from '@/components/UserCard';
 import {BACKEND_URL} from '@/app/constants/string';
-import React, { useState } from "react";
 import {request} from "@/app/utils/network";
-import 'bootstrap/dist/css/bootstrap.css';
 
-function Friends() 
+function Search() 
 {
     const [query, setQuery] = useState("");
     const [searchResult, setSearchResult] = useState([]);
-    const [hasSearched, setHasSearched] = useState(false);
+    const [hasSearched, setHasSearched] = useState(true);
     
+    useEffect(() => {
+        request(`${BACKEND_URL}/api/user/?search_text=abc`, "GET", true)
+        .then((res) => {
+            setSearchResult(res.users);
+        });
+    }, []);
+
+    /*    
     const handleSearch = () => {
         setHasSearched(true);
+        console.log("SSSSJ");
         request(`${BACKEND_URL}/api/user/?search_text=${query}`, "GET", false)
         .then((res) => {
-            setSearchResult(res.friends);
+            setSearchResult(res.users);
         });
     };
-
+*/
     return (
         <>
             <div className="sm:w-9/12 sm:m-auto pt-16 pb-16">
@@ -38,8 +47,8 @@ function Friends()
                         <button 
                             name="submit"
                             className="btn btn-primary"
-                            onClick={handleSearch}>
-                            搜索
+                        >
+                        搜索
                         </button>
                     </div>
                 </div>
@@ -60,4 +69,4 @@ function Friends()
     )
 }
 
-export default Friends;
+export default Search;

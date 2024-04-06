@@ -1,36 +1,26 @@
 import 'bootstrap/dist/css/bootstrap.css';
-import ChatCard from '@/components/ChatCard';
-import {BACKEND_URL} from '@/app/constants/string';
-import React, { useState,useEffect } from "react";
-import {request} from "@/app/utils/network";
-import { store } from "@/app/redux/store";
+import React, { useState, useEffect } from "react";
 import Link from 'next/link';
+import Image from 'next/image';
 
-export async function getServerSideProps(ctx) {
-    const { userid }=ctx.query;
-//    const chatsReq=await axios.get(`${BACKEND_URL}/api/user/${userid}/chats`);
-    
-    const chatsReq={
-        "data": [
-            {
-                "chat_id":1,
-                "chat_name":"群聊1",
-            },
-            {
-                "chat_id":2,
-                "chat_name":"群聊2",
-            },
-        ]
-    }
-    return {
-        props: {
-            chats: chatsReq.data
-        }
-    }
-}
+import ChatCard from '@/components/ChatCard';
+import { BACKEND_URL } from '@/app/constants/string';
+import { request } from "@/app/utils/network";
+import { store } from "@/app/redux/store";
+import modern from "@/public/ModernArt.jpg"
 
-function Chats({ chats }) 
+function Chats() 
 {
+    const [chats, setChats] = useState([]);
+
+    useEffect(() => {
+        console.log("Get "+store.getState().auth.name+"'s chats");
+        request(`${BACKEND_URL}/api/user/${store.getState().auth.id}/chats`, "GET", true)
+        .then((res) => {
+        setChats(res.chats);
+        });
+    }, []);
+
     return (
         <>
             <div className="sm:w-9/12 sm:m-auto pt-16 pb-16">
@@ -42,10 +32,11 @@ function Chats({ chats })
                             ml-8 mr-8 sm:mr-0 sm:ml-0">
                     <Link href={`/chat/create`} passHref>
                         <div className="card" style={{width: "18rem"}}>
-                            <img 
-                                src="https://images.unsplash.com/photo-1605460375648-278bcbd579a6"
+                            <Image 
+                                src={modern}
                                 className="card-img-top" 
-                                alt="search new users"/>
+                                alt="search new users"
+                            />
                             <div className="card-body">
                             <h5 className="card-title">创建群聊</h5>
                             </div>
