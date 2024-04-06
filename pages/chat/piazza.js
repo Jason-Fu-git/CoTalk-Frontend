@@ -1,5 +1,5 @@
 
-function PublicRoom()
+function Piazza()
 {
     // DOM loaded
     const url='ws://'+window.location.host+'/ws/chat/room/';
@@ -57,6 +57,43 @@ function PublicRoom()
     });
     
     input.focus();
+
+    const [messages, setMessages] = useState([]);
+
+    return (
+        <>
+            <div className="sm:w-9/12 sm:m-auto pt-16 pb-16">
+                <h1 className="
+                    dark:text-white text-4xl font-bold text-center">
+                广场
+                </h1>
+                <div>
+                {messages.map((message) => (
+                        <div key={message.msg_id}>
+                            <MessageCard {...message}/>
+                        </div>
+                ))}
+                </div>
+                <div className="input-group mb-3">
+                    <input
+                        className="form-control col_auto"
+                        type="text"
+                        placeholder="请输入聊天内容"
+                        id="chat-message-input"
+                    />
+                    <div className="col-auto">
+                        <button 
+                            name="submit"
+                            className="btn btn-primary"
+                            id="chat-message-submit"
+                        >
+                        发送
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </>
+    );
 }
 
-export default PublicRoom;
+export default Piazza;

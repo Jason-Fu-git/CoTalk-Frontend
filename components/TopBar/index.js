@@ -14,7 +14,7 @@ function TopBar()
                     font-semibold
                     p-2
                     rounded-md">
-                  个人主页
+                个人主页
                 </button>
             </Link>
 		</div>
@@ -28,7 +28,7 @@ function TopBar()
                     font-semibold
                     p-2
                     rounded-md">
-                  所有好友
+                所有好友
                 </button>
       		</Link>
 		</div>
@@ -42,9 +42,23 @@ function TopBar()
                     font-semibold
                     p-2
                     rounded-md">
-                  所有群聊
+                所有群聊
                 </button>
       		</Link>
+		</div>
+		<div className="w-10/12 m-auto">
+			<Link href={`/chat/piazza`} passHref>
+                <button className="
+                    dark:bg-blue-400
+                    dark:text-gray-800
+                    bg-blue-400
+                    text-white
+                    font-semibold
+                    p-2
+                    rounded-md">
+				广场
+                </button>
+            </Link>
 		</div>
 		<div className="w-10/12 m-auto">
 			<Link href={`/`} passHref>
@@ -56,7 +70,7 @@ function TopBar()
                     font-semibold
                     p-2
                     rounded-md">
-                  登出
+                登出
                 </button>
             </Link>
 		</div>
