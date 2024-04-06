@@ -1,8 +1,9 @@
 
 function Piazza()
 {
+    const [messages, setMessages] = useState([]);
     // DOM loaded
-    const url='ws://'+window.location.host+'/ws/chat/room/';
+    const url='ws://localhost:3000/ws/piazza';
     const chatSocket=new WebSocket(url);
     
     //客户端收到消息时触发
@@ -57,8 +58,6 @@ function Piazza()
     });
     
     input.focus();
-
-    const [messages, setMessages] = useState([]);
 
     return (
         <>
