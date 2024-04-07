@@ -15,15 +15,25 @@ const Update = () => {
     const [password,setPassword]=useState("");
     const [description, set_description] = useState("");
 
+    const [prev_name, setPrevName] = useState("");
+    const [prev_email, setPrevEmail] = useState("");
+    const [prev_description, setPrevDescription] = useState("");
+
     const router = useRouter();
     const dispatch = store.dispatch;
+
+    useEffect(() => {
+        setPrevName(store.getState().auth.name);
+        setPrevEmail(store.getState().auth.email);
+        setPrevDescription(store.getState().auth.description);
+    }, []);
 
     const update = () => {
         request(`${BACKEND_URL}/api/user/private/${store.getState().auth.id}`, "PUT", true, 
             {
-                "user_name": user_name,
-                "user_email": user_email,
-                "description": description,
+                "user_name": (user_name === "")  ? prev_name : user_name,
+                "user_email": (user_email === "") ? prev_email : user_email,
+                "description": (description === "") ? prev_description : description,
             })
         .then((res) => {
             if (Number(res.code) === 0) {
@@ -45,16 +55,6 @@ const Update = () => {
             }
         })
     }
-
-    const [prev_name, setPrevName] = useState("");
-    const [prev_email, setPrevEmail] = useState("");
-    const [prev_description, setPrevDescription] = useState("");
-
-    useEffect(() => {
-        setPrevName(store.getState().auth.name);
-        setPrevEmail(store.getState().auth.email);
-        setPrevDescription(store.getState().auth.description);
-    }, []);
 
     return (
         <>
