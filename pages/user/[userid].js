@@ -2,6 +2,7 @@ import {useEffect} from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import React, { useState } from "react";
+import 'bootstrap/dist/css/bootstrap.css';
 
 import { BACKEND_URL } from '@/app/constants/string';
 import { request } from "@/app/utils/network";
