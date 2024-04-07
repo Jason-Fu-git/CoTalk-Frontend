@@ -9,26 +9,19 @@ function Search()
 {
     const [query, setQuery] = useState("");
     const [searchResult, setSearchResult] = useState([]);
-    const [hasSearched, setHasSearched] = useState(true);
+    const [hasSearched, setHasSearched] = useState(false);
+    const [hassubmitsearch, setHassubmitsearch] = useState(false);
     
     useEffect(() => {
         console.log("Loading search result");
-        request(`${BACKEND_URL}/api/user/search`, "GET", true)
+        request(`${BACKEND_URL}/api/user/search/${query}`, "GET", true)
         .then((res) => {
             setSearchResult(res.users);
         });
-    }, []);
+        setHasSearched(false);
+    },[hasSearched]);
 
-    /*    
-    const handleSearch = () => {
-        setHasSearched(true);
-        console.log("SSSSJ");
-        request(`${BACKEND_URL}/api/user/?search_text=${query}`, "GET", false)
-        .then((res) => {
-            setSearchResult(res.users);
-        });
-    };
-*/
+
     return (
         <>
             <div className="sm:w-9/12 sm:m-auto pt-16 pb-16">
@@ -48,6 +41,10 @@ function Search()
                         <button 
                             name="submit"
                             className="btn btn-primary"
+                            onClick={() => {
+                                setHasSearched(true);
+                                setHassubmitsearch(true);
+                            }}
                         >
                         搜索
                         </button>
@@ -55,7 +52,7 @@ function Search()
                 </div>
                 <div className="grid gap-8 grid-cols-1 sm:grid-cols-3 mt-14
                     ml-8 mr-8 sm:mr-0 sm:ml-0">
-                    {hasSearched && (searchResult.length > 0 ? (
+                    {hassubmitsearch&&(searchResult.length > 0 ? (
                         searchResult.map((user) => (
                             <div key={user.user_id}>
                                 <UserCard {...user}/>
