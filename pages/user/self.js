@@ -1,6 +1,8 @@
 'use client'
 import React,{useState,useEffect} from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+
 
 import { request } from "@/app/utils/network";
 import { store } from "@/app/redux/store";
@@ -25,6 +27,17 @@ function Account()
 		})
   	}, []);
 
+	const router = useRouter();
+	
+	const delete_user=() => {
+        request(`${BACKEND_URL}/api/user/private/${store.getState().auth.id}`, "DELETE", true)
+        .then((res) => {
+            if (Number(res.code) === 0) {
+                alert("已删除该账号");
+				router.push(`/`);
+            }
+        })
+	}
 
     return (
         <div className="pt-0 sm:pt-16">
@@ -66,6 +79,20 @@ function Account()
 					修改个人信息
 					</button>
 				</Link>
+				</div>
+				<div className="w-10/12 m-auto">
+					<button 
+						className="
+						dark:bg-blue-400
+						dark:text-gray-800
+						bg-blue-400
+						text-white
+						font-semibold
+						p-2
+						rounded-md"
+						onClick={delete_user}>
+					注销
+					</button>
 				</div>
 			</div>
         </div>
