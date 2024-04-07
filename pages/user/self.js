@@ -1,7 +1,10 @@
 'use client'
 import React,{useState,useEffect} from "react";
-import { store } from "@/app/redux/store";
 import Link from "next/link";
+
+import { request } from "@/app/utils/network";
+import { store } from "@/app/redux/store";
+import { BACKEND_URL } from '@/app/constants/string';
 
 function Account() 
 {
@@ -13,7 +16,15 @@ function Account()
       	setCurrentName(store.getState().auth.name);
 		setCurrentEmail(store.getState().auth.email);
 		setCurrentDescription(store.getState().auth.description);
+
+		request(`${BACKEND_URL}/api/user/private/${store.getState().auth.id}`, "GET", false)
+		.then((res)=>{
+			setCurrentName(res.user_name);
+			setCurrentEmail((res.user_email === "") ? "邮箱为空" : res.user_email);
+			setCurrentDescription((res.description === "") ? "目前还没有个人描述" : res.description);
+		})
   	}, []);
+
 
     return (
         <div className="pt-0 sm:pt-16">
