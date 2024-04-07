@@ -5,42 +5,42 @@ import { BACKEND_URL } from '@/app/constants/string';
 
 function Piazza()
 {
-    useEffect(()=> {
-        const url="ws://CoTalkBackend-Concord.app.secoder.net/ws/piazza";
-        const chatSocket=new WebSocket(url);
-        
-        chatSocket.onopen=() =>{
-            console.log("Open websocket");
-        }
-
-        //客户端收到消息时触发
-        chatSocket.onmessage=function(event) {
-            const data=JSON.parse(event.data);
-        
-            //防止自己发给自己
-            if (data.type)
-            {
-                console.log("Frontend receive: ");
-                console.log(event);
-                //将新消息添加到后面
-                const dateOptions={hour: 'numeric', minute:'numeric', hour12:true};
-                const datetime=new Date(data.datetime).toLocaleString('en', dateOptions);
-                const name=data.user;
-                
-                messages.push({
-                    'sender': name,
-                    'text': data.message,
-                    'time': datetime,
-                })
-            }
-        };
-        
-        chatSocket.onclose=function(event) {
-            console.error('Chat socket closed unexpectedly');
-        };
-    }, []);
-
+    const url="ws://cotalkbackend-Concord.app.secoder.net/ws/piazza";
+    const chatSocket=new WebSocket(url);
     let messages=[];
+
+    useEffect(()=> {    
+    }, [messages]);
+
+    //客户端收到消息时触发
+    chatSocket.onmessage=function(event) {
+        const data=JSON.parse(event.data);
+        
+        //防止自己发给自己
+        if (data.type)
+        {
+            console.log("Frontend receive: ");
+            console.log(event);
+            //将新消息添加到后面
+            const dateOptions={hour: 'numeric', minute:'numeric', hour12:true};
+            const datetime=new Date(data.datetime).toLocaleString('en', dateOptions);
+            const name=data.user;
+                
+            messages.push({
+                'sender': name,
+                'text': data.message,
+                'time': datetime,
+            })
+        }
+    };
+
+    chatSocket.onclose=function(event) {
+        console.error('Chat socket closed unexpectedly');
+    };
+
+    chatSocket.onopen=() =>{
+        console.log("Open websocket");
+    }
 
     const sendMessage=() => {
         let inputArea=document.getElementById('chat-message-input');
