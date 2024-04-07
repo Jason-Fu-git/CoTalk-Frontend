@@ -21,7 +21,7 @@ function Account({props})
 	const [email, setEmail] = useState("");
 	const [description, setDescription] = useState("");
 
-	request(`${BACKEND_URL}/api/user/${props.userid}`, "GET", false)
+	request(`${BACKEND_URL}/api/user/private/${props.userid}`, "GET", false)
 	.then((res)=>{
 		setId(res.user_id);
 		setName(res.user_name);
