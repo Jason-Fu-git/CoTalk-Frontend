@@ -15,7 +15,7 @@ function Friends()
 
     useEffect(() => {
         console.log("Get "+store.getState().auth.name+"'s friends");
-        request(`${BACKEND_URL}/api/user/${store.getState().auth.id}/friends`, "GET", true)
+        request(`${BACKEND_URL}/api/user/private/${store.getState().auth.id}/friends`, "GET", true)
         .then((res) => {
         setFriends(res.friends);
         });

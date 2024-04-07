@@ -12,7 +12,8 @@ function Search()
     const [hasSearched, setHasSearched] = useState(true);
     
     useEffect(() => {
-        request(`${BACKEND_URL}/api/user/?search_text=abc`, "GET", true)
+        console.log("Loading search result");
+        request(`${BACKEND_URL}/api/user/search`, "GET", true)
         .then((res) => {
             setSearchResult(res.users);
         });
