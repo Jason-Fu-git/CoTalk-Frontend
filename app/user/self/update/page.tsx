@@ -1,11 +1,12 @@
 'use client'
 import { useState, useEffect } from "react";
-import { BACKEND_URL, UPDATE_SUCCESS,DELETE_SUCCESS} from "../../../constants/string";
-import { useRouter } from "next/navigation";
-import { setName, setEmail, setDescription} from "../../../redux/auth";
-import {store} from "@/app/redux/store";
-import { resetAuth } from "../../../redux/auth";
 import 'bootstrap/dist/css/bootstrap.css';
+import { useRouter } from "next/navigation";
+
+import { BACKEND_URL, UPDATE_SUCCESS,DELETE_SUCCESS} from "@/app/constants/string";
+import { setName, setEmail, setDescription} from "@/app/redux/auth";
+import { resetAuth } from "@/app/redux/auth";
+import {store} from "@/app/redux/store";
 import {request} from '@/app/utils/network'
 
 const Update = () => {

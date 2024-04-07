@@ -1,33 +1,41 @@
 import {useEffect} from 'react';
 import Link from 'next/link';
-import {BACKEND_URL} from '@/app/constants/string';
+import { useRouter } from 'next/router';
 import React, { useState } from "react";
-import {request} from "@/app/utils/network";
 
-export async function getServerSideProps({params}) 
-{
-	const {userid} = params;
-	return {
-		props: {
-			userid
-		}
-	}
-}
+import { BACKEND_URL } from '@/app/constants/string';
+import { request } from "@/app/utils/network";
+import {store} from "@/app/redux/store";
 
-function Account({props}) 
+function Account() 
 {
+	const router = useRouter();
+	const { userid } = router.query;
+
 	const [id, setId] = useState("");
 	const [name, setName] = useState("");
 	const [email, setEmail] = useState("");
 	const [description, setDescription] = useState("");
 
-	request(`${BACKEND_URL}/api/user/private/${props.userid}`, "GET", false)
+	request(`${BACKEND_URL}/api/user/private/${userid}`, "GET", false)
 	.then((res)=>{
 		setId(res.user_id);
 		setName(res.user_name);
 		setEmail((res.user_email === "") ? "邮箱为空" : res.user_email);
 		setDescription((res.description === "") ? "目前还没有个人描述" : res.description);
 	})
+
+	const apply_friend=() => {
+        request(`${BACKEND_URL}/api/user/private/${store.getState().auth.id}/friends`, "PUT", true,
+		{
+			"friend_id": id
+		})
+        .then((res) => {
+            if (Number(res.code) === 0) {
+                alert("好友申请已发送");
+            }
+        })
+	}
 
     return (
         <div className="pt-0 sm:pt-16">
@@ -56,10 +64,22 @@ function Account({props})
 				<p className="text-black dark:text-white">
 					{description}
 				</p>
+				<button 
+					className="dark:bg-blue-400
+					dark:text-gray-800
+					bg-blue-400
+					text-white
+					font-semibold
+					p-2
+					rounded-md
+					mt-6"
+					onClick={apply_friend}>
+				申请成为好友
+				</button>
             </div>
           </div>
         </div>
-      );
+    );
 }
 
 export default Account;
