@@ -3,13 +3,13 @@ function MessageCard(props) {
 	<>
         <div class="card">
             <div class="card-header">
-            用户: {props.sender_id}
+            用户: {props.sender}
             </div>
             <div class="card-body">
             <blockquote class="blockquote mb-0">
-                <p>{props.msg_text}</p>
+                <p>{props.text}</p>
                 <footer class="blockquote-footer">
-                    发送时间未知
+                {props.time}
                 </footer>
             </blockquote>
             </div>

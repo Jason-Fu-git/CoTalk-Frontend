@@ -1,11 +1,12 @@
 'use client'
 import { useState, useEffect } from "react";
-import { BACKEND_URL, UPDATE_SUCCESS,DELETE_SUCCESS} from "../../../constants/string";
-import { useRouter } from "next/navigation";
-import { setName, setEmail, setDescription} from "../../../redux/auth";
-import {store} from "@/app/redux/store";
-import { resetAuth } from "../../../redux/auth";
 import 'bootstrap/dist/css/bootstrap.css';
+import { useRouter } from "next/navigation";
+
+import { BACKEND_URL, UPDATE_SUCCESS,DELETE_SUCCESS} from "@/app/constants/string";
+import { setName, setEmail, setDescription} from "@/app/redux/auth";
+import { resetAuth } from "@/app/redux/auth";
+import {store} from "@/app/redux/store";
 import {request} from '@/app/utils/network'
 
 const Update = () => {
@@ -18,7 +19,7 @@ const Update = () => {
     const dispatch = store.dispatch;
 
     const update = () => {
-        request(`${BACKEND_URL}/api/user/`, "PUT", true, 
+        request(`${BACKEND_URL}/api/user/private/${store.getState().auth.id}`, "PUT", true, 
             {
                 "user_name": user_name,
                 "user_email": user_email,
@@ -35,7 +36,7 @@ const Update = () => {
         })
     };
     const delete_user = () => {
-        request(`${BACKEND_URL}/api/user/${store.getState().auth.id}`, "DELETE", true)
+        request(`${BACKEND_URL}/api/user/private/${store.getState().auth.id}`, "DELETE", true)
         .then((res) => {
             if (Number(res.code) === 0) {
                 dispatch(resetAuth());
