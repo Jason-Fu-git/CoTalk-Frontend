@@ -2,7 +2,7 @@
 import React,{ useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-
+import 'bootstrap/dist/css/bootstrap.css';
 
 import { request } from "@/app/utils/network";
 import { store } from "@/app/redux/store";
@@ -63,36 +63,40 @@ function Account()
 				</div>
 				</div>
 				<div className="p-8">
-				<p className="text-black dark:text-white">
-					{current_description}
-				</p>
-				<Link href={`/user/self/update`} passHref>
-					<button className="
-						dark:bg-blue-400
-						dark:text-gray-800
-						bg-blue-400
-						text-white
-						font-semibold
-						p-2
-						rounded-md
-						mt-6">
-					修改个人信息
-					</button>
-				</Link>
-				</div>
-				<div className="w-10/12 m-auto">
-					<button 
-						className="
-						dark:bg-blue-400
-						dark:text-gray-800
-						bg-blue-400
-						text-white
-						font-semibold
-						p-2
-						rounded-md"
-						onClick={delete_user}>
-					注销
-					</button>
+					<p className="text-black dark:text-white">
+						{current_description}
+					</p>
+					<div className="row gx-1">
+						<div className="col">
+						<Link href={`/user/self/update`} passHref>
+							<button className="
+								dark:bg-blue-400
+								dark:text-gray-800
+								bg-blue-400
+								text-white
+								font-semibold
+								p-2
+								rounded-md
+								mt-6">
+							修改个人信息
+							</button>
+						</Link>
+						</div>
+						<div className="col">
+						<button className="
+								dark:bg-blue-400
+								dark:text-gray-800
+								bg-blue-400
+								text-white
+								font-semibold
+								p-2
+								rounded-md
+								mt-6"
+							onClick={delete_user}>
+						删除账户
+						</button>
+						</div>
+					</div>
 				</div>
 			</div>
         </div>

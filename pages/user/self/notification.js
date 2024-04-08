@@ -1,10 +1,13 @@
-import React,{useState,useEffect, use} from "react";
+import React, { useState , useEffect } from "react";
+
 import { request } from "@/app/utils/network";
 import { BACKEND_URL } from '@/app/constants/string';
 import { store } from "@/app/redux/store";
+
 export default function Notification() {
     const [notifications, set_notifications] = useState([]);
     const [flash, set_flash] = useState(false);
+    
     useEffect(() => {
         request(`${BACKEND_URL}/api/user/private/${store.getState().auth.id}/notification`, "GET", true,
         {
@@ -15,7 +18,8 @@ export default function Notification() {
             set_notifications(res.notifications);
         });
     }, [flash]);
-    const deleteNotification = (notification_id:number) => {
+
+    const deleteNotification = (notification_id) => {
         request(`${BACKEND_URL}/api/user/private/${store.getState().auth.id}/notification/${notification_id}`, "DELETE", true)
         .then((res) => {
             if (Number(res.code) === 0) {
@@ -24,7 +28,7 @@ export default function Notification() {
         });
         set_flash(!flash);
     }
-    const markAsRead = (notification_id:number) => {
+    const markAsRead = (notification_id) => {
         request(`${BACKEND_URL}/api/user/private/${store.getState().auth.id}/notification/${notification_id}/read`, "PUT", true)
         .then((res) => {
             if (Number(res.code) === 0) {
