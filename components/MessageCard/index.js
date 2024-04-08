@@ -9,7 +9,7 @@ function MessageCard(props) {
             <blockquote class="blockquote mb-0">
                 <p>{props.message}</p>
                 <footer class="blockquote-footer">
-                {props.time}
+                {props.datetime}
                 </footer>
             </blockquote>
             </div>
