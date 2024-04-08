@@ -19,6 +19,20 @@ function TopBar()
             </Link>
 		</div>
 		<div className="w-10/12 m-auto">
+			<Link href={`/user/self/notification`} passHref>
+                <button className="
+                    dark:bg-blue-400
+                    dark:text-gray-800
+                    bg-blue-400
+                    text-white
+                    font-semibold
+                    p-2
+                    rounded-md">
+                收件箱
+                </button>
+            </Link>
+		</div>
+		<div className="w-10/12 m-auto">
 			<Link href={`/user/self/friends`} passHref>
                 <button className="
                     dark:bg-blue-400
