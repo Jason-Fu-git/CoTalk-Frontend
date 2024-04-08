@@ -1,15 +1,18 @@
-import React, { useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import 'bootstrap/dist/css/bootstrap.css';
 
-import { BACKEND_URL } from '@/app/constants/string';
+import MessageCard from '@/components/MessageCard';
+import { store } from "@/app/redux/store";
 
 function Piazza()
 {
     const url="ws://cotalkbackend-Concord.app.secoder.net/ws/piazza";
     const chatSocket=new WebSocket(url);
-    let messages=[];
+    const [messages, setMessages]=useState([]);
+    const [count, setCount]=useState(0);
 
-    useEffect(()=> {    
+    useEffect(()=> {
+        console.log("REFRESH");
     }, [messages]);
 
     //客户端收到消息时触发
@@ -17,41 +20,51 @@ function Piazza()
         const data=JSON.parse(event.data);
         
         //防止自己发给自己
-        if (data.type)
-        {
-            console.log("Frontend receive: ");
-            console.log(event);
-            //将新消息添加到后面
-            const dateOptions={hour: 'numeric', minute:'numeric', hour12:true};
-            const datetime=new Date(data.datetime).toLocaleString('en', dateOptions);
-            const name=data.user;
-                
-            messages.push({
-                'sender': name,
-                'text': data.message,
-                'time': datetime,
-            })
-        }
+        console.log("Frontend receive: ");
+        console.log(event);
+        //将新消息添加到后面
+        const dateOptions={hour: 'numeric', minute:'numeric', hour12:true};
+        const datetime=new Date(data.datetime).toLocaleString('en', dateOptions);
+        const sender_name=data.sender_name;
+        const sender_id=data.sender_id;
+              
+        const newMessages=[{
+            'id': count,
+            'sender_name': sender_name,
+            'sender_id': sender_id,
+            'message': data.message,
+            'datetime': datetime,
+        }].concat(messages);
+            
+        setCount(count+1);
+        setMessages(newMessages);
     };
 
     chatSocket.onclose=function(event) {
         console.error('Chat socket closed unexpectedly');
     };
 
-    chatSocket.onopen=() =>{
+    chatSocket.onopen=function(event) {
         console.log("Open websocket");
-    }
+    };
 
-    const sendMessage=() => {
+    const sendMessage=function(event) {
         let inputArea=document.getElementById('chat-message-input');
         const message=inputArea.value;
         if (message)
         {
-            console.log("Frontend send:");
-            console.log(message);
-            chatSocket.send(JSON.stringify({'message':message}));
+            console.log("Frontend send: "+message);
+            chatSocket.send(JSON.stringify({
+                'message': message,
+                'sender_id': store.getState().auth.id,
+                'sender_name': store.getState().auth.name,
+            }));
     
-            let inputArea=document.getElementById('chat-message-input');
+            inputArea.value='';
+            inputArea.focus();
+        }
+        else
+        {
             inputArea.value='';
             inputArea.focus();
         }
@@ -66,7 +79,7 @@ function Piazza()
                 </h1>
                 <div>
                 {messages.map((message) => (
-                        <div key={message.msg_id}>
+                        <div key={message.id}>
                             <MessageCard {...message}/>
                         </div>
                 ))}
