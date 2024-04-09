@@ -11,7 +11,7 @@ export default function Createpage(){
     const selfid = store.getState().auth.id;
 
     useEffect(() => {
-        request(`${BACKEND_URL}/api/user/${selfid}/friends`, "GET", true)
+        request(`${BACKEND_URL}/api/user/private/${selfid}/friends`, "GET", true)
         .then((res) => {
             setFriends(res.friends);
         });
@@ -19,7 +19,7 @@ export default function Createpage(){
 
     const createChat = () => {
         request(`${BACKEND_URL}/api/chat/create`, "POST", true,{
-            "use_id": selfid,
+            "user_id": selfid,
             "chat_name": chatName,
             "members": memberid
         })
@@ -39,17 +39,28 @@ export default function Createpage(){
                 placeholder="请输入聊天室名称"
             />
             <button onClick={() => setShowModal(true)}>选择好友</button>
+
             {showModal && (
                 <div>
                     {friends.map((friend) => (
-                        <div key={friend.id}>
-                            {friend.name}
-                            <button onClick={() => setMemberid([...memberid, friend.id])}>添加</button>
+                        <div key={friend.user_id}>
+                            {friend.user_name}
+                            <input 
+                                type="checkbox" 
+                                onChange={(e) => {
+                                    if (e.target.checked) {
+                                        setMemberid([...memberid, friend.user_id]);
+                                    } else {
+                                        setMemberid(memberid.filter(id => id !== friend.user_id));
+                                    }
+                                }}
+                            />
                         </div>
                     ))}
                     <button onClick={() => setShowModal(false)}>关闭</button>
                 </div>
             )}
+
             <button onClick={createChat}>创建聊天室</button>
         </div>
     )
