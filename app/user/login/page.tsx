@@ -18,7 +18,6 @@ const LoginScreen = () => {
     const login = () => {
         request(`${BACKEND_URL}/api/user/login`, "POST", false, {"user_name": user_name, "password": password})
         .then((res) => {
-            console.log(res);
             if (Number(res.code) === 0) {
                 dispatch(setName(res.user_name));
                 dispatch(setToken(res.token));
