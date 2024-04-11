@@ -2,8 +2,9 @@ import 'bootstrap/dist/css/bootstrap.css';
 import React, { useState, useEffect } from "react";
 
 import UserCard from '@/components/UserCard';
-import {BACKEND_URL} from '@/app/constants/string';
-import {request} from "@/app/utils/network";
+import { BACKEND_URL } from '@/app/constants/string';
+import { request } from "@/app/utils/network";
+import { store } from "@/app/redux/store";
 
 function Search() 
 {
@@ -11,11 +12,16 @@ function Search()
     const [searchResult, setSearchResult] = useState([]);
     const [hasSearched, setHasSearched] = useState(false);
     const [hassubmitsearch, setHassubmitsearch] = useState(false);
+
+    const my_friends=store.getState().auth.friends;
     
     useEffect(() => {
         console.log("Loading search result");
         request(`${BACKEND_URL}/api/user/search/${query}`, "GET", true)
         .then((res) => {
+            res.users.forEach(function (element, index, array){
+                element.is_friend=my_friends.includes(Number(element.user_id));
+            });
             setSearchResult(res.users);
         });
         setHasSearched(false);
