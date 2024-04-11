@@ -11,7 +11,7 @@ import { BACKEND_URL } from '@/app/constants/string';
 function Account() 
 {
 	//Set up general websocket with backend
-    const url="ws://cotalkbackend-Concord.app.secoder.net/ws?Authorization="+
+    const url="ws://cotalkbackend-Concord.app.secoder.net/ws/?Authorization="+
 		store.getState().auth.token+"&user_id="+store.getState().auth.id;
     const chatSocket=new WebSocket(url);
     //客户端收到消息时触发

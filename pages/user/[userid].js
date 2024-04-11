@@ -10,6 +10,7 @@ import { store } from "@/app/redux/store";
 function Account() 
 {
 	const router = useRouter();
+	const [id, setId] = useState(0);
 	const [name, setName] = useState("");
 	const [email, setEmail] = useState("");
 	const [description, setDescription] = useState("");
@@ -23,6 +24,7 @@ function Account()
 	
 		request(`${BACKEND_URL}/api/user/private/${userid}`, "GET", false)
 		.then((res)=>{
+			setId(res.user_id);
 			setName(res.user_name);
 			setEmail((res.user_email === "") ? "邮箱为空" : res.user_email);
 			setDescription((res.description === "") ? "目前还没有个人描述" : res.description);
