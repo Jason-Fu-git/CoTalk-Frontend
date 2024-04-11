@@ -1,9 +1,9 @@
 'use client'
-import React,{ useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import 'bootstrap/dist/css/bootstrap.css';
 
+import React,{ useState, useEffect } from "react";
 import { request } from "@/app/utils/network";
 import { store } from "@/app/redux/store";
 import { BACKEND_URL } from '@/app/constants/string';
@@ -13,10 +13,10 @@ function Account()
 	//Set up general websocket with backend
     const url="ws://cotalkbackend-Concord.app.secoder.net/ws/?Authorization="+
 		store.getState().auth.token+"&user_id="+store.getState().auth.id;
-    const chatSocket=new WebSocket(url);
-    //客户端收到消息时触发
+	const generalSocket=new WebSocket(url);
 
-    chatSocket.onmessage=function(event) {
+	//客户端收到消息时触发
+    generalSocket.onmessage=function(event) {
         const data=JSON.parse(event.data);
         
         //防止自己发给自己
@@ -40,11 +40,11 @@ function Account()
         setMessages(newMessages);
     };
 
-    chatSocket.onclose=function(event) {
+    generalSocket.onclose=function(event) {
         console.error('Chat socket closed unexpectedly');
     };
 
-    chatSocket.onopen=function(event) {
+    generalSocket.onopen=function(event) {
         console.log("Open websocket");
     };
 
