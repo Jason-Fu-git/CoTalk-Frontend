@@ -1,11 +1,12 @@
 'use client'
 import { useState } from "react";
-import { BACKEND_URL, FAILURE_PREFIX, LOGIN_FAILED, LOGIN_SUCCESS_PREFIX } from "../../constants/string";
 import { useRouter } from "next/navigation";
-import { setName, setId,setToken,resetAuth } from "../../redux/auth";
-import {store} from "@/app/redux/store";
 import 'bootstrap/dist/css/bootstrap.css';
 import Link from 'next/link';
+
+import { BACKEND_URL, FAILURE_PREFIX, LOGIN_FAILED, LOGIN_SUCCESS_PREFIX } from "../../constants/string";
+import { setName, setId, setToken, resetAuth } from "../../redux/auth";
+import {store} from "@/app/redux/store";
 import {request} from '@/app/utils/network'
 
 const LoginScreen = () => {
@@ -22,7 +23,7 @@ const LoginScreen = () => {
                 dispatch(setName(res.user_name));
                 dispatch(setToken(res.token));
                 dispatch(setId(res.user_id));
-                alert(LOGIN_SUCCESS_PREFIX + res.user_name);
+                //alert(LOGIN_SUCCESS_PREFIX + res.user_name);
                 router.push(`/user/self`);
             }
         })

@@ -29,7 +29,7 @@ const Update = () => {
     }, []);
 
     const update = () => {
-        request(`${BACKEND_URL}/api/user/private/${store.getState().auth.id}`, "PUT", true, 
+        request(`${BACKEND_URL}/api/user/private/${store.getState().auth.id}`, "POST", true, 
             {
                 "user_name": (user_name === "")  ? prev_name : user_name,
                 "user_email": (user_email === "") ? prev_email : user_email,

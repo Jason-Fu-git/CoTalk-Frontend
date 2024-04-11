@@ -8,16 +8,24 @@ import { BACKEND_URL } from '@/app/constants/string';
 import { request } from "@/app/utils/network";
 import { store } from "@/app/redux/store";
 import search from "@/public/Search.jpg";
+import { setFriends } from "@/app/redux/auth";
 
 function Friends() 
 {
-    const [friends, setFriends] = useState([]);
+    const [friends, setMyFriends] = useState([]);
 
     useEffect(() => {
         console.log("Get "+store.getState().auth.name+"'s friends");
         request(`${BACKEND_URL}/api/user/private/${store.getState().auth.id}/friends`, "GET", true)
         .then((res) => {
-        setFriends(res.friends);
+            setMyFriends(res.friends);
+            let friend_ids=[];
+            res.friends.forEach(function (element, index, array){
+                friend_ids.push(element.user_id);
+                element.is_friend=true;
+            });
+            console.log(friend_ids);
+            store.dispatch(setFriends(friend_ids));
         });
     }, []);
 
