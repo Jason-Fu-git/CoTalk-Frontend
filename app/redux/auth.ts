@@ -6,6 +6,7 @@ interface AuthState {
     id: number;
     email: string;
     description: string;
+    friends: Array<number>;
 }
 
 const initialState: AuthState = {
@@ -14,6 +15,7 @@ const initialState: AuthState = {
     id: 0,
     email: "邮箱为空",
     description: "目前还没有个人描述",
+    friends: [],
 };
 
 export const authSlice = createSlice({
@@ -29,23 +31,26 @@ export const authSlice = createSlice({
         setId: (state, action: PayloadAction<number>) => {
             state.id = action.payload;
         },
-        resetAuth: (state) => {
-            state.token = "";
-            state.name = "";
-            state.id = 0;
-            state.email="邮箱为空";
-            state.description="目前还没有个人描述";
-        },
-        //以下为修改内容
         setEmail: (state, action: PayloadAction<string>) => {
             state.email = action.payload;
         },
         setDescription: (state, action: PayloadAction<string>) => {
             state.description = action.payload;
         },
+        setFriends: (state, action: PayloadAction<Array<number>>) => {
+            state.friends=action.payload;
+        },
+        resetAuth: (state) => {
+            state.token = "";
+            state.name = "";
+            state.id = 0;
+            state.email="邮箱为空";
+            state.description="目前还没有个人描述";
+            state.friends=[];
+        },
     },
 });
 
-export const {setToken, setName, setId, resetAuth, 
-              setEmail, setDescription} = authSlice.actions;
+export const {setToken, setName, setId, setEmail,
+            setDescription, setFriends, resetAuth} = authSlice.actions;
 export default authSlice.reducer;

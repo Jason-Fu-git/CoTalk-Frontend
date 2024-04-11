@@ -18,7 +18,7 @@ export default function Notification() {
     }, [flash]);
 
     const deleteNotification = (notification_id) => {
-        request(`${BACKEND_URL}/api/user/private/${store.getState().auth.id}/notification/${notification_id}/detail`, "DELETE", true)
+        request(`${BACKEND_URL}/api/user/private/${store.getState().auth.id}/notification/${notification_id}`, "DELETE", true)
         .then((res) => {
             if (Number(res.code) === 0) {
                 alert("删除成功");
@@ -27,7 +27,7 @@ export default function Notification() {
         set_flash(!flash);
     }
     const markAsRead = (notification_id) => {
-        request(`${BACKEND_URL}/api/user/private/${store.getState().auth.id}/notification/${notification_id}/read`, "PUT", true)
+        request(`${BACKEND_URL}/api/user/private/${store.getState().auth.id}/notification/${notification_id}`, "PUT", true)
         .then((res) => {
             if (Number(res.code) === 0) {
                 alert("标记成功");
