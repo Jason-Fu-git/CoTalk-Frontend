@@ -23,7 +23,7 @@ const LoginScreen = () => {
                 dispatch(setName(res.user_name));
                 dispatch(setToken(res.token));
                 dispatch(setId(res.user_id));
-                alert(LOGIN_SUCCESS_PREFIX + res.user_name);
+                //alert(LOGIN_SUCCESS_PREFIX + res.user_name);
                 router.push(`/user/self`);
             }
         })

@@ -22,7 +22,7 @@ const RegisterPage = () => {
                 dispatch(setName(res.user_name));
                 dispatch(setToken(res.token));
                 dispatch(setId(res.user_id));
-                alert(REGISTER_SUCCESS_PREFIX + res.user_name);
+                //alert(REGISTER_SUCCESS_PREFIX + res.user_name);
                 router.push(`/user/self`);
             }
         })

@@ -38,7 +38,7 @@ export const authSlice = createSlice({
             state.description = action.payload;
         },
         setFriends: (state, action: PayloadAction<Array<number>>) => {
-            state.friends=action.payload;
+            state.friends=action.payload.concat();
         },
         resetAuth: (state) => {
             state.token = "";

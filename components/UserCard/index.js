@@ -13,7 +13,7 @@ function UserCard(props) {
                 <h5 className="card-title">{props.user_name}</h5>
 				<h6 className="card-subtitle mb-2 text-muted">{props.user_email}</h6>
 				<span className="badge bg-secondary">
-					不知道是不是好友
+				{(props.is_friend)? "好友" : "陌生人"}
 				</span>
             </div>
         </div>

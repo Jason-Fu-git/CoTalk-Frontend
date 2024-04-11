@@ -8,7 +8,7 @@ import { BACKEND_URL } from '@/app/constants/string';
 import { request } from "@/app/utils/network";
 import { store } from "@/app/redux/store";
 import search from "@/public/Search.jpg";
-import { setFriends } from "../../redux/auth";
+import { setFriends } from "@/app/redux/auth";
 
 function Friends() 
 {
@@ -20,10 +20,12 @@ function Friends()
         .then((res) => {
             setMyFriends(res.friends);
             let friend_ids=[];
-            res.forEach(function (element, index, array){
-                friend_ids.add(element.user_id);
+            res.friends.forEach(function (element, index, array){
+                friend_ids.push(element.user_id);
+                element.is_friend=true;
             });
-            dispatch(setFriends(friend_ids));
+            console.log(friend_ids);
+            store.dispatch(setFriends(friend_ids));
         });
     }, []);
 

@@ -12,7 +12,7 @@ function Piazza()
     const [count, setCount]=useState(0);
 
     useEffect(()=> {
-        console.log("REFRESH");
+        console.log("useEffect() need to refresh.");
     }, [messages]);
 
     //客户端收到消息时触发

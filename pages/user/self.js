@@ -10,6 +10,44 @@ import { BACKEND_URL } from '@/app/constants/string';
 
 function Account() 
 {
+	//Set up general websocket with backend
+    const url="ws://cotalkbackend-Concord.app.secoder.net/ws?Authorization="+
+		store.getState().auth.token+"&user_id="+store.getState().auth.id;
+    const chatSocket=new WebSocket(url);
+    //客户端收到消息时触发
+
+    chatSocket.onmessage=function(event) {
+        const data=JSON.parse(event.data);
+        
+        //防止自己发给自己
+        console.log("Frontend receive: ");
+        console.log(event);
+        //将新消息添加到后面
+        const dateOptions={hour: 'numeric', minute:'numeric', hour12:true};
+        const datetime=new Date(data.datetime).toLocaleString('en', dateOptions);
+        const sender_name=data.sender_name;
+        const sender_id=data.sender_id;
+              
+        const newMessages=[{
+            'id': count,
+            'sender_name': sender_name,
+            'sender_id': sender_id,
+            'message': data.message,
+            'datetime': datetime,
+        }].concat(messages);
+            
+        setCount(count+1);
+        setMessages(newMessages);
+    };
+
+    chatSocket.onclose=function(event) {
+        console.error('Chat socket closed unexpectedly');
+    };
+
+    chatSocket.onopen=function(event) {
+        console.log("Open websocket");
+    };
+
   	const [current_name, setCurrentName] = useState("");
 	const [current_email, setCurrentEmail] = useState("");
 	const [current_description, setCurrentDescription] = useState("");
