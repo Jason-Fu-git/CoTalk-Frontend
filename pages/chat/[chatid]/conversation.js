@@ -75,7 +75,7 @@ function Piazza()
             <div className="sm:w-9/12 sm:m-auto pt-16 pb-16">
                 <h1 className="
                     dark:text-white text-4xl font-bold text-center">
-                广场
+                
                 </h1>
                 <div>
                 {messages.map((message) => (

@@ -22,7 +22,12 @@ function Search()
             res.users.forEach(function (element, index, array){
                 element.is_friend=my_friends.includes(Number(element.user_id));
             });
-            setSearchResult(res.users);
+
+            const users=res.users.filter(function(element){
+                return (element.user_id !== store.getState().auth.id)
+            });
+
+            setSearchResult(users);
         });
         setHasSearched(false);
     },[hasSearched]);
