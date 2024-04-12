@@ -2,18 +2,21 @@ import Link from 'next/link';
 import 'bootstrap/dist/css/bootstrap.css';
 import { request } from "@/app/utils/network";
 import { BACKEND_URL } from '@/app/constants/string';
+import React,{ useState, useEffect } from "react";
 function UserCard(props) {
-  const getavator=(id)=>{
-    request(`${BACKEND_URL}/api/user/private/${id}/avatar`, "GET", false)
+  const [avatar, setAvatar] = useState('');
+  useEffect(()=>{
+    request(`${BACKEND_URL}/api/user/private/${props.user_id}/avatar`, "GET", false)
     .then((blob) => {
-      return(URL.createObjectURL(blob));
+      const url = URL.createObjectURL(blob);
+      setAvatar(url);
     });
-  }
+  }, []);
   return (
     <Link href={`/user/${props.user_id}`} passHref>
         <div className="card" style={{width: "18rem"}}>
             <img 
-                src={getavator(props.user_id)}
+                src={avatar}
                 className="card-img-top" 
                 alt="search new users"/>
             <div className="card-body">

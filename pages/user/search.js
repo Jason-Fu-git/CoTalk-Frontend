@@ -12,10 +12,14 @@ function Search()
     const [searchResult, setSearchResult] = useState([]);
     const [hasSearched, setHasSearched] = useState(false);
     const [hassubmitsearch, setHassubmitsearch] = useState(false);
-
+    const [iffirst, setIffirst] = useState(true);
     const my_friends=store.getState().auth.friends;
     
     useEffect(() => {
+        if(iffirst){
+            setIffirst(false);
+            return;
+        }
         console.log("Loading search result");
         request(`${BACKEND_URL}/api/user/search?search_text=${query}`, "GET", true)
         .then((res) => {
@@ -28,6 +32,7 @@ function Search()
             });
 
             setSearchResult(users);
+            setHassubmitsearch(true);
         });
         setHasSearched(false);
     },[hasSearched]);
@@ -54,7 +59,6 @@ function Search()
                             className="btn btn-primary"
                             onClick={() => {
                                 setHasSearched(true);
-                                setHassubmitsearch(true);
                             }}
                         >
                         搜索

@@ -14,7 +14,7 @@ function Account()
 	const [name, setName] = useState("");
 	const [email, setEmail] = useState("");
 	const [description, setDescription] = useState("");
-	const [avatar, setAvatar] = useState(null);
+	const [avatar, setAvatar] = useState('');
 	let is_friend=false;
 
 	useEffect(()=> {
@@ -29,8 +29,14 @@ function Account()
 			setName(res.user_name);
 			setEmail((res.user_email === "") ? "邮箱为空" : res.user_email);
 			setDescription((res.description === "") ? "目前还没有个人描述" : res.description);
-		})
+		});
+		request(`${BACKEND_URL}/api/user/private/${userid}/avatar`, "GET", false)
+		.then((blob) => {
+			const url = URL.createObjectURL(blob);
+			setAvatar(url);
+		});
 	}, []);
+
 
 	const apply_friend=() => {
 		request(`${BACKEND_URL}/api/user/private/${store.getState().auth.id}/friends`, "PUT", true,
