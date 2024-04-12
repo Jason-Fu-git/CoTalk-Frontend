@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { BACKEND_URL, REGISTER_SUCCESS_PREFIX } from "../../constants/string";
 import { useRouter } from "next/navigation";
-import { setName, setId, setToken } from "../../redux/auth";
+import { setName, setId, setToken,setEmail,setDescription} from "../../redux/auth";
 import {store} from "@/app/redux/store";
 import 'bootstrap/dist/css/bootstrap.css'
 import {request} from '@/app/utils/network'
@@ -10,20 +10,32 @@ import {request} from '@/app/utils/network'
 const RegisterPage = () => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
-    const [email, setEmail] = useState('');
+    const [email, setemail] = useState('');
     const [avatar, setAvatar] = useState(null);
+    const [description, setdescription] = useState('');
     const router = useRouter();
     const dispatch = store.dispatch;
     
     const register = () => {
-        request(`${BACKEND_URL}/api/user/register`, "POST", false, {"user_name": username, "password": password})
+        const formData = new FormData();
+        formData.append("user_name", username);
+        formData.append("password", password);
+        formData.append("user_email", email);
+        formData.append("description", description);
+        if (avatar) {
+            formData.append("avatar", avatar);
+        }
+        
+        request(`${BACKEND_URL}/api/user/register`, "POST", false, "multipart/form-data", formData)
         .then((res) => {
             if (Number(res.code) === 0) {
                 dispatch(setName(res.user_name));
                 dispatch(setToken(res.token));
                 dispatch(setId(res.user_id));
+                dispatch(setEmail(res.user_email));
+                dispatch(setDescription(res.description));
                 //alert(REGISTER_SUCCESS_PREFIX + res.user_name);
-                router.push(`/user/login`);
+                router.push(`/user/self`);
             }
         })
         
@@ -56,7 +68,22 @@ const RegisterPage = () => {
                 type="email"
                 placeholder="邮箱"
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                onChange={(e) => setemail(e.target.value)}
+            />
+            </div>
+            <div className="input-group mb-3">
+            <input
+                className="form-control"
+                type="file"
+                onChange={(e) => setAvatar(e.target.files[0])}
+            />
+            </div>
+            <div className="input-group mb-3">
+            <textarea
+                className="form-control"
+                placeholder="个人简介"
+                value={description}
+                onChange={(e) => setdescription(e.target.value)}
             />
             </div>
             <button 
