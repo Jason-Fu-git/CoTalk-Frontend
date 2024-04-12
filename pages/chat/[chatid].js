@@ -2,26 +2,19 @@ import 'bootstrap/dist/css/bootstrap.css';
 import UserCard from '@/components/UserCard';
 import {BACKEND_URL} from '@/app/constants/string';
 import React, { useState,useEffect } from "react";
+import {useRouter} from 'next/router';
 import {request} from "@/app/utils/network";
 import { store } from "@/app/redux/store";
 import Link from 'next/link';
 
-export async function getServerSideProps({params}) 
-{
-	const {chatid} = params;
-	return {
-		props: {
-			chatid
-		}
-	}
-}
 
 function Chat() 
 {
+    const router = useRouter();
     const [members, setMembers] = useState([]);
-
+    const {chatid} = router.query;
     useEffect(() => {
-        request(`${BACKEND_URL}/api/chat/${props.chatid}/members`, "GET", true)
+        request(`${BACKEND_URL}/api/chat/${chatid}/members?user_id=${store.getState().auth.id}`, "GET", true)
         .then((res) => {
         setMembers(res.members);
         });
