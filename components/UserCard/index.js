@@ -1,12 +1,19 @@
 import Link from 'next/link';
 import 'bootstrap/dist/css/bootstrap.css';
-
+import { request } from "@/app/utils/network";
+import { BACKEND_URL } from '@/app/constants/string';
 function UserCard(props) {
+  const getavator=(id)=>{
+    request(`${BACKEND_URL}/api/user/private/${id}/avatar`, "GET", false)
+    .then((blob) => {
+      return(URL.createObjectURL(blob));
+    });
+  }
   return (
     <Link href={`/user/${props.user_id}`} passHref>
         <div className="card" style={{width: "18rem"}}>
             <img 
-                src="https://images.unsplash.com/photo-1605460375648-278bcbd579a6"
+                src={getavator(props.user_id)}
                 className="card-img-top" 
                 alt="search new users"/>
             <div className="card-body">
@@ -20,5 +27,4 @@ function UserCard(props) {
     </Link>
   );
 }
-
 export default UserCard;

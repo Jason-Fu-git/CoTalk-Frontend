@@ -14,6 +14,7 @@ function Account()
 	const [name, setName] = useState("");
 	const [email, setEmail] = useState("");
 	const [description, setDescription] = useState("");
+	const [avatar, setAvatar] = useState(null);
 	let is_friend=false;
 
 	useEffect(()=> {
@@ -61,13 +62,13 @@ function Account()
           	<div className="dark:bg-gray-800 text-white w-12/12 shadow-lg sm:w-9/12 sm:m-auto">
 				<div className="relative sm:w-full">
 				<img
-					src="https://images.unsplash.com/photo-1605460375648-278bcbd579a6"
+					src={avatar}
 					alt={name}
 					className="w-full h-96 object-cover object-center"
 				/>
 				<div className="bg-gray-800 bg-opacity-50 absolute flex items-end	w-full h-full top-0 left-0 p-8">
 					<img
-						src="https://images.unsplash.com/photo-1605460375648-278bcbd579a6"
+						src={avatar}
 						alt={name}
 						className="bg-gray-300 w-20 rounded-full mr-4"
 					/>

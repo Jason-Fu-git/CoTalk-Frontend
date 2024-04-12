@@ -5,7 +5,7 @@ import 'bootstrap/dist/css/bootstrap.css';
 import Link from 'next/link';
 
 import { BACKEND_URL, FAILURE_PREFIX, LOGIN_FAILED, LOGIN_SUCCESS_PREFIX } from "../../constants/string";
-import { setName, setId, setToken, resetAuth } from "../../redux/auth";
+import { setName, setId, setToken, resetAuth,setDescription,setEmail } from "../../redux/auth";
 import {store} from "@/app/redux/store";
 import {request} from '@/app/utils/network'
 
@@ -17,12 +17,14 @@ const LoginScreen = () => {
     const dispatch = store.dispatch;
 
     const login = () => {
-        request(`${BACKEND_URL}/api/user/login`, "POST", false, {"user_name": user_name, "password": password})
+        request(`${BACKEND_URL}/api/user/login`, "POST", false, "application/json",{"user_name": user_name, "password": password})
         .then((res) => {
             if (Number(res.code) === 0) {
                 dispatch(setName(res.user_name));
                 dispatch(setToken(res.token));
                 dispatch(setId(res.user_id));
+                dispatch(setEmail(res.user_email));
+                dispatch(setDescription(res.description));
                 //alert(LOGIN_SUCCESS_PREFIX + res.user_name);
                 router.push(`/user/self`);
             }

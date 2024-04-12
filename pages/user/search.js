@@ -17,7 +17,7 @@ function Search()
     
     useEffect(() => {
         console.log("Loading search result");
-        request(`${BACKEND_URL}/api/user/search/${query}`, "GET", true)
+        request(`${BACKEND_URL}/api/user/search?search_text=${query}`, "GET", true)
         .then((res) => {
             res.users.forEach(function (element, index, array){
                 element.is_friend=my_friends.includes(Number(element.user_id));
