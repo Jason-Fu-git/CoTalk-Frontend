@@ -3,7 +3,7 @@ import Link from 'next/link';
 function ChatCard(props) {
   return (
 	<>
-		<Link href={`/chat/${props.user_id}`} passHref>
+		<Link href={`/chat/${props.chat_id}`} passHref>
 			<div className="card" style={{width: "18rem"}}>
 				<img 
 					src="https://images.unsplash.com/photo-1605460375648-278bcbd579a6"
