@@ -3,6 +3,7 @@
  *       我们推荐你在大作业中也尝试写一个网络请求 wrapper，本文件可以用作参考
  */
 
+import { json } from "stream/consumers";
 import {store} from "../redux/store";
 
 export enum NetworkErrorType {
@@ -38,20 +39,28 @@ export const request = async (
     url: string,
     method: "GET" | "POST" | "PUT" | "DELETE",
     needAuth: boolean,
-    body?: object,
+    contentType?: string,
+    body?: any,
 ) => {
     const headers = new Headers();
     if (needAuth) {
         const token = store.getState().auth.token;
         headers.append("Authorization", token);
     }
-
+    if (contentType==="application/json") {
+        body=body&&JSON.stringify(body);
+    }
     const response = await fetch(url, {
         method,
-        body: body && JSON.stringify(body),
+        body: body,
         headers,
     });
 
+    if (response.headers.get("Content-Type") === "image/jpeg" ||
+    response.headers.get("Content-Type") === "image/png" ||
+    response.headers.get("Content-Type") === "image/jpg") {
+    return await response.blob();
+    } 
     const data = await response.json();
     const code = Number(data.code);
 

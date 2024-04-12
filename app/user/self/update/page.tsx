@@ -14,7 +14,7 @@ const Update = () => {
     const [user_email, set_email] = useState("");
     const [password,setPassword]=useState("");
     const [description, set_description] = useState("");
-
+    const [avatar, setAvatar] = useState(null);
     const [prev_name, setPrevName] = useState("");
     const [prev_email, setPrevEmail] = useState("");
     const [prev_description, setPrevDescription] = useState("");
@@ -29,12 +29,14 @@ const Update = () => {
     }, []);
 
     const update = () => {
-        request(`${BACKEND_URL}/api/user/private/${store.getState().auth.id}`, "POST", true, 
-            {
-                "user_name": (user_name === "")  ? prev_name : user_name,
-                "user_email": (user_email === "") ? prev_email : user_email,
-                "description": (description === "") ? prev_description : description,
-            })
+        const formData = new FormData();
+        formData.append("user_name", user_name);
+        formData.append("user_email", user_email);
+        formData.append("description", description);
+        if (avatar) {
+            formData.append("avatar", avatar);
+        }
+        request(`${BACKEND_URL}/api/user/private/${store.getState().auth.id}`, "POST", true, "multipart/form-data", formData)
         .then((res) => {
             if (Number(res.code) === 0) {
                 dispatch(setName(res.user_name));
@@ -78,6 +80,14 @@ const Update = () => {
                 placeholder={prev_email}
                 value={user_email}
                 onChange={(e) => set_email(e.target.value)}
+            />
+            </div>
+            <div className="mb-3">
+            <label htmlFor="exampleFormControlInput1" className="form-label">头像</label>
+            <input
+                className="form-control"
+                type="file"
+                onChange={(e) => setAvatar(e.target.files[0])}
             />
             </div>
             <div className="mb-3">
