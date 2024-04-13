@@ -6,7 +6,6 @@ import { setName, setId, setToken,setEmail,setDescription} from "../../redux/aut
 import {store} from "@/app/redux/store";
 import 'bootstrap/dist/css/bootstrap.css'
 import {request} from '@/app/utils/network'
-
 const RegisterPage = () => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
@@ -16,26 +15,26 @@ const RegisterPage = () => {
     const router = useRouter();
     const dispatch = store.dispatch;
     
-    const register = () => {
+    const register = async() => {
         const formData = new FormData();
         formData.append("user_name", username);
         formData.append("password", password);
         formData.append("user_email", email);
         formData.append("description", description);
-        if (avatar) {
+        if (avatar!==null) {
             formData.append("avatar", avatar);
         }
         
         request(`${BACKEND_URL}/api/user/register`, "POST", false, "multipart/form-data", formData)
         .then((res) => {
             if (Number(res.code) === 0) {
-                dispatch(setName(res.user_name));
-                dispatch(setToken(res.token));
-                dispatch(setId(res.user_id));
-                dispatch(setEmail(res.user_email));
-                dispatch(setDescription(res.description));
+                // dispatch(setName(res.user_name));
+                // dispatch(setToken(res.token));
+                // dispatch(setId(res.user_id));
+                // dispatch(setEmail(res.user_email));
+                // dispatch(setDescription(res.description));
                 //alert(REGISTER_SUCCESS_PREFIX + res.user_name);
-                router.push(`/user/self`);
+                router.push(`/user/login`);
             }
         })
         

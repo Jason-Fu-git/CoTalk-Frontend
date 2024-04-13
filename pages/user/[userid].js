@@ -8,8 +8,6 @@ import { BACKEND_URL } from '@/app/constants/string';
 import { request } from "@/app/utils/network";
 import { store } from "@/app/redux/store";
 import default_background from "@/public/DefaultBackground.jpg"
-import default_avatar from "@/public/DefaultAvatar.jpg"
-
 function Account() 
 {
 	const router = useRouter();
@@ -33,18 +31,15 @@ function Account()
 			setEmail((res.user_email === "") ? "邮箱为空" : res.user_email);
 			setDescription((res.description === "") ? "目前还没有个人描述" : res.description);
 		});
-		/*
 		request(`${BACKEND_URL}/api/user/private/${userid}/avatar`, "GET", false)
-		.then((blob) => {
-			const url = URL.createObjectURL(blob);
+		.then((url) => {
 			setAvatar(url);
 		});
-		*/
 	}, []);
 
 
 	const apply_friend=() => {
-		request(`${BACKEND_URL}/api/user/private/${store.getState().auth.id}/friends`, "PUT", true,
+		request(`${BACKEND_URL}/api/user/private/${store.getState().auth.id}/friends`, "PUT", true,"application/json",
 		{
 			"friend_id": id,
 		})
@@ -56,7 +51,7 @@ function Account()
 	};
 
 	const delete_friend=() => {
-		request(`${BACKEND_URL}/api/user/private/${store.getState().auth.id}/friends`, "PUT", true,
+		request(`${BACKEND_URL}/api/user/private/${store.getState().auth.id}/friends`, "PUT", true,"application/json",
 		{
 			"friend_id": id,
 			"approve": false,
@@ -79,7 +74,7 @@ function Account()
 				/>
 				<div className="bg-gray-800 bg-opacity-50 absolute flex items-end	w-full h-full top-0 left-0 p-8">
 					<Image
-						src={default_avatar}
+						src={avatar}
 						alt={name}
 						className="bg-gray-300 w-20 rounded-full mr-4"
 					/>

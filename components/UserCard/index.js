@@ -4,24 +4,20 @@ import 'bootstrap/dist/css/bootstrap.css';
 import { request } from "@/app/utils/network";
 import { BACKEND_URL } from '@/app/constants/string';
 import React,{ useState, useEffect } from "react";
-import default_avatar from "@/public/DefaultAvatar.jpg";
 
 function UserCard(props) {
   const [avatar, setAvatar] = useState('');
   useEffect(()=>{
-    /*
     request(`${BACKEND_URL}/api/user/private/${props.user_id}/avatar`, "GET", false)
-    .then((blob) => {
-      const url = URL.createObjectURL(blob);
+    .then((url) => {
       setAvatar(url);
     });
-    */
   }, []);
   return (
     <Link href={`/user/${props.user_id}`} passHref>
         <div className="card" style={{width: "18rem"}}>
             <Image 
-                src={default_avatar}
+                src={avatar}
                 className="card-img-top" 
                 alt="search new users"/>
             <div className="card-body">
