@@ -48,7 +48,7 @@ export default function Notification() {
         set_flash(!flash);
     }
     const approve_friend = (friend_id) => {
-        request(`${BACKEND_URL}/api/user/private/${store.getState().auth.id}/friends`, "PUT", true,
+        request(`${BACKEND_URL}/api/user/private/${store.getState().auth.id}/friends`, "PUT", true,"application/json",
         {
             "friend_id": friend_id,
             "approve": true

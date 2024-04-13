@@ -3,8 +3,8 @@
  *       我们推荐你在大作业中也尝试写一个网络请求 wrapper，本文件可以用作参考
  */
 
-import { json } from "stream/consumers";
 import {store} from "../redux/store";
+import default_avatar from "@/public/DefaultAvatar.jpg"
 
 export enum NetworkErrorType {
     UNAUTHORIZED,
@@ -55,13 +55,17 @@ export const request = async (
         body: body,
         headers,
     });
-
+    if(url.includes("avatar")&&response.status===500){
+        return default_avatar;
+    }
     if (response.headers.get("Content-Type") === "image/jpeg" ||
     response.headers.get("Content-Type") === "image/png" ||
     response.headers.get("Content-Type") === "image/jpg") {
-    return await response.blob();
+        return URL.createObjectURL(await response.blob());
     } 
     const data = await response.json();
+    //如果url包含avatar字段
+
     const code = Number(data.code);
 
     // HTTP status 400
