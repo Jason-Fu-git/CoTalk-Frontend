@@ -6,7 +6,9 @@ import { store } from "@/app/redux/store";
 
 function Piazza()
 {
-    const url="ws://cotalkbackend-Concord.app.secoder.net/ws/piazza";
+    const url="ws://cotalkbackend-Concord.app.secoder.net/ws/"+
+        "?Authorization="+store.getState().auth.token+
+        "&user_id="+store.getState().auth.id;
     const chatSocket=new WebSocket(url);
     const [messages, setMessages]=useState([]);
     const [count, setCount]=useState(0);

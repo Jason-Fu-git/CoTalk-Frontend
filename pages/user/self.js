@@ -6,13 +6,15 @@ import 'bootstrap/dist/css/bootstrap.css';
 import React,{ useState, useEffect } from "react";
 import { request } from "@/app/utils/network";
 import { store } from "@/app/redux/store";
+import { setName, setEmail, setDescription} from "@/app/redux/auth";
 import { BACKEND_URL } from '@/app/constants/string';
 
 function Account() 
 {
 	//Set up general websocket with backend
-    const url="ws://cotalkbackend-Concord.app.secoder.net/ws/?Authorization="+
-		store.getState().auth.token+"&user_id="+store.getState().auth.id;
+    const url="ws://cotalkbackend-Concord.app.secoder.net/ws/"+
+		"?Authorization="+store.getState().auth.token+
+		"&user_id="+store.getState().auth.id;
 	const generalSocket=new WebSocket(url);
 
 	//客户端收到消息时触发
@@ -54,15 +56,23 @@ function Account()
 	const [avatar, setAvatar] = useState("");
 
   	useEffect(() => {
-      	setCurrentName(store.getState().auth.name);
-		setCurrentEmail(store.getState().auth.email);
-		setCurrentDescription(store.getState().auth.description);
+		request(`${BACKEND_URL}/api/user/private/${store.getState().auth.id}`, "GET", false)
+		.then((res)=>{
+			//从后端获取最新个人信息
+			setCurrentName(res.user_name);
+			setCurrentEmail((res.user_email === "") ? "邮箱为空" : res.user_email);
+			setCurrentDescription((res.description === "") ? "目前还没有个人描述" : res.description);
+			//设置前端Cookie
+			setName(current_name);
+			setEmail(current_email);
+			setDescription(current_description);
+		});
+
 		request(`${BACKEND_URL}/api/user/private/${store.getState().auth.id}/avatar`, "GET", false)
 		.then((blob) => {
 			const url=URL.createObjectURL(blob);
 			setAvatar(url);
-		}
-		);
+		});
   	}, []);
 
 	const router = useRouter();
