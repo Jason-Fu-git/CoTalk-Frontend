@@ -1,5 +1,5 @@
 'use client'
-import { useState, useEffect } from "react";
+import { useState, useEffect, use } from "react";
 import 'bootstrap/dist/css/bootstrap.css';
 import { useRouter } from "next/navigation";
 
@@ -30,9 +30,15 @@ const Update = () => {
 
     const update = () => {
         const formData = new FormData();
-        formData.append("user_name", user_name);
-        formData.append("user_email", user_email);
-        formData.append("description", description);
+        if(user_name!==""){
+            formData.append("user_name", user_name);
+        }
+        if(user_email!==""){
+            formData.append("user_email", user_email);
+        }
+        if(description!==""){
+            formData.append("description", description);
+        }
         if (avatar) {
             formData.append("avatar", avatar);
         }
@@ -104,7 +110,7 @@ const Update = () => {
                 name="submit"
                 className="btn btn-primary"
                 onClick={update} 
-                disabled={user_name === ""&&description===""&&user_email===""}>
+                disabled={user_name === ""&&description===""&&user_email===""&&avatar===null}>
                 确认修改
             </button>
             <button 

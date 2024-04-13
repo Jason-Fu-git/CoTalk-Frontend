@@ -70,14 +70,10 @@ function Account()
 			setEmail(current_email);
 			setDescription(current_description);
 		});
-
-		/*
 		request(`${BACKEND_URL}/api/user/private/${store.getState().auth.id}/avatar`, "GET", false)
-		.then((blob) => {
-			const url=URL.createObjectURL(blob);
+		.then((url) => {
 			setAvatar(url);
 		});
-		*/
   	}, []);
 
 	const router = useRouter();
@@ -103,7 +99,7 @@ function Account()
 				/>
 				<div className="bg-gray-800 bg-opacity-50 absolute flex items-end	w-full h-full top-0 left-0 p-8">
 					<Image
-					src={default_avatar}
+					src={avatar}
 					alt={current_name}
 					className="bg-gray-300 w-20 rounded-full mr-4"
 					/>
