@@ -6,10 +6,13 @@ import { store } from "@/app/redux/store";
 
 function Piazza()
 {
+    const router = useRouter();
+    const {chatid} = router.query;
+
     const url="ws://cotalkbackend-Concord.app.secoder.net/ws/"+
-        "?Authorization="+store.getState().auth.token+
-        "&user_id="+store.getState().auth.id;
+        store.getState().auth.id+"/"+chatid+"/"+store.getState().auth.token;
     const chatSocket=new WebSocket(url);
+
     const [messages, setMessages]=useState([]);
     const [count, setCount]=useState(0);
 
@@ -77,7 +80,7 @@ function Piazza()
             <div className="sm:w-9/12 sm:m-auto pt-16 pb-16">
                 <h1 className="
                     dark:text-white text-4xl font-bold text-center">
-                
+                聊天室
                 </h1>
                 <div>
                 {messages.map((message) => (

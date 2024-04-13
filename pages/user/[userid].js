@@ -13,7 +13,7 @@ import default_avatar from "@/public/DefaultAvatar.jpg"
 function Account() 
 {
 	const router = useRouter();
-	const [id, setId] = useState(0);
+	const [id, setId] = useState(-1);
 	const [name, setName] = useState("");
 	const [email, setEmail] = useState("");
 	const [description, setDescription] = useState("");
@@ -22,29 +22,31 @@ function Account()
 
 	useEffect(()=> {
 		const { userid } = router.query;
-
+		setId(userid);
+		
 		const my_friends=store.getState().auth.friends;
 		is_friend=my_friends.includes(Number(userid));
 	
 		request(`${BACKEND_URL}/api/user/private/${userid}`, "GET", false)
 		.then((res)=>{
-			setId(res.user_id);
 			setName(res.user_name);
 			setEmail((res.user_email === "") ? "邮箱为空" : res.user_email);
 			setDescription((res.description === "") ? "目前还没有个人描述" : res.description);
 		});
+		/*
 		request(`${BACKEND_URL}/api/user/private/${userid}/avatar`, "GET", false)
 		.then((blob) => {
 			const url = URL.createObjectURL(blob);
 			setAvatar(url);
 		});
+		*/
 	}, []);
 
 
 	const apply_friend=() => {
 		request(`${BACKEND_URL}/api/user/private/${store.getState().auth.id}/friends`, "PUT", true,
 		{
-			"friend_id": id
+			"friend_id": id,
 		})
 		.then((res) => {
 			if (Number(res.code) === 0) {
