@@ -1,18 +1,23 @@
 'use client'
 import Link from "next/link";
+import Image from 'next/image';
 import { useRouter } from "next/navigation";
 import 'bootstrap/dist/css/bootstrap.css';
 
 import React,{ useState, useEffect } from "react";
 import { request } from "@/app/utils/network";
 import { store } from "@/app/redux/store";
+import { setName, setEmail, setDescription} from "@/app/redux/auth";
 import { BACKEND_URL } from '@/app/constants/string';
+import default_background from "@/public/DefaultBackground.jpg"
+import default_avatar from "@/public/DefaultAvatar.jpg"
 
 function Account() 
 {
 	//Set up general websocket with backend
-    const url="ws://cotalkbackend-Concord.app.secoder.net/ws/?Authorization="+
-		store.getState().auth.token+"&user_id="+store.getState().auth.id;
+    const url="ws://cotalkbackend-Concord.app.secoder.net/ws/"+
+		"?Authorization="+store.getState().auth.token+
+		"&user_id="+store.getState().auth.id;
 	const generalSocket=new WebSocket(url);
 
 	//客户端收到消息时触发
@@ -54,15 +59,25 @@ function Account()
 	const [avatar, setAvatar] = useState("");
 
   	useEffect(() => {
-      	setCurrentName(store.getState().auth.name);
-		setCurrentEmail(store.getState().auth.email);
-		setCurrentDescription(store.getState().auth.description);
+		request(`${BACKEND_URL}/api/user/private/${store.getState().auth.id}`, "GET", false)
+		.then((res)=>{
+			//从后端获取最新个人信息
+			setCurrentName(res.user_name);
+			setCurrentEmail((res.user_email === "") ? "邮箱为空" : res.user_email);
+			setCurrentDescription((res.description === "") ? "目前还没有个人描述" : res.description);
+			//设置前端Cookie
+			setName(current_name);
+			setEmail(current_email);
+			setDescription(current_description);
+		});
+
+		/*
 		request(`${BACKEND_URL}/api/user/private/${store.getState().auth.id}/avatar`, "GET", false)
 		.then((blob) => {
 			const url=URL.createObjectURL(blob);
 			setAvatar(url);
-		}
-		);
+		});
+		*/
   	}, []);
 
 	const router = useRouter();
@@ -81,14 +96,14 @@ function Account()
         <div className="pt-0 sm:pt-16">
 			<div className="dark:bg-gray-800 text-white w-12/12 shadow-lg sm:w-9/12 sm:m-auto">
 				<div className="relative sm:w-full">
-				<img
-					src={avatar}
+				<Image
+					src={default_background}
 					alt={current_name}
 					className="w-full h-96 object-cover object-center"
 				/>
 				<div className="bg-gray-800 bg-opacity-50 absolute flex items-end	w-full h-full top-0 left-0 p-8">
-					<img
-					src={avatar}
+					<Image
+					src={default_avatar}
 					alt={current_name}
 					className="bg-gray-300 w-20 rounded-full mr-4"
 					/>
