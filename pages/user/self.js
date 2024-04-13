@@ -1,5 +1,6 @@
 'use client'
 import Link from "next/link";
+import Image from 'next/image';
 import { useRouter } from "next/navigation";
 import 'bootstrap/dist/css/bootstrap.css';
 
@@ -8,6 +9,8 @@ import { request } from "@/app/utils/network";
 import { store } from "@/app/redux/store";
 import { setName, setEmail, setDescription} from "@/app/redux/auth";
 import { BACKEND_URL } from '@/app/constants/string';
+import default_background from "@/public/DefaultBackground.jpg"
+import default_avatar from "@/public/DefaultAvatar.jpg"
 
 function Account() 
 {
@@ -68,11 +71,13 @@ function Account()
 			setDescription(current_description);
 		});
 
+		/*
 		request(`${BACKEND_URL}/api/user/private/${store.getState().auth.id}/avatar`, "GET", false)
 		.then((blob) => {
 			const url=URL.createObjectURL(blob);
 			setAvatar(url);
 		});
+		*/
   	}, []);
 
 	const router = useRouter();
@@ -91,14 +96,14 @@ function Account()
         <div className="pt-0 sm:pt-16">
 			<div className="dark:bg-gray-800 text-white w-12/12 shadow-lg sm:w-9/12 sm:m-auto">
 				<div className="relative sm:w-full">
-				<img
-					src={avatar}
+				<Image
+					src={default_background}
 					alt={current_name}
 					className="w-full h-96 object-cover object-center"
 				/>
 				<div className="bg-gray-800 bg-opacity-50 absolute flex items-end	w-full h-full top-0 left-0 p-8">
-					<img
-					src={avatar}
+					<Image
+					src={default_avatar}
 					alt={current_name}
 					className="bg-gray-300 w-20 rounded-full mr-4"
 					/>
