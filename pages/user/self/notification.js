@@ -7,7 +7,7 @@ import { setFriends } from "@/app/redux/auth";
 export default function Notification() {
     const [notifications, set_notifications] = useState([]);
     const [flash, set_flash] = useState(false);
-    
+    const self_id = store.getState().auth.id;
     useEffect(() => {
         const later_than=0;
         const only_unread=false;
@@ -48,7 +48,6 @@ export default function Notification() {
                 alert("标记成功");
             }
         });
-        set_flash(!flash);
     }
     
     const approve_friend = (friend_id) => {
@@ -64,18 +63,18 @@ export default function Notification() {
             }
         });
     }
-    const approve_chat = (chat_id) => {
-        request(`${BACKEND_URL}/api/chat/${chat_id}/members`, "PUT", true,"application/json",
-        {
-            "user_id": store.getState().auth.id,
-            "member_id": store.getState().auth.id,
-            "approve": true
-          })
-        .then((res) => {
-            if (Number(res.code) === 0) {
-                alert("已加入聊天室");
-            }
-        });
+    const approve_chat = (chat_id,sender_id) => {
+        // request(`${BACKEND_URL}/api/chat/${chat_id}/members`, "PUT", true,"application/json",
+        // {
+        //     "user_id": self_id,
+        //     "member_id": self_id,
+        //     "approve": true
+        //   })
+        // .then((res) => {
+        //     if (Number(res.code) === 0) {
+        //         alert("已加入聊天室");
+        //     }
+        // });
     }
     function FriendRequestNotification({ notification, markAsRead, approve_friend, deleteNotification,index }) {
         return (
@@ -89,7 +88,8 @@ export default function Notification() {
                         <button 
                             name="markAsRead"
                             className="btn btn-secondary"
-                            onClick={() => markAsRead(notification.notification_id)}
+                            onClick={() => {markAsRead(notification.notification_id);
+                                set_flash(!flash);}}
                         >
                             标记为已读
                         </button>
@@ -102,7 +102,8 @@ export default function Notification() {
                     <button
                         name="approve_friend"
                         className="btn btn-success"
-                        onClick={() => approve_friend(notification.sender_id)}
+                        onClick={() => {approve_friend(notification.sender_id);
+                            set_flash(!flash);}}
                     >
                         同意好友申请
                     </button>
@@ -110,7 +111,8 @@ export default function Notification() {
                 <button 
                     name="delete"
                     className="btn btn-primary"
-                    onClick={() => deleteNotification(notification.notification_id)}
+                    onClick={() => {deleteNotification(notification.notification_id);
+                    set_flash(!flash);}}
                 >
                     删除此条通知
                 </button>
@@ -129,7 +131,8 @@ export default function Notification() {
                         <button 
                             name="markAsRead"
                             className="btn btn-secondary"
-                            onClick={() => markAsRead(notification.notification_id)}
+                            onClick={() => {markAsRead(notification.notification_id);
+                            set_flash(!flash);}}
                         >
                             标记为已读
                         </button>
@@ -141,7 +144,8 @@ export default function Notification() {
                 <button 
                     name="delete"
                     className="btn btn-primary"
-                    onClick={() => deleteNotification(notification.notification_id)}
+                    onClick={() => {deleteNotification(notification.notification_id);
+                    set_flash(!flash);}}
                 >
                     删除此条通知
                 </button>
@@ -149,18 +153,23 @@ export default function Notification() {
         );
     }
     function InvitechatNotification({notification,markAsRead,approve_chat,deleteNotification,index}){
+        const [chatname,setchatname] = useState([]);
+        useEffect(() => {
+
+        }, []);
         return (
             <div key={notification.notification_id}>
                 <p>index:{index+1}</p>
                 <p>消息类型：聊天室邀请</p>
-                <p>sender_name: {notification.sender_name}</p>
+                <p>{notification.sender_name}邀请你加入群聊：</p>
                 {notification.is_read === false && (
                     <>
                         <span>未读</span>
                         <button 
                             name="markAsRead"
                             className="btn btn-secondary"
-                            onClick={() => markAsRead(notification.notification_id)}
+                            onClick={() => {markAsRead(notification.notification_id);
+                            set_flash(!flash);}}
                         >
                             标记为已读
                         </button>
@@ -172,14 +181,16 @@ export default function Notification() {
                 <button
                     name="approve_chat"
                     className="btn btn-success"
-                    onClick={() => approve_chat(notification.chat_id)}
+                    onClick={() => {approve_chat(notification.content.chat_id,notification.sender_id);
+                        set_flash(!flash);}}
                 >
                     同意聊天室邀请
                 </button>
                 <button 
                     name="delete"
                     className="btn btn-primary"
-                    onClick={() => deleteNotification(notification.notification_id)}
+                    onClick={() => {deleteNotification(notification.notification_id);
+                    set_flash(!flash);}}
                 >
                     删除此条通知
                 </button>
