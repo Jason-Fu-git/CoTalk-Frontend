@@ -1,13 +1,95 @@
-import ThemeSwitch from '../ThemeSwitch';
+import Link from "next/link";
 
-function TopBar() {
-  return (
-    <div className="w-full p-2 bg-green-500">
-      <div className="w-10/12 m-auto">
-        <ThemeSwitch />
-      </div>
+function TopBar() 
+{
+  	return (
+    <div className="w-full p-2 bg-blue-300 flex auto">
+		<div className="w-10/12 m-auto">
+			<Link href={`/user/self`} passHref>
+                <button className="
+                    dark:bg-blue-400
+                    dark:text-gray-800
+                    bg-blue-400
+                    text-white
+                    font-semibold
+                    p-2
+                    rounded-md">
+                个人主页
+                </button>
+            </Link>
+		</div>
+		<div className="w-10/12 m-auto">
+			<Link href={`/user/self/notification`} passHref>
+                <button className="
+                    dark:bg-blue-400
+                    dark:text-gray-800
+                    bg-blue-400
+                    text-white
+                    font-semibold
+                    p-2
+                    rounded-md">
+                收件箱
+                </button>
+            </Link>
+		</div>
+		<div className="w-10/12 m-auto">
+			<Link href={`/user/self/friends`} passHref>
+                <button className="
+                    dark:bg-blue-400
+                    dark:text-gray-800
+                    bg-blue-400
+                    text-white
+                    font-semibold
+                    p-2
+                    rounded-md">
+                所有好友
+                </button>
+      		</Link>
+		</div>
+		<div className="w-10/12 m-auto">
+			<Link href={`/user/self/chats`} passHref>
+                <button className="
+                    dark:bg-blue-400
+                    dark:text-gray-800
+                    bg-blue-400
+                    text-white
+                    font-semibold
+                    p-2
+                    rounded-md">
+                所有群聊
+                </button>
+      		</Link>
+		</div>
+		<div className="w-10/12 m-auto">
+			<Link href={`/chat/piazza`} passHref>
+                <button className="
+                    dark:bg-blue-400
+                    dark:text-gray-800
+                    bg-blue-400
+                    text-white
+                    font-semibold
+                    p-2
+                    rounded-md">
+				广场
+                </button>
+            </Link>
+		</div>
+		<div className="w-10/12 m-auto">
+			<Link href={`/`} passHref>
+                <button className="
+                    dark:bg-blue-400
+                    dark:text-gray-800
+                    bg-blue-400
+                    text-white
+                    font-semibold
+                    p-2
+                    rounded-md">
+                登出
+                </button>
+            </Link>
+		</div>
     </div>
-  );
+  	);
 }
 
 export default TopBar;
