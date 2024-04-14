@@ -10,7 +10,7 @@ const RegisterPage = () => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [email, setemail] = useState('');
-    const [avatar, setAvatar] = useState(null);
+    const [avatar, setAvatar] = useState(new File([], ""));
     const [description, setdescription] = useState('');
     const router = useRouter();
     // const dispatch = store.dispatch;
@@ -21,7 +21,7 @@ const RegisterPage = () => {
         formData.append("password", password);
         formData.append("user_email", email);
         formData.append("description", description);
-        if (avatar!==null) {
+        if (avatar.size !== 0) {
             formData.append("avatar", avatar);
         }
         
@@ -74,7 +74,7 @@ const RegisterPage = () => {
             <input
                 className="form-control"
                 type="file"
-                onChange={(e) => setAvatar(e.target.files?.[0])}
+                onChange={(e) => setAvatar(e.target.files?.[0] as File)}
             />
             </div>
             <div className="input-group mb-3">
