@@ -1,10 +1,11 @@
 import 'bootstrap/dist/css/bootstrap.css';
 import React, { useState, useEffect } from 'react';
+import {useRouter} from 'next/router';
 
 import MessageCard from '@/components/MessageCard';
 import { store } from "@/app/redux/store";
 
-function Piazza()
+function Conversation()
 {
     const router = useRouter();
     const {chatid} = router.query;
@@ -82,6 +83,11 @@ function Piazza()
                     dark:text-white text-4xl font-bold text-center">
                 聊天室
                 </h1>
+                <Link href={`chat/${chatid}`} passHref>
+                    <button className="btn btn-secondary">
+                    群聊信息
+                    </button>
+                </Link>
                 <div>
                 {messages.map((message) => (
                         <div key={message.id}>
@@ -111,4 +117,4 @@ function Piazza()
     );
 }
 
-export default Piazza;
+export default Conversation;

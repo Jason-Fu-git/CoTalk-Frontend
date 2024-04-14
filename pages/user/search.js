@@ -24,7 +24,14 @@ function Search()
         request(`${BACKEND_URL}/api/user/search?search_text=${query}`, "GET", true)
         .then((res) => {
             res.users.forEach(function (element, index, array){
-                element.is_friend=my_friends.includes(Number(element.user_id));
+                if (my_friends.includes(Number(element.user_id)))
+                {
+                    element.user_tag="好友";
+                }
+                else
+                {
+                    element.user_tag="陌生人";
+                }
             });
 
             const users=res.users.filter(function(element){

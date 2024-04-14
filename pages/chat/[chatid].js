@@ -7,16 +7,28 @@ import {request} from "@/app/utils/network";
 import { store } from "@/app/redux/store";
 import Link from 'next/link';
 
-
 function Chat() 
 {
     const router = useRouter();
     const [members, setMembers] = useState([]);
     const {chatid} = router.query;
+    const my_friends = store.getState().auth.friends;
+
     useEffect(() => {
         request(`${BACKEND_URL}/api/chat/${chatid}/members?user_id=${store.getState().auth.id}`, "GET", true)
         .then((res) => {
-        setMembers(res.members);
+            res.members.forEach(function (element, index, array){
+                if (element.user_id === store.getState().auth.id)
+                {
+                    element.user_tag="自己";
+                }
+                else 
+                {
+                    element.user_tag=(my_friends.includes(Number(element.user_id)))?
+                    "好友" : "陌生人";
+                }
+            });
+            setMembers(res.members);
         });
     }, []);
 

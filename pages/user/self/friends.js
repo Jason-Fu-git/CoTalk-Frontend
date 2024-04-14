@@ -22,7 +22,7 @@ function Friends()
             let friend_ids=[];
             res.friends.forEach(function (element, index, array){
                 friend_ids.push(element.user_id);
-                element.is_friend=true;
+                element.user_tag="好友";
             });
             console.log(friend_ids);
             store.dispatch(setFriends(friend_ids));

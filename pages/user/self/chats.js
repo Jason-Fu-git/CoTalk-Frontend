@@ -30,13 +30,8 @@ function Chats()
                 </h1>
                 <div className="grid gap-8 grid-cols-1 sm:grid-cols-3 mt-14
                             ml-8 mr-8 sm:mr-0 sm:ml-0">
-                    <Link href={`/chat/create`} passHref>
+                    <Link href={`chat/create`} passHref>
                         <div className="card" style={{width: "18rem"}}>
-                            <Image 
-                                src={modern}
-                                className="card-img-top" 
-                                alt="search new users"
-                            />
                             <div className="card-body">
                             <h5 className="card-title">创建群聊</h5>
                             </div>

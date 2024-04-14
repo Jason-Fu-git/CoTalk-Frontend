@@ -13,17 +13,16 @@ export default function Notification() {
         const only_unread=false;
         request(`${BACKEND_URL}/api/user/private/${store.getState().auth.id}/notifications`, "GET", true)
         .then((res) => {
-            res.notifications.forEach(function (element, index, array){
+            res.notifications.forEach(async function (element, index, array){
                 //Modify every notification
                 const sender_id=element.sender_id;
                 let sender_name="??";
                 //Get the sender's name
-                request(`${BACKEND_URL}/api/user/private/${sender_id}`, "GET", false)
+                await request(`${BACKEND_URL}/api/user/private/${sender_id}`, "GET", false)
                 .then((res) => {
                     sender_name=res.user_name;
+                    element.sender_name=sender_name;
                 });
-                //Set the sender's name
-                element.sender_name=sender_name;
             });
             set_notifications(res.notifications);
         });
@@ -38,6 +37,7 @@ export default function Notification() {
         });
         set_flash(!flash);
     }
+
     const markAsRead = (notification_id) => {
         request(`${BACKEND_URL}/api/user/private/${store.getState().auth.id}/notification/${notification_id}`, "PUT", true)
         .then((res) => {
@@ -47,6 +47,7 @@ export default function Notification() {
         });
         set_flash(!flash);
     }
+    
     const approve_friend = (friend_id) => {
         request(`${BACKEND_URL}/api/user/private/${store.getState().auth.id}/friends`, "PUT", true,"application/json",
         {

@@ -12,7 +12,7 @@ interface AuthState {
 const initialState: AuthState = {
     token: "",
     name: "",
-    id: 0,
+    id: -1,
     email: "邮箱为空",
     description: "目前还没有个人描述",
     friends: [],
