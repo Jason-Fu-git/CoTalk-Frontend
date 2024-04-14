@@ -18,7 +18,7 @@ export default function Createpage(){
     }, []);
 
     const createChat = () => {
-        request(`${BACKEND_URL}/api/chat/create`, "POST", true,{
+        request(`${BACKEND_URL}/api/chat/create`, "POST", true,"application/json",{
             "user_id": selfid,
             "chat_name": chatName,
             "members": memberid
@@ -61,7 +61,9 @@ export default function Createpage(){
                 </div>
             )}
 
-            <button onClick={createChat}>创建聊天室</button>
+            <button 
+            disabled={chatName===''}
+            onClick={createChat}>创建聊天室</button>
         </div>
     )
 }

@@ -21,10 +21,10 @@ function Account()
 	useEffect(()=> {
 		const { userid } = router.query;
 		setId(userid);
-		
+		console.log(userid);
 		const my_friends=store.getState().auth.friends;
 		is_friend=my_friends.includes(Number(userid));
-	
+		console.log(is_friend);
 		request(`${BACKEND_URL}/api/user/private/${userid}`, "GET", false)
 		.then((res)=>{
 			setName(res.user_name);

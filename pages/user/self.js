@@ -95,6 +95,8 @@ function Account()
 					<Image
 					src={avatar}
 					alt={current_name}
+					width={200}
+					height={200}
 					className="bg-gray-300 w-20 rounded-full mr-4"
 					/>
 					<div>

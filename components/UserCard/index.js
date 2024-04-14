@@ -5,7 +5,6 @@ import React,{ useState, useEffect } from "react";
 
 import { request } from "@/app/utils/network";
 import { BACKEND_URL } from '@/app/constants/string';
-import { store } from "@/app/redux/store";
 
 function UserCard(props) {
 	const [avatar, setAvatar] = useState('');
@@ -21,6 +20,8 @@ function UserCard(props) {
         <div className="card" style={{width: "18rem"}}>
             <Image 
                 src={avatar}
+				width={288}
+				height={288}
                 className="card-img-top" 
                 alt="search new users"/>
             <div className="card-body">

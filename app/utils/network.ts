@@ -64,7 +64,6 @@ export const request = async (
         return URL.createObjectURL(await response.blob());
     } 
     const data = await response.json();
-    //如果url包含avatar字段
 
     const code = Number(data.code);
 
