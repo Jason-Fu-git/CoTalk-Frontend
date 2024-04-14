@@ -14,7 +14,7 @@ const Update = () => {
     const [user_email, set_email] = useState("");
     const [password,setPassword]=useState("");
     const [description, set_description] = useState("");
-    const [avatar, setAvatar] = useState(new File([], ""));
+    const [avatar, setAvatar] = useState(typeof window !== 'undefined' ? new File([], "") : null);
     const [prev_name, setPrevName] = useState("");
     const [prev_email, setPrevEmail] = useState("");
     const [prev_description, setPrevDescription] = useState("");
@@ -39,7 +39,7 @@ const Update = () => {
         if(description!==""){
             formData.append("description", description);
         }
-        if (avatar.size !== 0) {
+        if (avatar!=null&&avatar.size !== 0) {
             formData.append("avatar", avatar);
         }
         request(`${BACKEND_URL}/api/user/private/${store.getState().auth.id}`, "POST", true, "multipart/form-data", formData)
