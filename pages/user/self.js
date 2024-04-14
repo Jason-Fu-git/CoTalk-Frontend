@@ -15,6 +15,7 @@ import default_avatar from "@/public/DefaultAvatar.jpg"
 function Account() 
 {
 	//Set up general websocket with backend
+	/*
     const url="ws://cotalkbackend-Concord.app.secoder.net/ws/"+
 		"?Authorization="+store.getState().auth.token+
 		"&user_id="+store.getState().auth.id;
@@ -51,6 +52,7 @@ function Account()
     generalSocket.onopen=function(event) {
         console.log("Open websocket");
     };
+	*/
 
   	const [current_name, setCurrentName] = useState("");
 	const [current_email, setCurrentEmail] = useState("");
