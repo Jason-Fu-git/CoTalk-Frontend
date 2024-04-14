@@ -93,7 +93,7 @@ const Update = () => {
             <input
                 className="form-control"
                 type="file"
-                onChange={(e) => setAvatar(e.target.files[0])}
+                onChange={(e) => setAvatar(e.target.files?.[0])}
             />
             </div>
             <div className="mb-3">

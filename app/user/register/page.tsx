@@ -13,7 +13,7 @@ const RegisterPage = () => {
     const [avatar, setAvatar] = useState(null);
     const [description, setdescription] = useState('');
     const router = useRouter();
-    const dispatch = store.dispatch;
+    // const dispatch = store.dispatch;
     
     const register = async() => {
         const formData = new FormData();
@@ -74,7 +74,7 @@ const RegisterPage = () => {
             <input
                 className="form-control"
                 type="file"
-                onChange={(e) => setAvatar(e.target.files[0])}
+                onChange={(e) => setAvatar(e.target.files?.[0])}
             />
             </div>
             <div className="input-group mb-3">
