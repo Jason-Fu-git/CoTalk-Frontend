@@ -23,8 +23,7 @@ function Account()
 	//客户端收到消息时触发
     generalSocket.onmessage=function(event) {
         const data=JSON.parse(event.data);
-        
-        //防止自己发给自己
+
         console.log("Frontend receive: ");
         console.log(event);
         //将新消息添加到后面
@@ -59,17 +58,10 @@ function Account()
 	const [avatar, setAvatar] = useState("");
 
   	useEffect(() => {
-		request(`${BACKEND_URL}/api/user/private/${store.getState().auth.id}`, "GET", false)
-		.then((res)=>{
-			//从后端获取最新个人信息
-			setCurrentName(res.user_name);
-			setCurrentEmail((res.user_email === "") ? "邮箱为空" : res.user_email);
-			setCurrentDescription((res.description === "") ? "目前还没有个人描述" : res.description);
-			//设置前端Cookie
-			setName(current_name);
-			setEmail(current_email);
-			setDescription(current_description);
-		});
+		setCurrentName(store.getState().auth.name);
+		setCurrentEmail((store.getState().auth.email) ? "邮箱为空" : store.getState().auth.email);
+		setCurrentDescription((store.getState().auth.description) ? "目前还没有个人描述" : store.getState().auth.description);
+
 		request(`${BACKEND_URL}/api/user/private/${store.getState().auth.id}/avatar`, "GET", false)
 		.then((url) => {
 			setAvatar(url);
