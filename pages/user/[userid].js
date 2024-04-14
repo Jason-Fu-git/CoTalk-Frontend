@@ -7,6 +7,7 @@ import 'bootstrap/dist/css/bootstrap.css';
 import { BACKEND_URL } from '@/app/constants/string';
 import { request } from "@/app/utils/network";
 import { store } from "@/app/redux/store";
+import { setFriends } from "@/app/redux/auth";
 import default_background from "@/public/DefaultBackground.jpg"
 function Account() 
 {
@@ -16,14 +17,14 @@ function Account()
 	const [email, setEmail] = useState("");
 	const [description, setDescription] = useState("");
 	const [avatar, setAvatar] = useState('');
-	let is_friend=false;
+	const [is_friend, setIsFriend] = useState(false);
 
 	useEffect(()=> {
 		const { userid } = router.query;
 		setId(userid);
 		console.log(userid);
 		const my_friends=store.getState().auth.friends;
-		is_friend=my_friends.includes(Number(userid));
+		setIsFriend(my_friends.includes(Number(userid)));
 		console.log(is_friend);
 		request(`${BACKEND_URL}/api/user/private/${userid}`, "GET", false)
 		.then((res)=>{
@@ -58,7 +59,9 @@ function Account()
 		})
 		.then((res) => {
 			if (Number(res.code) === 0) {
+				store.dispatch(setFriends(store.getState().auth.friends.filter((friend_id) => friend_id !== id)));
 				alert("已删除好友");
+				router.push("/user/self/friends");
 			}
 		})
 	};
@@ -74,8 +77,10 @@ function Account()
 				/>
 				<div className="bg-gray-800 bg-opacity-50 absolute flex items-end	w-full h-full top-0 left-0 p-8">
 					<Image
-						src={avatar}
+						src={avatar.url?avatar.url:avatar.src}
 						alt={name}
+						width={avatar.width}
+						height={avatar.height}
 						className="bg-gray-300 w-20 rounded-full mr-4"
 					/>
 					<div>

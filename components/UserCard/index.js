@@ -19,9 +19,9 @@ function UserCard(props) {
     <Link href={`/user/${props.user_id}`} passHref>
         <div className="card" style={{width: "18rem"}}>
             <Image 
-                src={avatar}
-				width={288}
-				height={288}
+                src={avatar.url?avatar.url:avatar.src}
+				width={avatar.width}
+				height={avatar.height}
                 className="card-img-top" 
                 alt="search new users"/>
             <div className="card-body">

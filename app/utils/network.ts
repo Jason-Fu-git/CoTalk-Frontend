@@ -61,7 +61,15 @@ export const request = async (
     if (response.headers.get("Content-Type") === "image/jpeg" ||
     response.headers.get("Content-Type") === "image/png" ||
     response.headers.get("Content-Type") === "image/jpg") {
-        return URL.createObjectURL(await response.blob());
+        const blob = await response.blob();
+        const url = URL.createObjectURL(blob);
+        return new Promise((resolve, reject) => {
+            const img = new Image();
+            img.onload = () => resolve({ url, width: img.width, height: img.height });
+            img.onerror = reject;
+            img.src = url;
+        });
+        
     } 
     const data = await response.json();
 
