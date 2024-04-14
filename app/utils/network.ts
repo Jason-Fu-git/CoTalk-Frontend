@@ -48,6 +48,7 @@ export const request = async (
         headers.append("Authorization", token);
     }
     if (contentType==="application/json") {
+        headers.append("Content-Type", "application/json");
         body=body&&JSON.stringify(body);
     }
     const response = await fetch(url, {
