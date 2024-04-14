@@ -2,7 +2,10 @@ import 'bootstrap/dist/css/bootstrap.css';
 import React, { useState, useEffect } from 'react';
 import {useRouter} from 'next/router';
 import Link from 'next/link';
+<<<<<<< pages/chat/[chatid]/conversation.js
+=======
 
+>>>>>>> pages/chat/[chatid]/conversation.js
 import MessageCard from '@/components/MessageCard';
 import { store } from "@/app/redux/store";
 
@@ -11,7 +14,11 @@ function Conversation()
     const router = useRouter();
     const {chatid} = router.query;
 
+<<<<<<< pages/chat/[chatid]/conversation.js
+    const url=`ws://cotalkbackend-Concord.app.secoder.net/ws/chat/${chatid}/`;
+=======
     const url="ws://cotalkbackend-Concord.app.secoder.net/ws/chat/"+chatid;
+>>>>>>> pages/chat/[chatid]/conversation.js
     const chatSocket=new WebSocket(url);
 
     const [messages, setMessages]=useState([]);
@@ -83,7 +90,7 @@ function Conversation()
                     dark:text-white text-4xl font-bold text-center">
                 聊天室
                 </h1>
-                <Link href={`chat/${chatid}`} passHref>
+                <Link href={`/chat/${chatid}`} passHref>
                     <button className="btn btn-secondary">
                     群聊信息
                     </button>

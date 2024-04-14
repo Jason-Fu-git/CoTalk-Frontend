@@ -2,6 +2,7 @@ import React,{useState, useEffect}  from "react";
 import { BACKEND_URL } from '@/app/constants/string';
 import { request } from "@/app/utils/network";
 import { store } from "@/app/redux/store";
+import { useRouter } from "next/router";
 
 export default function Createpage(){
     const [chatName, setChatName] = useState("");
@@ -9,7 +10,7 @@ export default function Createpage(){
     const [friends, setFriends] = useState([]);
     const [showModal, setShowModal] = useState(false);
     const selfid = store.getState().auth.id;
-
+    const router = useRouter();
     useEffect(() => {
         request(`${BACKEND_URL}/api/user/private/${selfid}/friends`, "GET", true)
         .then((res) => {
@@ -18,7 +19,7 @@ export default function Createpage(){
     }, []);
 
     const createChat = () => {
-        request(`${BACKEND_URL}/api/chat/create`, "POST", true,{
+        request(`${BACKEND_URL}/api/chat/create`, "POST", true,"application/json",{
             "user_id": selfid,
             "chat_name": chatName,
             "members": memberid
@@ -26,6 +27,7 @@ export default function Createpage(){
         .then((res) => {
             if (Number(res.code) === 0) {
                 alert("创建成功");
+                router.push(`/chat/${res.chat_id}/conversation`);
             }
         });
     }
@@ -61,7 +63,9 @@ export default function Createpage(){
                 </div>
             )}
 
-            <button onClick={createChat}>创建聊天室</button>
+            <button 
+            disabled={chatName===''||memberid.length===0}
+            onClick={createChat}>创建聊天室</button>
         </div>
     )
 }
