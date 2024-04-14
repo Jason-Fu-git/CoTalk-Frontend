@@ -10,7 +10,7 @@ const RegisterPage = () => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [email, setemail] = useState('');
-    const [avatar, setAvatar] = useState(new File([], ""));
+    const [avatar, setAvatar] = useState(typeof window !== 'undefined' ? new File([], "") : null);
     const [description, setdescription] = useState('');
     const router = useRouter();
     // const dispatch = store.dispatch;
@@ -21,7 +21,7 @@ const RegisterPage = () => {
         formData.append("password", password);
         formData.append("user_email", email);
         formData.append("description", description);
-        if (avatar.size !== 0) {
+        if (avatar!=null&&avatar.size !== 0) {
             formData.append("avatar", avatar);
         }
         
