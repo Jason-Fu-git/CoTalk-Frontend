@@ -45,9 +45,15 @@ const Update = () => {
         request(`${BACKEND_URL}/api/user/private/${store.getState().auth.id}`, "POST", true, "multipart/form-data", formData)
         .then((res) => {
             if (Number(res.code) === 0) {
-                dispatch(setName(res.user_name));
-                dispatch(setEmail(res.user_email));
-                dispatch(setDescription(res.description));
+                if(user_name!==""){
+                    dispatch(setName(user_name));
+                }
+                if(user_email!==""){
+                    dispatch(setEmail(user_email));
+                }
+                if(description!==""){
+                    dispatch(setDescription(description));
+                }
                 alert(UPDATE_SUCCESS);
                 router.push(`/user/self`);
             }

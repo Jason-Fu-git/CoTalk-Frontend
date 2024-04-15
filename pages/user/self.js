@@ -61,8 +61,8 @@ function Account()
 
   	useEffect(() => {
 		setCurrentName(store.getState().auth.name);
-		setCurrentEmail((store.getState().auth.email) ? "邮箱为空" : store.getState().auth.email);
-		setCurrentDescription((store.getState().auth.description) ? "目前还没有个人描述" : store.getState().auth.description);
+		setCurrentEmail((store.getState().auth.email==="") ? "邮箱为空" : store.getState().auth.email);
+		setCurrentDescription((store.getState().auth.description==="") ? "目前还没有个人描述" : store.getState().auth.description);
 
 		request(`${BACKEND_URL}/api/user/private/${store.getState().auth.id}/avatar`, "GET", false)
 		.then((url) => {

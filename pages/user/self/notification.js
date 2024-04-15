@@ -1,4 +1,5 @@
 import React, { useState , useEffect } from "react";
+import 'bootstrap/dist/css/bootstrap.css';
 
 import { request } from "@/app/utils/network";
 import { BACKEND_URL } from '@/app/constants/string';
