@@ -93,7 +93,7 @@ function Account()
 				/>
 				<div className="bg-gray-800 bg-opacity-50 absolute flex items-end	w-full h-full top-0 left-0 p-8">
 					<Image
-					src={avatar.url?avatar.url:avatar.src}
+					src={(avatar.url) ? (avatar.url): (avatar.src)}
 					alt={current_name}
 					width={avatar.width}
 					height={avatar.height}
