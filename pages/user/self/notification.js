@@ -11,7 +11,6 @@ export default function Notification() {
     const self_id = store.getState().auth.id;
 
     useEffect(() => {
-        set_flash(!flash);
         const later_than=0;
         const only_unread=false;
         request(`${BACKEND_URL}/api/user/private/${store.getState().auth.id}/notifications?only_unread=${only_unread}&later_than=${later_than}`, "GET", true)
