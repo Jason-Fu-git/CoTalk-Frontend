@@ -11,7 +11,6 @@ export default function Notification() {
     const self_id = store.getState().auth.id;
 
     useEffect(() => {
-        set_flash(!flash);
         const later_than=0;
         const only_unread=false;
         request(`${BACKEND_URL}/api/user/private/${store.getState().auth.id}/notifications?only_unread=${only_unread}&later_than=${later_than}`, "GET", true)
@@ -79,17 +78,17 @@ export default function Notification() {
     }
 
     const approveChat = (chat_id,sender_id) => {
-        // request(`${BACKEND_URL}/api/chat/${chat_id}/members`, "PUT", true,"application/json",
-        // {
-        //     "user_id": self_id,
-        //     "member_id": self_id,
-        //     "approve": true
-        //   })
-        // .then((res) => {
-        //     if (Number(res.code) === 0) {
-        //         alert("已加入聊天室");
-        //     }
-        // });
+        request(`${BACKEND_URL}/api/chat/${chat_id}/members`, "PUT", true,"application/json",
+        {
+            "user_id": self_id,
+            "member_id": self_id,
+            "approve": true
+          })
+        .then((res) => {
+            if (Number(res.code) === 0) {
+                alert("已加入聊天室");
+            }
+        });
     }
 
     return (

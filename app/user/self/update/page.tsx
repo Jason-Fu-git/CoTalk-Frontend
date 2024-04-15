@@ -110,7 +110,7 @@ const Update = () => {
                 name="submit"
                 className="btn btn-primary"
                 onClick={update} 
-                disabled={user_name === ""&&description===""&&user_email===""&&avatar===null}>
+                disabled={user_name === ""&&description===""&&user_email===""&&avatar!=null&&avatar.size=== 0}>
                 确认修改
             </button>
             <button 
