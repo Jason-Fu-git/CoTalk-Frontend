@@ -25,7 +25,7 @@ function MessageCard(props)
 							<div class="col-md-8">
 								<div class="card-body">
 								<h1 className="dark:text-white text-3xl font-bold">
-                				{props.sender_name}
+                				{props.sender_name} {props.datetime}
                 				</h1>
 								<h1 className="dark:text-white text-3xl font-bold">
                 				{props.message}
@@ -59,7 +59,7 @@ function MessageCard(props)
 							<div class="col-md-8">
 								<div class="card-body">
 								<h1 className="dark:text-white text-3xl font-bold">
-                				{props.sender_name}
+                				{props.sender_name} {props.datetime}
                 				</h1>
 								<h1 className="dark:text-white text-3xl font-bold">
                 				{props.message}
