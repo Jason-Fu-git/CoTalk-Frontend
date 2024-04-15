@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import { request } from "@/app/utils/network";
+import { BACKEND_URL } from '@/app/constants/string';
 import 'bootstrap/dist/css/bootstrap.css';
 
 import MessageCard from '@/components/MessageCard';
@@ -13,6 +15,10 @@ function Piazza()
 
     useEffect(()=> {
         console.log("useEffect() need to refresh.");
+
+        return () => {
+            chatSocket.close();
+        }
     }, [messages]);
 
     //客户端收到消息时触发
@@ -27,11 +33,18 @@ function Piazza()
         const datetime=new Date(data.datetime).toLocaleString('en', dateOptions);
         const sender_name=data.sender_name;
         const sender_id=data.sender_id;
+        let sender_avatar="";
+
+        request(`${BACKEND_URL}/api/user/private/${sender}/avatar`, "GET", false)
+		.then((url) => {
+			sender_avatar=url;
+		});
               
         const newMessages=[{
             'id': count,
             'sender_name': sender_name,
             'sender_id': sender_id,
+            'sender_avatar': avatar,
             'message': data.message,
             'datetime': datetime,
         }].concat(messages);
