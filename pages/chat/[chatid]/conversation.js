@@ -2,8 +2,11 @@ import 'bootstrap/dist/css/bootstrap.css';
 import React, { useState, useEffect } from 'react';
 import {useRouter} from 'next/router';
 import Link from 'next/link';
+
 import MessageCard from '@/components/MessageCard';
 import { store } from "@/app/redux/store";
+import { request } from "@/app/utils/network";
+import { BACKEND_URL } from '@/app/constants/string';
 
 function Conversation()
 {
@@ -17,7 +20,12 @@ function Conversation()
     const [count, setCount]=useState(0);
 
     useEffect(()=> {
-        console.log("REFRESH");
+        console.log("useEffect执行刷新");
+        console.log("当先消息列表: "+messages);
+
+        return () => {
+            chatSocket.close();
+        }
     }, [messages]);
 
     //客户端收到消息时触发
@@ -25,32 +33,40 @@ function Conversation()
         const data=JSON.parse(event.data);
         
         //防止自己发给自己
-        console.log("Frontend receive: ");
-        console.log(event);
+        console.log("前端收到: "+data.messages);
         //将新消息添加到后面
         const dateOptions={hour: 'numeric', minute:'numeric', hour12:true};
         const datetime=new Date(data.datetime).toLocaleString('en', dateOptions);
         const sender_name=data.sender_name;
         const sender_id=data.sender_id;
+        let sender_avatar="";
+
+        request(`${BACKEND_URL}/api/user/private/${sender}/avatar`, "GET", false)
+		.then((url) => {
+			sender_avatar=url;
+		});
               
-        const newMessages=[{
-            'id': count,
+        const oldMessages=messages;
+        const newMessages=oldMessages.concat([{
+            'index': count,
             'sender_name': sender_name,
             'sender_id': sender_id,
+            'sender_avatar': sender_avatar,
             'message': data.message,
             'datetime': datetime,
-        }].concat(messages);
+        }]);
+        console.log("前端消息列表: "+newMessages);
             
         setCount(count+1);
         setMessages(newMessages);
     };
 
     chatSocket.onclose=function(event) {
-        console.error('Chat socket closed unexpectedly');
+        console.error('Websocket连接已断开');
     };
 
     chatSocket.onopen=function(event) {
-        console.log("Open websocket");
+        console.log("Websocket连接已建立");
     };
 
     const sendMessage=function(event) {
@@ -58,7 +74,7 @@ function Conversation()
         const message=inputArea.value;
         if (message)
         {
-            console.log("Frontend send: "+message);
+            console.log("前端发送: "+message);
             chatSocket.send(JSON.stringify({
                 'message': message,
                 'sender_id': store.getState().auth.id,
@@ -89,7 +105,7 @@ function Conversation()
                 </Link>
                 <div>
                 {messages.map((message) => (
-                        <div key={message.id}>
+                        <div key={message.index}>
                             <MessageCard {...message}/>
                         </div>
                 ))}

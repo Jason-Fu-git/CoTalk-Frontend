@@ -30,15 +30,15 @@ export default function Notification() {
                 switch ((element.content.type, element.content.status)) {
                     case ("user.friend.request", "make request"):
                         element.header="好友申请";
-                        element.message="["+element.sender_name+"]想成为你的好友";
+                        element.message=element.sender_name+" 想成为你的好友";
                         break;
                     case ("user.friend.request", "accept request"):
                         element.header="好友申请";
-                        element.message="已同意["+element.sender_name+"]的好友申请";
+                        element.message="已同意 "+element.sender_name+" 的好友申请";
                         break;
                     case ("chat.management", "make invitation"):
                         element.header="群聊邀请";
-                        element.message="["+element.sender_name+"]邀请你加入群聊";
+                        element.message=element.sender_name+" 邀请你加入群聊";
                         break;
                 }
                 return element;
@@ -112,7 +112,7 @@ export default function Notification() {
                         <div key={index}>
                             <div class="card">
                                 <div class="card-header">
-                                    [{index}] : {notification.header}
+                                    {notification.header}
                                 </div>
                                 <div class="card-body">
                                     <h5 class="card-title">{notification.message}</h5>
