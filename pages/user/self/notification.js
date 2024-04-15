@@ -81,17 +81,17 @@ export default function Notification() {
     }
 
     const approveChat = (chat_id,sender_id) => {
-        // request(`${BACKEND_URL}/api/chat/${chat_id}/members`, "PUT", true,"application/json",
-        // {
-        //     "user_id": self_id,
-        //     "member_id": self_id,
-        //     "approve": true
-        //   })
-        // .then((res) => {
-        //     if (Number(res.code) === 0) {
-        //         alert("已加入聊天室");
-        //     }
-        // });
+        request(`${BACKEND_URL}/api/chat/${chat_id}/members`, "PUT", true,"application/json",
+        {
+            "user_id": self_id,
+            "member_id": self_id,
+            "approve": true
+          })
+        .then((res) => {
+            if (Number(res.code) === 0) {
+                alert("已加入聊天室");
+            }
+        });
     }
 
     return (
