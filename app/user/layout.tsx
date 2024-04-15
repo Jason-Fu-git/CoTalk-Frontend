@@ -8,19 +8,8 @@ export default function LoginLayout({
     children: React.ReactNode
   }) {
     return (
-      <div className={styles.container}>
-        <div className={styles.sidebar}>
-          <Link href="/" className={styles.link}>
-            CoTalk
-          </Link>
-          <Link href="/chat" className={styles.link}>
-            群聊
-          </Link>
-          <Link href="/friend" className={styles.link}>
-            好友
-          </Link>
-        </div>
-        <section className={styles.content}>{children}</section>
-      </div>
+        <section className={styles.content}>
+			{children}
+		</section>
     )
 }
