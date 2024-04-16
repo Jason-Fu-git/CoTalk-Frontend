@@ -35,7 +35,7 @@ function Piazza()
         const sender_id=data.sender_id;
         let sender_avatar="";
 
-        request(`${BACKEND_URL}/api/user/private/${sender}/avatar`, "GET", false)
+        request(`${BACKEND_URL}/api/user/private/${sender_id}/avatar`, "GET", false)
 		.then((url) => {
 			sender_avatar=url;
 		});
