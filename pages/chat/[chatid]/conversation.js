@@ -12,7 +12,7 @@ function Conversation()
     const router = useRouter();
     const {chatid} = router.query;
 
-    const url=`wws://cotalkbackend-Concord.app.secoder.net/ws/chat/${chatid}/`;
+    const url=`wss://cotalkbackend-Concord.app.secoder.net/ws/chat/${chatid}/`;
     const chatSocket=new WebSocket(url);
 
     const [messages, setMessages]=useState([]);
@@ -39,8 +39,8 @@ function Conversation()
         const sender_name=data.sender_name;
         const sender_id=data.sender_id;
         let sender_avatar="";
-
-        request(`${BACKEND_URL}/api/user/private/${sender}/avatar`, "GET", false)
+        console.log(sender_id);
+        request(`${BACKEND_URL}/api/user/private/${sender_id}/avatar`, "GET", false)
 		.then((url) => {
 			sender_avatar=url;
 		});
