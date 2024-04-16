@@ -56,12 +56,12 @@ function MessageCard(props)
 						<div class="row g-0">
 							<div class="col-md-4">
 								<Image
-									src={(props.sender_avatar.url) ? 
-									(props.sender_avatar.url):
-									(props.sender_avatar.src)}
+									src={(avatar.url) ? 
+									(avatar.url):
+									(avatar.src)}
 									alt={props.sender_name}
-									width={props.sender_avatar.width}
-									height={props.sender_avatar.height}/>
+									width={avatar.width}
+									height={avatar.height}/>
 							</div>
 							<div class="col-md-8">
 								<div class="card-body">
