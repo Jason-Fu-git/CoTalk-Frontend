@@ -2,7 +2,6 @@ import 'bootstrap/dist/css/bootstrap.css';
 import React, { useState, useEffect } from 'react';
 import {useRouter} from 'next/router';
 import Link from 'next/link';
-
 import MessageCard from '@/components/MessageCard';
 import { store } from "@/app/redux/store";
 import { request } from "@/app/utils/network";
@@ -13,7 +12,7 @@ function Conversation()
     const router = useRouter();
     const {chatid} = router.query;
 
-    const url=`ws://cotalkbackend-Concord.app.secoder.net/ws/chat/${chatid}/`;
+    const url=`ws://${BACKEND_URL}/ws/chat/${chatid}/`;
     const chatSocket=new WebSocket(url);
 
     const [messages, setMessages]=useState([]);
