@@ -44,6 +44,7 @@ function Conversation()
 		.then((url) => {
 			sender_avatar=url;
 		});
+        console.log(sender_avatar);
               
         const oldMessages=messages;
         const newMessages=oldMessages.concat([{
