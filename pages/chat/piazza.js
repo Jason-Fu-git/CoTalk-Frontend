@@ -14,7 +14,8 @@ function Piazza()
     const [count, setCount]=useState(0);
 
     useEffect(()=> {
-        console.log("useEffect() need to refresh.");
+        console.log("useEffect执行刷新");
+        console.log("当前消息列表: "+messages);
 
         return () => {
             chatSocket.close();
@@ -25,9 +26,6 @@ function Piazza()
     chatSocket.onmessage=function(event) {
         const data=JSON.parse(event.data);
         
-        //防止自己发给自己
-        console.log("Frontend receive: ");
-        console.log(event);
         //将新消息添加到后面
         const dateOptions={hour: 'numeric', minute:'numeric', hour12:true};
         const datetime=new Date(data.datetime).toLocaleString('en', dateOptions);
@@ -40,14 +38,15 @@ function Piazza()
 			sender_avatar=url;
 		});
               
-        const newMessages=[{
-            'id': count,
+        const oldMessages=messages;
+        const newMessages=oldMessages.concat([{
+            'index': count,
             'sender_name': sender_name,
             'sender_id': sender_id,
             'sender_avatar': sender_avatar,
             'message': data.message,
             'datetime': datetime,
-        }].concat(messages);
+        }]);
             
         setCount(count+1);
         setMessages(newMessages);
