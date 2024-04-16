@@ -20,7 +20,7 @@ function Conversation()
 
     useEffect(()=> {
         console.log("useEffect执行刷新");
-        console.log("当先消息列表: "+messages);
+        console.log("当前消息列表: "+messages);
 
         return () => {
             chatSocket.close();
@@ -31,8 +31,6 @@ function Conversation()
     chatSocket.onmessage=function(event) {
         const data=JSON.parse(event.data);
         
-        //防止自己发给自己
-        console.log("前端收到: "+data.messages);
         //将新消息添加到后面
         const dateOptions={hour: 'numeric', minute:'numeric', hour12:true};
         const datetime=new Date(data.datetime).toLocaleString('en', dateOptions);
@@ -44,7 +42,6 @@ function Conversation()
 		.then((url) => {
 			sender_avatar=url;
 		});
-        console.log(sender_avatar);
               
         const oldMessages=messages;
         const newMessages=oldMessages.concat([{
@@ -55,7 +52,6 @@ function Conversation()
             'message': data.message,
             'datetime': datetime,
         }]);
-        console.log("前端消息列表: "+newMessages);
             
         setCount(count+1);
         setMessages(newMessages);
