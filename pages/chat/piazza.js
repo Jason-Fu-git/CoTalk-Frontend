@@ -44,7 +44,7 @@ function Piazza()
             'id': count,
             'sender_name': sender_name,
             'sender_id': sender_id,
-            'sender_avatar': avatar,
+            'sender_avatar': sender_avatar,
             'message': data.message,
             'datetime': datetime,
         }].concat(messages);
