@@ -39,8 +39,8 @@ function Conversation()
         const sender_name=data.sender_name;
         const sender_id=data.sender_id;
         let sender_avatar="";
-
-        request(`${BACKEND_URL}/api/user/private/${sender}/avatar`, "GET", false)
+        console.log(sender_id);
+        request(`${BACKEND_URL}/api/user/private/${sender_id}/avatar`, "GET", false)
 		.then((url) => {
 			sender_avatar=url;
 		});
