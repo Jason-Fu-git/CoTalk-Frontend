@@ -12,7 +12,7 @@ function Conversation()
     const router = useRouter();
     const {chatid} = router.query;
 
-    const url=`ws://${BACKEND_URL}/ws/chat/${chatid}/`;
+    const url=`wws://cotalkbackend-Concord.app.secoder.net/ws/chat/${chatid}/`;
     const chatSocket=new WebSocket(url);
 
     const [messages, setMessages]=useState([]);
