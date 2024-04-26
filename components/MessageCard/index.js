@@ -6,6 +6,7 @@ import { request } from "@/app/utils/network";
 
 function MessageCard(props) 
 {
+	// sender's avatar
 	const [avatar, setAvatar] = useState('');
 	useEffect(()=>{
 		request(`${BACKEND_URL}/api/user/private/${props.sender_id}/avatar`, "GET", false)
@@ -15,6 +16,7 @@ function MessageCard(props)
 	}, []);
 	const my_id=store.getState().auth.id;
 
+	// right click menu
 	const [contextMenu, setContextMenu] = useState({ visible: false, x: 0, y: 0 });
 
 	const onContextMenu = (event) => {
@@ -63,16 +65,16 @@ function MessageCard(props)
 					</div>
 
 					{contextMenu.visible && (
-						<div style={{ 
+						<div 
+							style={{ 
 							position: 'absolute', 
 							top: contextMenu.y,
 							left: contextMenu.x,
-							backgroundColor: 'white' }}>
-						<ul>
-							<li>Option 1</li>
-							<li>Option 2</li>
-							<li>Option 3</li>
-						</ul>
+							backgroundColor: 'white' }}
+							class="list-group">
+							<button type="button" class="list-group-item list-group-item-action">A second item</button>
+							<button type="button" class="list-group-item list-group-item-action">A third button item</button>
+							<button type="button" class="list-group-item list-group-item-action">A fourth button item</button>
 						</div>
 					)}
 				</div>
