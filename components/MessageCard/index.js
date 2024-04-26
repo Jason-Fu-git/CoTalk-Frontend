@@ -11,7 +11,7 @@ function MessageCard(props)
 	useEffect(()=>{
 		request(`${BACKEND_URL}/api/user/private/${props.sender_id}/avatar`, "GET", false)
 		.then((url) => {
-		setAvatar(url);
+			setAvatar(url);
 		});
 	}, []);
 	const my_id=store.getState().auth.id;
@@ -33,6 +33,22 @@ function MessageCard(props)
 	  setContextMenu({ visible: false, x: 0, y: 0 });
 	};
 
+    const deleteMessage=function(event) {
+        console.log("delete function called.");
+		console.log("message id: "+props.message_id);
+		request(`${BACKEND_URL}/api/message/${props.message_id}/management`,
+				"DELETE", true, "application/json", 
+			{
+				"user_id": props.sender_id,
+				"is_remove": true,
+			})
+		.then((res) => {
+			if (Number(res.code)===0) {
+				alert("成功删除");
+			}
+		});
+    }
+
 	if (props.sender_id === my_id)
 	{
 		return (
@@ -43,12 +59,12 @@ function MessageCard(props)
 						</div>
 						<div class="card-body">
 							<div class="row g-0">
-								<div class="col-md-4">
+								<div class="col-md-3">
 									<Image
 										src={avatar.src?avatar.src:avatar.url}
 										alt={props.sender_name}
-										width={avatar.width}
-										height={avatar.height}/>
+										width={avatar.width/2}
+										height={avatar.height/2}/>
 								</div>
 								<div class="col-md-8">
 									<div class="card-body">
@@ -67,14 +83,21 @@ function MessageCard(props)
 					{contextMenu.visible && (
 						<div 
 							style={{ 
-							position: 'absolute', 
 							top: contextMenu.y,
 							left: contextMenu.x,
 							backgroundColor: 'white' }}
 							class="list-group">
-							<button type="button" class="list-group-item list-group-item-action">A second item</button>
-							<button type="button" class="list-group-item list-group-item-action">A third button item</button>
-							<button type="button" class="list-group-item list-group-item-action">A fourth button item</button>
+							<button 
+								type="button" 
+								class="list-group-item list-group-item-action">
+								撤回
+							</button>
+							<button 
+								type="button" 
+								class="list-group-item list-group-item-action"
+								onClick={deleteMessage}>
+								删除
+							</button>
 						</div>
 					)}
 				</div>
@@ -97,8 +120,8 @@ function MessageCard(props)
 										(avatar.url):
 										(avatar.src)}
 										alt={props.sender_name}
-										width={avatar.width}
-										height={avatar.height}/>
+										width={avatar.width/2}
+										height={avatar.height/2}/>
 								</div>
 								<div class="col-md-8">
 									<div class="card-body">
@@ -115,16 +138,14 @@ function MessageCard(props)
 					</div>
 
 					{contextMenu.visible && (
-						<div style={{ 
-							position: 'absolute', 
+						<div 
+							style={{ 
 							top: contextMenu.y,
 							left: contextMenu.x,
-							backgroundColor: 'white' }}>
-						<ul>
-							<li>Option 1</li>
-							<li>Option 2</li>
-							<li>Option 3</li>
-						</ul>
+							backgroundColor: 'white' }}
+							class="list-group">
+							<button type="button" class="list-group-item list-group-item-action">回复</button>
+							<button type="button" class="list-group-item list-group-item-action">删除</button>
 						</div>
 					)}
 				</div>

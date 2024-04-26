@@ -37,14 +37,17 @@ function Piazza()
 		.then((url) => {
 			sender_avatar=url;
 		});
-              
+            
         const oldMessages=messages;
         const newMessages=oldMessages.concat([{
             'index': count,
             'sender_name': sender_name,
             'sender_id': sender_id,
             'sender_avatar': sender_avatar,
+
             'message': data.message,
+            'message_id': data.msg_id,
+
             'datetime': datetime,
         }]);
             
@@ -89,6 +92,7 @@ function Piazza()
                     dark:text-white text-4xl font-bold text-center">
                 广场
                 </h1>
+
                 <div>
                 {messages.map((message) => (
                         <div key={message.id}>
@@ -96,6 +100,7 @@ function Piazza()
                         </div>
                 ))}
                 </div>
+
                 <div className="input-group mb-3">
                     <input
                         className="form-control col_auto"
@@ -113,6 +118,7 @@ function Piazza()
                         </button>
                     </div>
                 </div>
+
             </div>
         </>
     );

@@ -37,19 +37,22 @@ function Conversation()
         const sender_name=data.sender_name;
         const sender_id=data.sender_id;
         let sender_avatar="";
-        console.log(sender_id);
+        
         request(`${BACKEND_URL}/api/user/private/${sender_id}/avatar`, "GET", false)
 		.then((url) => {
 			sender_avatar=url;
 		});
-              
+        
         const oldMessages=messages;
         const newMessages=oldMessages.concat([{
             'index': count,
             'sender_name': sender_name,
             'sender_id': sender_id,
             'sender_avatar': sender_avatar,
+
             'message': data.message,
+            'message_id': data.msg_id,
+
             'datetime': datetime,
         }]);
             
@@ -70,7 +73,6 @@ function Conversation()
         const message=inputArea.value;
         if (message)
         {
-            console.log("前端发送: "+message);
             chatSocket.send(JSON.stringify({
                 'message': message,
                 'sender_id': store.getState().auth.id,
