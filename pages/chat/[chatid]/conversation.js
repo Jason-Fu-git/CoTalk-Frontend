@@ -22,8 +22,13 @@ function Conversation()
         console.log("useEffect执行刷新");
         console.log("当前消息列表: "+messages);
 
+        const generalUrl="ws://cotalkbackend-Concord.app.secoder.net/ws/main/"+
+        store.getState().auth.id+"/"+store.getState().auth.token;
+        const generalSocket=new WebSocket(generalUrl);
+
         return () => {
             chatSocket.close();
+            generalSocket.close();
         }
     }, [messages]);
 
@@ -88,6 +93,42 @@ function Conversation()
             inputArea.focus();
         }
     }
+
+    generalSocket.onmessage=function(event) {
+        console.log('General websocket receive something');
+        const data=JSON.parse(event.data);
+
+        if (data.type !== 'chat.message')
+        {
+            // 其余内容还未实现
+            console.log('Unknown message');
+            assert(false);
+            return;
+        }
+        if (data.status !== 'send message')
+        {
+            // 撤回还未实现
+            console.log('Unknown status');
+            assert(false);
+            return;
+        }
+
+        const sender_id=data.user_id;
+        const message_id=data.msg_id;
+
+        // 来自其他群聊的新消息还未实现
+        assert(data.chat_id === chatid);
+
+        
+    }
+
+    generalSocket.onclose=function(event) {
+        console.log('General socket closed');
+    };
+
+    generalSocket.onopen=function(event) {
+        console.log("Open general websocket");
+    };
 
     return (
         <>
