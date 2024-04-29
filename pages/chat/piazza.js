@@ -8,20 +8,37 @@ import { store } from "@/app/redux/store";
 
 function Piazza()
 {
-    const url="wss://cotalkbackend-Concord.app.secoder.net/ws/piazza";
-    const chatSocket=new WebSocket(url);
     const [messages, setMessages]=useState([]);
     const [count, setCount]=useState(0);
 
     useEffect(()=> {
-        console.log("useEffect执行刷新");
-        console.log("当前消息列表: "+messages);
+        console.log("useEffect is called");
+
+        const url="wss://cotalkbackend-Concord.app.secoder.net/ws/piazza";
+        const chatSocket=new WebSocket(url);
+
+        const generalUrl="ws://cotalkbackend-Concord.app.secoder.net/ws/main/"+store.getState().auth.id+"/";
+        const generalSocket=new WebSocket(generalUrl);
+    
+        generalSocket.onmessage=function(event) {
+            console.log('General websocket receive something');
+        }
+    
+        generalSocket.onclose=function(event) {
+            console.log('General socket closed');
+        };
+    
+        generalSocket.onopen=function(event) {
+            console.log("Open general websocket");
+        };
 
         return () => {
             chatSocket.close();
+            generalSocket.close();
         }
     }, [messages]);
 
+    /*
     //客户端收到消息时触发
     chatSocket.onmessage=function(event) {
         const data=JSON.parse(event.data);
@@ -56,7 +73,7 @@ function Piazza()
     };
 
     chatSocket.onclose=function(event) {
-        console.error('Chat socket closed unexpectedly');
+        console.log('Chat socket closed');
     };
 
     chatSocket.onopen=function(event) {
@@ -77,6 +94,32 @@ function Piazza()
     
             inputArea.value='';
             inputArea.focus();
+        }
+        else
+        {
+            inputArea.value='';
+            inputArea.focus();
+        }
+    }
+    */
+
+    const sendMessage=function(event) {
+        let inputArea=document.getElementById('chat-message-input');
+        const message=inputArea.value;
+        if (message)
+        {
+            request(`${BACKEND_URL}/api/message/send`, "POST", true, 
+                "application/json", {
+                "user_id": store.getState().auth.id, 
+                "chat_id": 0,
+                "msg_text": message,
+                "msg_type": "text",
+            })
+            .then((res) => {
+                if (Number(res.code) === 0) {
+                    console.log("Send successfully.");
+                }
+            })
         }
         else
         {

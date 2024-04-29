@@ -61,11 +61,11 @@ function Conversation()
     };
 
     chatSocket.onclose=function(event) {
-        console.error('Websocket连接已断开');
+        console.log('Chat socket closed');
     };
 
     chatSocket.onopen=function(event) {
-        console.log("Websocket连接已建立");
+        console.log("Open websocket");
     };
 
     const sendMessage=function(event) {
@@ -101,6 +101,12 @@ function Conversation()
                     群聊信息
                     </button>
                 </Link>
+                <Link href={`/chat/${chatid}/conversation`} passHref>
+                    <button className="btn btn-secondary">
+                    搜索聊天记录
+                    </button>
+                </Link>
+
                 <div>
                 {messages.map((message) => (
                         <div key={message.index}>
@@ -108,6 +114,7 @@ function Conversation()
                         </div>
                 ))}
                 </div>
+
                 <div className="input-group mb-3">
                     <input
                         className="form-control col_auto"
@@ -125,6 +132,7 @@ function Conversation()
                         </button>
                     </div>
                 </div>
+
             </div>
         </>
     );
