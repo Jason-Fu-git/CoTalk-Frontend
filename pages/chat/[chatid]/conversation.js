@@ -8,12 +8,12 @@ import { store } from "@/app/redux/store";
 import { request } from "@/app/utils/network";
 import { BACKEND_URL } from '@/app/constants/string';
 
-const [messages, setMessages]=useState([]);
-const [count, setCount]=useState(0);
-
 async function getChatMessages(chatid)
 {
-    const res= await request(`${BACKEND_URL}/api/chat/${chatid}/messages`, "GET", true)
+    const res= await request(`${BACKEND_URL}/api/chat/${chatid}/messages`, "GET", true,
+        {
+            "user_id": store.getState().auth.id,
+        });
     if (Number(res.code)===0)
     {
         const history=res.messages;
@@ -27,6 +27,7 @@ async function getChatMessages(chatid)
             let sender_avatar = "";
             const url = await request(`${BACKEND_URL}/api/user/private/${item.sender_id}/avatar`, "GET", false);
             sender_avatar = url;
+            const dateOptions={hour: 'numeric', minute:'numeric', hour12:true};
             const datetime = new Date(item.create_time).toLocaleString('en', dateOptions);
 
             // Mark as read
@@ -34,7 +35,7 @@ async function getChatMessages(chatid)
             {
                 await request(`${BACKEND_URL}/api/message/${item.msg_id}/management`, "PUT", true, 
                 {
-                    "user_id": self_id,
+                    "user_id": store.getState().auth.id,
                 });
             }
 
@@ -43,7 +44,7 @@ async function getChatMessages(chatid)
                 'sender_name': "后端目前没有返回用户名",
                 'sender_id': item.sender_id,
                 'sender_avatar': sender_avatar,
-                
+
                 'message': item.msg_text,
                 'message_id': item.msg_id,
 
@@ -62,6 +63,11 @@ function Conversation()
     const {chatid} = router.query;
     const self_id=store.getState().auth.id;
 
+    const url=`wss://cotalkbackend-Concord.app.secoder.net/ws/chat/${chatid}/`;
+    const chatSocket=new WebSocket(url);
+
+    const [messages, setMessages]=useState([]);
+    const [count, setCount]=useState(0);
     // 第一次渲染时将所有已有消息标记为已读
     const [firstRender, setFirstRender]=useState(true);
     // 用这个值来手动刷新
@@ -77,13 +83,22 @@ function Conversation()
             setFirstRender(false);
         }
 
-        // 连接WebSocket
-        const url=`wss://cotalkbackend-Concord.app.secoder.net/ws/chat/${chatid}/`;
-        const chatSocket=new WebSocket(url);
-    
+        // 连接WebSocket   
         const generalUrl="ws://cotalkbackend-Concord.app.secoder.net/ws/main/"+
         store.getState().auth.id+"/"+store.getState().auth.token;
         const generalSocket=new WebSocket(generalUrl);
+
+        generalSocket.onmessage=function(event) {
+            console.log('General websocket receive something');
+        }
+    
+        generalSocket.onclose=function(event) {
+            console.log('General socket closed');
+        };
+    
+        generalSocket.onopen=function(event) {
+            console.log("Open general websocket");
+        };
 
         return () => {
             chatSocket.close();
@@ -168,18 +183,6 @@ function Conversation()
             inputArea.focus();
         }
     }
-
-    generalSocket.onmessage=function(event) {
-        console.log('General websocket receive something');
-    }
-
-    generalSocket.onclose=function(event) {
-        console.log('General socket closed');
-    };
-
-    generalSocket.onopen=function(event) {
-        console.log("Open general websocket");
-    };
 
     return (
         <>
