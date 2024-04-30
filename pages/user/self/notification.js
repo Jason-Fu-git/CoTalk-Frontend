@@ -21,12 +21,14 @@ export default function Notification() {
                 element.content = JSON.parse(element.content.replace(/'/g, '"').replace(/True/g, 'true').replace(/False/g, 'false')); // Replace single quotes with double quotes
                 // set the sender's name
                 const sender_id=element.sender_id;
+
                 let sender_name="??";
                 await request(`${BACKEND_URL}/api/user/private/${sender_id}`, "GET", false)
                 .then((res) => {
                     sender_name=res.user_name;
                     element.sender_name=sender_name; // Add new property to element
                 });
+                
                 // set the notification's content
                 switch ((element.content.type, element.content.status)) {
                     case ("user.friend.request", "make request"):

@@ -8,60 +8,10 @@ import { store } from "@/app/redux/store";
 import { request } from "@/app/utils/network";
 import { BACKEND_URL } from '@/app/constants/string';
 
-async function getChatMessages(chatid)
-{
-    const url=`${BACKEND_URL}/api/chat/${chatid}/messages?user_id=`+store.getState().auth.id;
-    const res= await request(url, "GET", true);
-    
-    if (Number(res.code)===0)
-    {
-        const history=res.messages;
-        let new_list=[];
-        let count=0;
-
-        for (let item of history) 
-        {
-
-            // Sender avatar
-            let sender_avatar = "";
-            const url = await request(`${BACKEND_URL}/api/user/private/${item.sender_id}/avatar`, "GET", false);
-            sender_avatar = url;
-            const dateOptions={hour: 'numeric', minute:'numeric', hour12:true};
-            const datetime = new Date(item.create_time).toLocaleString('en', dateOptions);
-
-            // Mark as read
-            if (!item.read_users.includes(self_id)) 
-            {
-                await request(`${BACKEND_URL}/api/message/${item.msg_id}/management`,
-                "PUT", true, "application/json",
-                {
-                    "user_id": store.getState().auth.id,
-                });
-            }
-
-            new_list.push({
-                'index': count, 
-                'sender_name': "后端目前没有返回用户名",
-                'sender_id': item.sender_id,
-                'sender_avatar': sender_avatar,
-
-                'message': item.msg_text,
-                'message_id': item.msg_id,
-
-                'datetime': datetime,
-            });
-
-            count=count+1;
-        }
-        return new_list;
-    }
-}
-
 function Conversation()
 {
     const router = useRouter();
     const {chatid} = router.query;
-    const self_id=store.getState().auth.id;
 
     const url=`wss://cotalkbackend-Concord.app.secoder.net/ws/chat/${chatid}/`;
     const chatSocket=new WebSocket(url);
@@ -74,14 +24,53 @@ function Conversation()
     const [toggle, setToggle]=useState(true);
 
     useEffect(()=> {
-        console.log("useEffect执行刷新");
-        console.log("当前消息列表: "+messages);
-
         if (firstRender)
         {
-            const history=getChatMessages(chatid);
-            setMessages(history);
-            setCount(history.length);
+            const url=`${BACKEND_URL}/api/chat/${chatid}/messages?user_id=`+store.getState().auth.id;
+        
+            request(url, "GET", true)
+            .then(async (res) => {
+                const promises = res.messages.map(async function (element, index){
+                    // modify every notification
+                    // set the sender's name
+                    const sender_id=element.sender_id;
+        
+                    let sender_name="??";
+                    await request(`${BACKEND_URL}/api/user/private/${sender_id}`, "GET", false)
+                    .then((res) => {
+                        sender_name=res.user_name;
+                    });
+        
+                    const sender_avatar = await request(`${BACKEND_URL}/api/user/private/${element.sender_id}/avatar`, "GET", false);
+                    const dateOptions={hour: 'numeric', minute:'numeric', hour12:true};
+                    const datetime = new Date(element.create_time).toLocaleString('en', dateOptions);
+        
+                    // Mark as read
+                    if (!element.read_users.includes(store.getState().auth.id)) 
+                    {
+                        await request(`${BACKEND_URL}/api/message/${item.msg_id}/management`,
+                        "PUT", true, "application/json",
+                        {
+                            "user_id": store.getState().auth.id,
+                        });
+                    }
+        
+                    return ({
+                        'index': index,
+                        'sender_name': sender_name,
+                        'sender_id': sender_id,
+                        'sender_avatar': sender_avatar,
+            
+                        'message': element.msg_text,
+                        'message_id': element.msg_id,
+        
+                        'datetime': datetime,
+                    });
+                });
+                const messages = await Promise.all(promises);
+                setMessages(messages);
+            });
+            //setCount(history.length);
             setFirstRender(false);
         }
 
@@ -91,15 +80,15 @@ function Conversation()
         const generalSocket=new WebSocket(generalUrl);
 
         generalSocket.onmessage=function(event) {
-            console.log('General websocket receive something');
+            //console.log('General websocket receive something');
         }
     
         generalSocket.onclose=function(event) {
-            console.log('General socket closed');
+            //console.log('General socket closed');
         };
     
         generalSocket.onopen=function(event) {
-            console.log("Open general websocket");
+            //console.log("Open general websocket");
         };
 
         return () => {
@@ -143,11 +132,11 @@ function Conversation()
     };
 
     chatSocket.onclose=function(event) {
-        console.log('Chat socket closed');
+        //console.log('Chat socket closed');
     };
 
     chatSocket.onopen=function(event) {
-        console.log("Open websocket");
+        //console.log("Open websocket");
     };
 
     const sendMessage=function(event) {
@@ -184,6 +173,22 @@ function Conversation()
             inputArea.value='';
             inputArea.focus();
         }
+    }
+
+    const deleteMessage=function(event) {
+        console.log("delete function called.");
+		console.log("message id: "+props.message_id);
+		request(`${BACKEND_URL}/api/message/${props.message_id}/management`,
+				"DELETE", true, "application/json", 
+			{
+				"user_id": props.sender_id,
+				"is_remove": false,
+			})
+		.then((res) => {
+			if (Number(res.code)===0) {
+				alert("成功删除");
+			}
+		});
     }
 
     return (
