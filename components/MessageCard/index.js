@@ -33,22 +33,6 @@ function MessageCard(props)
 	  setContextMenu({ visible: false, x: 0, y: 0 });
 	};
 
-    const deleteMessage=function(event) {
-        console.log("delete function called.");
-		console.log("message id: "+props.message_id);
-		request(`${BACKEND_URL}/api/message/${props.message_id}/management`,
-				"DELETE", true, "application/json", 
-			{
-				"user_id": props.sender_id,
-				"is_remove": true,
-			})
-		.then((res) => {
-			if (Number(res.code)===0) {
-				alert("成功删除");
-			}
-		});
-    }
-
 	if (props.sender_id === my_id)
 	{
 		return (
@@ -95,7 +79,7 @@ function MessageCard(props)
 							<button 
 								type="button" 
 								class="list-group-item list-group-item-action"
-								onClick={deleteMessage}>
+								onClick={()=>props.onDelete(props.message_id, props.sender_id)}>
 								删除
 							</button>
 						</div>
@@ -144,8 +128,17 @@ function MessageCard(props)
 							left: contextMenu.x,
 							backgroundColor: 'white' }}
 							class="list-group">
-							<button type="button" class="list-group-item list-group-item-action">回复</button>
-							<button type="button" class="list-group-item list-group-item-action">删除</button>
+							<button 
+								type="button" 
+								class="list-group-item list-group-item-action">
+							回复
+							</button>
+							<button 
+								type="button" 
+								class="list-group-item list-group-item-action"
+								onClick={()=>props.onDelete(props.message_id, props.sender_id)}>
+							删除
+							</button>
 						</div>
 					)}
 				</div>

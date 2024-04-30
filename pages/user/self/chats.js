@@ -14,7 +14,6 @@ function Chats()
     const [chats, setChats] = useState([]);
 
     useEffect(() => {
-        console.log("Get "+store.getState().auth.name+"'s chats");
         request(`${BACKEND_URL}/api/user/private/${store.getState().auth.id}/chats`, "GET", true)
         .then((res) => {
         setChats(res.chats);
