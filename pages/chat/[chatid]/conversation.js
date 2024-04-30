@@ -24,6 +24,7 @@ function Conversation()
     const [toggle, setToggle]=useState(true);
 
     useEffect(()=> {
+        // 第一次刷新时拉取历史记录
         if (firstRender)
         {
             const url=`${BACKEND_URL}/api/chat/${chatid}/messages?user_id=`+store.getState().auth.id;
@@ -31,8 +32,8 @@ function Conversation()
             request(url, "GET", true)
             .then(async (res) => {
                 const promises = res.messages.map(async function (element, index){
-                    // modify every notification
-                    // set the sender's name
+                    console.log("Process: ");
+                    console.log(element);
                     const sender_id=element.sender_id;
         
                     let sender_name="??";
@@ -48,7 +49,7 @@ function Conversation()
                     // Mark as read
                     if (!element.read_users.includes(store.getState().auth.id)) 
                     {
-                        await request(`${BACKEND_URL}/api/message/${item.msg_id}/management`,
+                        await request(`${BACKEND_URL}/api/message/${element.msg_id}/management`,
                         "PUT", true, "application/json",
                         {
                             "user_id": store.getState().auth.id,
@@ -65,6 +66,8 @@ function Conversation()
                         'message_id': element.msg_id,
         
                         'datetime': datetime,
+
+                        'onDelete': deleteMessage,
                     });
                 });
                 const messages = await Promise.all(promises);
@@ -124,6 +127,8 @@ function Conversation()
             'message_id': data.msg_id,
 
             'datetime': datetime,
+
+            'onDelete': deleteMessage,
         }]);
             
         setCount(count+1);
@@ -175,18 +180,19 @@ function Conversation()
         }
     }
 
-    const deleteMessage=function(event) {
+    const deleteMessage=function(message_id, sender_id) {
         console.log("delete function called.");
-		console.log("message id: "+props.message_id);
-		request(`${BACKEND_URL}/api/message/${props.message_id}/management`,
+		console.log("message id: "+message_id);
+		request(`${BACKEND_URL}/api/message/${message_id}/management`,
 				"DELETE", true, "application/json", 
 			{
-				"user_id": props.sender_id,
+				"user_id": sender_id,
 				"is_remove": false,
 			})
 		.then((res) => {
 			if (Number(res.code)===0) {
 				alert("成功删除");
+                setToggle(!toggle);
 			}
 		});
     }

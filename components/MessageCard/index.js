@@ -56,7 +56,7 @@ function MessageCard(props)
 									{props.sender_name} {props.datetime}
 									</h1>
 									<h1 className="dark:text-white text-3xl font-bold">
-									{props.props}
+									{props.message}
 									</h1>
 									</div>
 								</div>
@@ -79,7 +79,7 @@ function MessageCard(props)
 							<button 
 								type="button" 
 								class="list-group-item list-group-item-action"
-								onClick={onDelete}>
+								onClick={()=>props.onDelete(props.message_id, props.sender_id)}>
 								删除
 							</button>
 						</div>
@@ -113,7 +113,7 @@ function MessageCard(props)
 									{props.sender_name} {props.datetime}
 									</h1>
 									<h1 className="dark:text-white text-3xl font-bold">
-									{props.props}
+									{props.message}
 									</h1>
 									</div>
 								</div>
@@ -136,7 +136,7 @@ function MessageCard(props)
 							<button 
 								type="button" 
 								class="list-group-item list-group-item-action"
-								onClick={onDelete}>
+								onClick={()=>props.onDelete(props.message_id, props.sender_id)}>
 							删除
 							</button>
 						</div>
