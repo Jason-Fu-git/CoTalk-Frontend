@@ -39,13 +39,15 @@ async function getChatMessages(chatid)
             }
 
             new_list.push({
-                index: count, 
-                sender_name: "后端目前没有返回用户名",
-                sender_id: item.sender_id,
-                sender_avatar: sender_avatar,
-                message: item.msg_text,
-                message_id: item.msg_id,
-                datetime: datetime,
+                'index': count, 
+                'sender_name': "后端目前没有返回用户名",
+                'sender_id': item.sender_id,
+                'sender_avatar': sender_avatar,
+                
+                'message': item.msg_text,
+                'message_id': item.msg_id,
+
+                'datetime': datetime,
             });
 
             setCount(count+1);
