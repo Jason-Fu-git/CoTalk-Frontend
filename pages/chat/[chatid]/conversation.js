@@ -10,18 +10,17 @@ import { BACKEND_URL } from '@/app/constants/string';
 
 async function getChatMessages(chatid)
 {
-    const res= await request(`${BACKEND_URL}/api/chat/${chatid}/messages`, "GET", true,
-        {
-            "user_id": store.getState().auth.id,
-        });
+    const url=`${BACKEND_URL}/api/chat/${chatid}/messages?user_id=`+store.getState().auth.id;
+    const res= await request(url, "GET", true);
+    
     if (Number(res.code)===0)
     {
         const history=res.messages;
         let new_list=[];
+        let count=0;
 
         for (let item of history) 
         {
-            setCount(count + 1);
 
             // Sender avatar
             let sender_avatar = "";
@@ -33,7 +32,8 @@ async function getChatMessages(chatid)
             // Mark as read
             if (!item.read_users.includes(self_id)) 
             {
-                await request(`${BACKEND_URL}/api/message/${item.msg_id}/management`, "PUT", true, 
+                await request(`${BACKEND_URL}/api/message/${item.msg_id}/management`,
+                "PUT", true, "application/json",
                 {
                     "user_id": store.getState().auth.id,
                 });
@@ -51,9 +51,9 @@ async function getChatMessages(chatid)
                 'datetime': datetime,
             });
 
-            setCount(count+1);
+            count=count+1;
         }
-        setMessages(new_list);
+        return new_list;
     }
 }
 
@@ -79,7 +79,9 @@ function Conversation()
 
         if (firstRender)
         {
-            getChatMessages(chatid);
+            const history=getChatMessages(chatid);
+            setMessages(history);
+            setCount(history.length);
             setFirstRender(false);
         }
 
