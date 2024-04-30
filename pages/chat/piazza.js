@@ -8,20 +8,37 @@ import { store } from "@/app/redux/store";
 
 function Piazza()
 {
-    const url="wss://cotalkbackend-Concord.app.secoder.net/ws/piazza";
-    const chatSocket=new WebSocket(url);
     const [messages, setMessages]=useState([]);
     const [count, setCount]=useState(0);
 
     useEffect(()=> {
-        console.log("useEffect执行刷新");
-        console.log("当前消息列表: "+messages);
+        console.log("useEffect is called");
+
+        const url="wss://cotalkbackend-Concord.app.secoder.net/ws/piazza";
+        const chatSocket=new WebSocket(url);
+
+        const generalUrl="ws://cotalkbackend-Concord.app.secoder.net/ws/main/"+store.getState().auth.id+"/";
+        const generalSocket=new WebSocket(generalUrl);
+    
+        generalSocket.onmessage=function(event) {
+            console.log('General websocket receive something');
+        }
+    
+        generalSocket.onclose=function(event) {
+            console.log('General socket closed');
+        };
+    
+        generalSocket.onopen=function(event) {
+            console.log("Open general websocket");
+        };
 
         return () => {
             chatSocket.close();
+            generalSocket.close();
         }
     }, [messages]);
 
+    /*
     //客户端收到消息时触发
     chatSocket.onmessage=function(event) {
         const data=JSON.parse(event.data);
@@ -37,14 +54,17 @@ function Piazza()
 		.then((url) => {
 			sender_avatar=url;
 		});
-              
+            
         const oldMessages=messages;
         const newMessages=oldMessages.concat([{
             'index': count,
             'sender_name': sender_name,
             'sender_id': sender_id,
             'sender_avatar': sender_avatar,
+
             'message': data.message,
+            'message_id': data.msg_id,
+
             'datetime': datetime,
         }]);
             
@@ -53,7 +73,7 @@ function Piazza()
     };
 
     chatSocket.onclose=function(event) {
-        console.error('Chat socket closed unexpectedly');
+        console.log('Chat socket closed');
     };
 
     chatSocket.onopen=function(event) {
@@ -81,6 +101,32 @@ function Piazza()
             inputArea.focus();
         }
     }
+    */
+
+    const sendMessage=function(event) {
+        let inputArea=document.getElementById('chat-message-input');
+        const message=inputArea.value;
+        if (message)
+        {
+            request(`${BACKEND_URL}/api/message/send`, "POST", true, 
+                "application/json", {
+                "user_id": store.getState().auth.id, 
+                "chat_id": 0,
+                "msg_text": message,
+                "msg_type": "text",
+            })
+            .then((res) => {
+                if (Number(res.code) === 0) {
+                    console.log("Send successfully.");
+                }
+            })
+        }
+        else
+        {
+            inputArea.value='';
+            inputArea.focus();
+        }
+    }
 
     return (
         <>
@@ -89,6 +135,7 @@ function Piazza()
                     dark:text-white text-4xl font-bold text-center">
                 广场
                 </h1>
+
                 <div>
                 {messages.map((message) => (
                         <div key={message.id}>
@@ -96,6 +143,7 @@ function Piazza()
                         </div>
                 ))}
                 </div>
+
                 <div className="input-group mb-3">
                     <input
                         className="form-control col_auto"
@@ -113,6 +161,7 @@ function Piazza()
                         </button>
                     </div>
                 </div>
+
             </div>
         </>
     );
