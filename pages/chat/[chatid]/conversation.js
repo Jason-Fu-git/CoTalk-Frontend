@@ -17,7 +17,9 @@ function Conversation()
     const [count, setCount]=useState(0);
     // 第一次渲染时将所有已有消息标记为已读
     const [firstRender, setFirstRender]=useState(true);
+    const [toggle, setToggle]=useState(true);
     const [chatSocket, setSocket]=useState();
+    const [generalSocket, setGeneralSocket]=useState();
 
     useEffect(()=> {    
         const url=`wss://cotalkbackend-Concord.app.secoder.net/ws/chat/${chatid}/`;
@@ -27,6 +29,7 @@ function Conversation()
         //客户端收到消息时触发
         chatSocket.onmessage=function(event) 
         {
+            /*
             const data=JSON.parse(event.data);
             
             //将新消息添加到后面
@@ -58,6 +61,7 @@ function Conversation()
                 
             setCount(count+1);
             setMessages(newMessages);
+            */
         };
 
         chatSocket.onclose=function(event) 
@@ -70,77 +74,147 @@ function Conversation()
             console.log("Open chat socket");
         };
 
-        // 第一次刷新时拉取历史记录
-        if (firstRender)
-        {
-            const url=`${BACKEND_URL}/api/chat/${chatid}/messages?user_id=`+store.getState().auth.id;
-        
-            request(url, "GET", true)
-            .then(async (res) => {
-                const promises = res.messages.map(async function (element, index){
-                    console.log("Process: ");
-                    console.log(element);
-                    const sender_id=element.sender_id;
-        
-                    let sender_name="??";
-                    await request(`${BACKEND_URL}/api/user/private/${sender_id}`, "GET", false)
-                    .then((res) => {
-                        sender_name=res.user_name;
-                    });
-        
-                    const sender_avatar = await request(`${BACKEND_URL}/api/user/private/${element.sender_id}/avatar`, "GET", false);
-                    const dateOptions={hour: 'numeric', minute:'numeric', hour12:true};
-                    const datetime = new Date(element.create_time).toLocaleString('en', dateOptions);
-        
-                    // Mark as read
-                    if (!element.read_users.includes(store.getState().auth.id)) 
-                    {
-                        await request(`${BACKEND_URL}/api/message/${element.msg_id}/management`,
-                        "PUT", true, "application/json",
-                        {
-                            "user_id": store.getState().auth.id,
-                        });
-                    }
-        
-                    return ({
-                        'index': index,
-                        'sender_name': sender_name,
-                        'sender_id': sender_id,
-                        'sender_avatar': sender_avatar,
-            
-                        'message': element.msg_text,
-                        'message_id': element.msg_id,
-        
-                        'datetime': datetime,
+        const generalUrl="ws://cotalkbackend-Concord.app.secoder.net/ws/main/"+
+        store.getState().auth.id+"/"+store.getState().auth.token;
+        const generalSocket=new WebSocket(generalUrl);
 
-                        'onDelete': deleteMessage,
-                    });
-                });
-                const messages = await Promise.all(promises);
-                setMessages(messages);
-                console.log("Process finished.");
+        generalSocket.onmessage=function(event) 
+        {
+            const data=JSON.parse(event.data);
+            
+            if (!data.type === "chat.message")
+            {
+                return;
+            }
+            if (!data.status === "send message")
+            {
+                return;
+            }
+            const sender_id=data.user_id;
+            const chat_id=data.chat_id;
+            const message_id=data.msg_id;
+            if (!chat_id === chatid)
+            {
+                return;
+            }
+            // 发送时间
+            const dateOptions={hour: 'numeric', minute:'numeric', hour12:true};
+            const datetime=new Date(data.update_time).toLocaleString('en', dateOptions);
+            // 发送者
+            let sender_name="??";
+            request(`${BACKEND_URL}/api/user/private/${sender_id}`, "GET", false)
+            .then((res) => {
+                sender_name=res.user_name;
             });
-            //setCount(history.length);
-            setFirstRender(false);
+            // 发送人头像
+            let sender_avatar="";   
+            request(`${BACKEND_URL}/api/user/private/${sender_id}/avatar`, "GET", false)
+            .then((url) => {
+                sender_avatar=url;
+            });
+
+            const message_url=`${BACKEND_URL}/api/messaage/${message_id}/management?user_id=`+store.getState().auth.id;
+            const message=request(message_url, "GET", true);
+
+            const oldMessages=messages;
+            const newMessages=oldMessages.concat([{
+                'index': count,
+                'sender_name': sender_name,
+                'sender_id': sender_id,
+                'sender_avatar': sender_avatar,
+
+                'message': message.msg_text,
+                'message_id': message_id,
+
+                'datetime': datetime,
+
+                'onDelete': deleteMessage,
+            }]);
+
+            setCount(count+1);
+            setMessages(newMessages);
         }
+
+        generalSocket.onclose=function(event) 
+        {
+            console.log('General socket closed');
+        };
+
+        generalSocket.onopen=function(event) 
+        {
+            console.log("Open general websocket");
+        };
+
+        console.log("Loading history");
+        const messages_url=`${BACKEND_URL}/api/chat/${chatid}/messages?user_id=`+store.getState().auth.id;
+        
+        request(messages_url, "GET", true)
+        .then(async (res) => {
+            const promises = res.messages.map(async function (element, index){
+                const sender_id=element.sender_id;
+                console.log("Eat my SHIT: "+sender_id);
+                let sender_name="??";
+                await request(`${BACKEND_URL}/api/user/private/${sender_id}`, "GET", false)
+                .then((res) => {
+                    sender_name=res.user_name;
+                    console.log("CHECKPOINT 1");
+                });
+                console.log("CHECKPOINT 2");
+                const sender_avatar = await request(`${BACKEND_URL}/api/user/private/${sender_id}/avatar`, "GET", false);
+                console.log("CHECKPOINT 3");
+                const dateOptions={hour: 'numeric', minute:'numeric', hour12:true};
+                const datetime = new Date(element.create_time).toLocaleString('en', dateOptions);
+        
+                // Mark as read
+                if (!element.read_users.includes(store.getState().auth.id)) 
+                {
+                    await request(`${BACKEND_URL}/api/message/${element.msg_id}/management`,
+                    "PUT", true, "application/json",
+                    {
+                        "user_id": store.getState().auth.id,
+                    });
+                }
+    
+                return ({
+                    'index': index,
+                    'sender_name': sender_name,
+                    'sender_id': sender_id,
+                    'sender_avatar': sender_avatar,
+            
+                    'message': element.msg_text,
+                    'message_id': element.msg_id,
+    
+                    'datetime': datetime,
+
+                    'onDelete': deleteMessage,
+                });
+            });
+            const messages = await Promise.all(promises);
+            setMessages(messages);
+            console.log("Process finished.");
+        });
+        //setCount(history.length);
 
         return () => {
             chatSocket.close();
         }
-    }, [messages]);
+    }, [messages, toggle]);
 
-    const sendMessage=function(event) {
+    const sendMessage=function(event) 
+    {
         let inputArea=document.getElementById('chat-message-input');
         const message=inputArea.value;
         if (message)
         {
             // 通过WebSocket发送一份
+            /*
             console.log("Send webSocket");
             chatSocket.send(JSON.stringify({
                 'message': message,
                 'sender_id': store.getState().auth.id,
                 'sender_name': store.getState().auth.name,
             }));
+            */
 
             // 通过Http发送一份
             console.log("Send Http");
@@ -171,8 +245,8 @@ function Conversation()
         console.log("delete function called.");
 		console.log("message id: "+message_id);
 
-        const newMessages = messages.filter(obj => obj.message_id !== message_id);
-
+        const newMessages = messages.filter(obj => (obj.message_id !== message_id));
+        console.log(newMessages);
 		request(`${BACKEND_URL}/api/message/${message_id}/management`,
 				"DELETE", true, "application/json", 
 			{
