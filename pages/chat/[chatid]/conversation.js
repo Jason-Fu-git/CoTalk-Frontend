@@ -13,17 +13,63 @@ function Conversation()
     const router = useRouter();
     const {chatid} = router.query;
 
-    const url=`wss://cotalkbackend-Concord.app.secoder.net/ws/chat/${chatid}/`;
-    const chatSocket=new WebSocket(url);
-
     const [messages, setMessages]=useState([]);
     const [count, setCount]=useState(0);
     // 第一次渲染时将所有已有消息标记为已读
     const [firstRender, setFirstRender]=useState(true);
-    // 用这个值来手动刷新
-    const [toggle, setToggle]=useState(true);
+    const [chatSocket, setSocket]=useState();
 
-    useEffect(()=> {
+    useEffect(()=> {    
+        const url=`wss://cotalkbackend-Concord.app.secoder.net/ws/chat/${chatid}/`;
+        const chatSocket=new WebSocket(url);
+        setSocket(chatSocket);
+
+        //客户端收到消息时触发
+        chatSocket.onmessage=function(event) 
+        {
+            const data=JSON.parse(event.data);
+            
+            //将新消息添加到后面
+            const dateOptions={hour: 'numeric', minute:'numeric', hour12:true};
+            const datetime=new Date(data.datetime).toLocaleString('en', dateOptions);
+            const sender_name=data.sender_name;
+            const sender_id=data.sender_id;
+            let sender_avatar="";
+            
+            request(`${BACKEND_URL}/api/user/private/${sender_id}/avatar`, "GET", false)
+            .then((url) => {
+                sender_avatar=url;
+            });
+            
+            const oldMessages=messages;
+            const newMessages=oldMessages.concat([{
+                'index': count,
+                'sender_name': sender_name,
+                'sender_id': sender_id,
+                'sender_avatar': sender_avatar,
+
+                'message': data.message,
+                'message_id': data.msg_id,
+
+                'datetime': datetime,
+
+                'onDelete': deleteMessage,
+            }]);
+                
+            setCount(count+1);
+            setMessages(newMessages);
+        };
+
+        chatSocket.onclose=function(event) 
+        {
+            console.log('Chat socket closed');
+        };
+
+        chatSocket.onopen=function(event) 
+        {
+            console.log("Open chat socket");
+        };
+
         // 第一次刷新时拉取历史记录
         if (firstRender)
         {
@@ -72,77 +118,16 @@ function Conversation()
                 });
                 const messages = await Promise.all(promises);
                 setMessages(messages);
+                console.log("Process finished.");
             });
             //setCount(history.length);
             setFirstRender(false);
         }
 
-        // 连接WebSocket   
-        const generalUrl="ws://cotalkbackend-Concord.app.secoder.net/ws/main/"+
-        store.getState().auth.id+"/"+store.getState().auth.token;
-        const generalSocket=new WebSocket(generalUrl);
-
-        generalSocket.onmessage=function(event) {
-            //console.log('General websocket receive something');
-        }
-    
-        generalSocket.onclose=function(event) {
-            //console.log('General socket closed');
-        };
-    
-        generalSocket.onopen=function(event) {
-            //console.log("Open general websocket");
-        };
-
         return () => {
             chatSocket.close();
-            generalSocket.close();
         }
-    }, [toggle]);
-
-    //客户端收到消息时触发
-    chatSocket.onmessage=function(event) {
-        const data=JSON.parse(event.data);
-        
-        //将新消息添加到后面
-        const dateOptions={hour: 'numeric', minute:'numeric', hour12:true};
-        const datetime=new Date(data.datetime).toLocaleString('en', dateOptions);
-        const sender_name=data.sender_name;
-        const sender_id=data.sender_id;
-        let sender_avatar="";
-        
-        request(`${BACKEND_URL}/api/user/private/${sender_id}/avatar`, "GET", false)
-		.then((url) => {
-			sender_avatar=url;
-		});
-        
-        const oldMessages=messages;
-        const newMessages=oldMessages.concat([{
-            'index': count,
-            'sender_name': sender_name,
-            'sender_id': sender_id,
-            'sender_avatar': sender_avatar,
-
-            'message': data.message,
-            'message_id': data.msg_id,
-
-            'datetime': datetime,
-
-            'onDelete': deleteMessage,
-        }]);
-            
-        setCount(count+1);
-        setMessages(newMessages);
-        setToggle(!toggle);
-    };
-
-    chatSocket.onclose=function(event) {
-        //console.log('Chat socket closed');
-    };
-
-    chatSocket.onopen=function(event) {
-        //console.log("Open websocket");
-    };
+    }, [messages]);
 
     const sendMessage=function(event) {
         let inputArea=document.getElementById('chat-message-input');
@@ -150,6 +135,7 @@ function Conversation()
         if (message)
         {
             // 通过WebSocket发送一份
+            console.log("Send webSocket");
             chatSocket.send(JSON.stringify({
                 'message': message,
                 'sender_id': store.getState().auth.id,
@@ -157,6 +143,7 @@ function Conversation()
             }));
 
             // 通过Http发送一份
+            console.log("Send Http");
             request(`${BACKEND_URL}/api/message/send`, "POST", true, "application/json", 
             {
                 "user_id": store.getState().auth.id,
@@ -183,6 +170,9 @@ function Conversation()
     const deleteMessage=function(message_id, sender_id) {
         console.log("delete function called.");
 		console.log("message id: "+message_id);
+
+        const newMessages = messages.filter(obj => obj.message_id !== message_id);
+
 		request(`${BACKEND_URL}/api/message/${message_id}/management`,
 				"DELETE", true, "application/json", 
 			{
@@ -192,7 +182,7 @@ function Conversation()
 		.then((res) => {
 			if (Number(res.code)===0) {
 				alert("成功删除");
-                setToggle(!toggle);
+                setMessages(newMessages);
 			}
 		});
     }
