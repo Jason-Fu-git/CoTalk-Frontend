@@ -14,46 +14,6 @@ import default_avatar from "@/public/DefaultAvatar.jpg"
 
 function Account() 
 {
-	//Set up general websocket with backend
-	/*
-    const url="ws://cotalkbackend-Concord.app.secoder.net/ws/"+
-		"?Authorization="+store.getState().auth.token+
-		"&user_id="+store.getState().auth.id;
-	const generalSocket=new WebSocket(url);
-
-	//客户端收到消息时触发
-    generalSocket.onmessage=function(event) {
-        const data=JSON.parse(event.data);
-
-        console.log("Frontend receive: ");
-        console.log(event);
-        //将新消息添加到后面
-        const dateOptions={hour: 'numeric', minute:'numeric', hour12:true};
-        const datetime=new Date(data.datetime).toLocaleString('en', dateOptions);
-        const sender_name=data.sender_name;
-        const sender_id=data.sender_id;
-              
-        const newMessages=[{
-            'id': count,
-            'sender_name': sender_name,
-            'sender_id': sender_id,
-            'message': data.message,
-            'datetime': datetime,
-        }].concat(messages);
-            
-        setCount(count+1);
-        setMessages(newMessages);
-    };
-
-    generalSocket.onclose=function(event) {
-        console.error('Chat socket closed unexpectedly');
-    };
-
-    generalSocket.onopen=function(event) {
-        console.log("Open websocket");
-    };
-	*/
-
   	const [current_name, setCurrentName] = useState("");
 	const [current_email, setCurrentEmail] = useState("");
 	const [current_description, setCurrentDescription] = useState("");
@@ -68,6 +28,26 @@ function Account()
 		.then((url) => {
 			setAvatar(url);
 		});
+
+		const generalUrl="ws://cotalkbackend-Concord.app.secoder.net/ws/main/"+
+			store.getState().auth.id+"/"+store.getState().auth.token;
+		const generalSocket=new WebSocket(generalUrl);
+	
+		generalSocket.onmessage=function(event) {
+			console.log('General websocket receive something');
+		}
+	
+		generalSocket.onclose=function(event) {
+			console.log('General socket closed');
+		};
+	
+		generalSocket.onopen=function(event) {
+			console.log("Open general websocket");
+		};
+
+        return () => {
+            generalSocket.close();
+        }
   	}, []);
 
 	const router = useRouter();
