@@ -14,12 +14,18 @@ function Conversation()
     const {chatid} = router.query;
 
     const [messages, setMessages]=useState([]);
+
     const [count, setCount]=useState(0);
     // 第一次渲染时将所有已有消息标记为已读
     const [firstRender, setFirstRender]=useState(true);
     const [toggle, setToggle]=useState(true);
     const [chatSocket, setSocket]=useState();
     const [generalSocket, setGeneralSocket]=useState();
+
+    const addMessage = (newMessage) => {
+        setMessages(oldMessages => [...oldMessages, newMessage]);
+        setCount(messages.length);
+    };
 
     useEffect(()=> {    
         const url=`wss://cotalkbackend-Concord.app.secoder.net/ws/chat/${chatid}/`;
@@ -77,9 +83,11 @@ function Conversation()
         const generalUrl="ws://cotalkbackend-Concord.app.secoder.net/ws/main/"+
         store.getState().auth.id+"/"+store.getState().auth.token;
         const generalSocket=new WebSocket(generalUrl);
+        setGeneralSocket(generalSocket);
 
         generalSocket.onmessage=async function(event) 
         {
+            console.log("General socket receive something");
             const data=JSON.parse(event.data);
             
             if (!data.type === "chat.message")
@@ -116,23 +124,19 @@ function Conversation()
             const message_url=`${BACKEND_URL}/api/message/${message_id}/management?user_id=`+store.getState().auth.id;
             const message=await request(message_url, "GET", true);
 
-            const oldMessages=messages;
-            const newMessages=oldMessages.concat([{
+            addMessage({
                 'index': count,
                 'sender_name': sender_name,
                 'sender_id': sender_id,
                 'sender_avatar': sender_avatar,
-
+              
                 'message': message.msg_text,
                 'message_id': message_id,
-
+              
                 'datetime': datetime,
-
+              
                 'onDelete': deleteMessage,
-            }]);
-
-            setCount(count+1);
-            setMessages(newMessages);
+            });
             setToggle(!toggle);
         }
 
@@ -159,11 +163,8 @@ function Conversation()
                     await request(`${BACKEND_URL}/api/user/private/${sender_id}`, "GET", false)
                     .then((res) => {
                         sender_name=res.user_name;
-                        console.log("CHECKPOINT 1");
                     });
-                    console.log("CHECKPOINT 2");
                     const sender_avatar = await request(`${BACKEND_URL}/api/user/private/${sender_id}/avatar`, "GET", false);
-                    console.log("CHECKPOINT 3");
                     const dateOptions={hour: 'numeric', minute:'numeric', hour12:true};
                     const datetime = new Date(element.create_time).toLocaleString('en', dateOptions);
             
