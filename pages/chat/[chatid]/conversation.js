@@ -78,7 +78,7 @@ function Conversation()
         store.getState().auth.id+"/"+store.getState().auth.token;
         const generalSocket=new WebSocket(generalUrl);
 
-        generalSocket.onmessage=function(event) 
+        generalSocket.onmessage=async function(event) 
         {
             const data=JSON.parse(event.data);
             
@@ -102,19 +102,19 @@ function Conversation()
             const datetime=new Date(data.update_time).toLocaleString('en', dateOptions);
             // 发送者
             let sender_name="??";
-            request(`${BACKEND_URL}/api/user/private/${sender_id}`, "GET", false)
+            await request(`${BACKEND_URL}/api/user/private/${sender_id}`, "GET", false)
             .then((res) => {
                 sender_name=res.user_name;
             });
             // 发送人头像
             let sender_avatar="";   
-            request(`${BACKEND_URL}/api/user/private/${sender_id}/avatar`, "GET", false)
+            await request(`${BACKEND_URL}/api/user/private/${sender_id}/avatar`, "GET", false)
             .then((url) => {
                 sender_avatar=url;
             });
 
-            const message_url=`${BACKEND_URL}/api/messaage/${message_id}/management?user_id=`+store.getState().auth.id;
-            const message=request(message_url, "GET", true);
+            const message_url=`${BACKEND_URL}/api/message/${message_id}/management?user_id=`+store.getState().auth.id;
+            const message=await request(message_url, "GET", true);
 
             const oldMessages=messages;
             const newMessages=oldMessages.concat([{
@@ -155,7 +155,6 @@ function Conversation()
             .then(async (res) => {
                 const promises = res.messages.map(async function (element, index){
                     const sender_id=element.sender_id;
-                    console.log("Eat my SHIT: "+sender_id);
                     let sender_name="??";
                     await request(`${BACKEND_URL}/api/user/private/${sender_id}`, "GET", false)
                     .then((res) => {
