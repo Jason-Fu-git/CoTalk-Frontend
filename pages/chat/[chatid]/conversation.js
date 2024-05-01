@@ -133,6 +133,7 @@ function Conversation()
 
             setCount(count+1);
             setMessages(newMessages);
+            setToggle(!toggle);
         }
 
         generalSocket.onclose=function(event) 
@@ -145,60 +146,65 @@ function Conversation()
             console.log("Open general websocket");
         };
 
-        console.log("Loading history");
-        const messages_url=`${BACKEND_URL}/api/chat/${chatid}/messages?user_id=`+store.getState().auth.id;
-        
-        request(messages_url, "GET", true)
-        .then(async (res) => {
-            const promises = res.messages.map(async function (element, index){
-                const sender_id=element.sender_id;
-                console.log("Eat my SHIT: "+sender_id);
-                let sender_name="??";
-                await request(`${BACKEND_URL}/api/user/private/${sender_id}`, "GET", false)
-                .then((res) => {
-                    sender_name=res.user_name;
-                    console.log("CHECKPOINT 1");
-                });
-                console.log("CHECKPOINT 2");
-                const sender_avatar = await request(`${BACKEND_URL}/api/user/private/${sender_id}/avatar`, "GET", false);
-                console.log("CHECKPOINT 3");
-                const dateOptions={hour: 'numeric', minute:'numeric', hour12:true};
-                const datetime = new Date(element.create_time).toLocaleString('en', dateOptions);
-        
-                // Mark as read
-                if (!element.read_users.includes(store.getState().auth.id)) 
-                {
-                    await request(`${BACKEND_URL}/api/message/${element.msg_id}/management`,
-                    "PUT", true, "application/json",
-                    {
-                        "user_id": store.getState().auth.id,
-                    });
-                }
-    
-                return ({
-                    'index': index,
-                    'sender_name': sender_name,
-                    'sender_id': sender_id,
-                    'sender_avatar': sender_avatar,
+        if (firstRender)
+        {   
+            console.log("Loading history");
+            const messages_url=`${BACKEND_URL}/api/chat/${chatid}/messages?user_id=`+store.getState().auth.id;
             
-                    'message': element.msg_text,
-                    'message_id': element.msg_id,
-    
-                    'datetime': datetime,
+            request(messages_url, "GET", true)
+            .then(async (res) => {
+                const promises = res.messages.map(async function (element, index){
+                    const sender_id=element.sender_id;
+                    console.log("Eat my SHIT: "+sender_id);
+                    let sender_name="??";
+                    await request(`${BACKEND_URL}/api/user/private/${sender_id}`, "GET", false)
+                    .then((res) => {
+                        sender_name=res.user_name;
+                        console.log("CHECKPOINT 1");
+                    });
+                    console.log("CHECKPOINT 2");
+                    const sender_avatar = await request(`${BACKEND_URL}/api/user/private/${sender_id}/avatar`, "GET", false);
+                    console.log("CHECKPOINT 3");
+                    const dateOptions={hour: 'numeric', minute:'numeric', hour12:true};
+                    const datetime = new Date(element.create_time).toLocaleString('en', dateOptions);
+            
+                    // Mark as read
+                    if (!element.read_users.includes(store.getState().auth.id)) 
+                    {
+                        await request(`${BACKEND_URL}/api/message/${element.msg_id}/management`,
+                        "PUT", true, "application/json",
+                        {
+                            "user_id": store.getState().auth.id,
+                        });
+                    }
+        
+                    return ({
+                        'index': index,
+                        'sender_name': sender_name,
+                        'sender_id': sender_id,
+                        'sender_avatar': sender_avatar,
+                
+                        'message': element.msg_text,
+                        'message_id': element.msg_id,
+        
+                        'datetime': datetime,
 
-                    'onDelete': deleteMessage,
+                        'onDelete': deleteMessage,
+                    });
                 });
+                const history = await Promise.all(promises);
+                setMessages(history);
+                setCount(history.length);
             });
-            const messages = await Promise.all(promises);
-            setMessages(messages);
-            console.log("Process finished.");
-        });
-        //setCount(history.length);
+            console.log("History restored");
+            setFirstRender(false);
+        }
 
         return () => {
             chatSocket.close();
+            generalSocket.close();
         }
-    }, [messages, toggle]);
+    }, [toggle]);
 
     const sendMessage=function(event) 
     {
