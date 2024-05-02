@@ -197,6 +197,7 @@ function Conversation()
                 setCount(history.length);
             });
             console.log("History restored");
+            console.log(messages);
             setFirstRender(false);
         }
 
@@ -212,15 +213,6 @@ function Conversation()
         const message=inputArea.value;
         if (message)
         {
-            // 通过WebSocket发送一份
-            /*
-            console.log("Send webSocket");
-            chatSocket.send(JSON.stringify({
-                'message': message,
-                'sender_id': store.getState().auth.id,
-                'sender_name': store.getState().auth.name,
-            }));
-            */
 
             // 通过Http发送一份
             console.log("Send Http");
@@ -250,9 +242,7 @@ function Conversation()
     const deleteMessage=function(message_id, sender_id) {
         console.log("delete function called.");
 		console.log("message id: "+message_id);
-
-        const newMessages = messages.filter(obj => (obj.message_id !== message_id));
-        console.log(newMessages);
+        
 		request(`${BACKEND_URL}/api/message/${message_id}/management`,
 				"DELETE", true, "application/json", 
 			{
@@ -262,7 +252,10 @@ function Conversation()
 		.then((res) => {
 			if (Number(res.code)===0) {
 				alert("成功删除");
-                setMessages(newMessages);
+                setMessages((currentMessages) => {
+                    const newMessages = currentMessages.filter(obj => (obj.message_id !== message_id));
+                    return newMessages;
+                });
 			}
 		});
     }
