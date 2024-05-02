@@ -13,6 +13,7 @@ import { setFriends } from "@/app/redux/auth";
 function Friends() 
 {
     const [friends, setMyFriends] = useState([]);
+    const [groups, setGroups]=useState([]);
 
     useEffect(() => {
         console.log("Get "+store.getState().auth.name+"'s friends");
@@ -32,6 +33,20 @@ function Friends()
     return (
         <>
             <div className="sm:w-9/12 sm:m-auto pt-16 pb-16">
+                <h1 className="
+                    dark:text-white text-4xl font-bold text-center">
+                    好友分组
+                </h1>
+                <div className="grid gap-8 grid-cols-1 sm:grid-cols-3 mt-14
+                            ml-8 mr-8 sm:mr-0 sm:ml-0">
+                    <Link href={`/self/friends/create_group`} passHref>
+                        <div className="card" style={{width: "18rem"}}>
+                            <div className="card-body">
+                            <h5 className="card-title">新建分组</h5>
+                            </div>
+                        </div>
+                    </Link>
+                </div>
                 <h1 className="
                     dark:text-white text-4xl font-bold text-center">
                     所有好友
