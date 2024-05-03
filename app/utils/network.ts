@@ -1,8 +1,3 @@
-/**
- * @note 本文件是一个网络请求 wrapper 示例，其作用是将所有网络请求汇总到一个函数内处理
- *       我们推荐你在大作业中也尝试写一个网络请求 wrapper，本文件可以用作参考
- */
-
 import {store} from "../redux/store";
 import default_avatar from "@/public/DefaultAvatar.jpg"
 
@@ -17,7 +12,8 @@ export enum NetworkErrorType {
     UNKNOWN_ERROR,
 }
 
-export class NetworkError extends Error {
+export class NetworkError extends Error 
+{
     type: NetworkErrorType;
     message: string;
 
@@ -172,10 +168,6 @@ export const request = async (
         );
     }
 
-    // /**
-    //  * @note 这里的错误处理显然是粗糙的，根据 HTTP status 和 code 的不同应该有更精细的处理
-    //  *       在大作业中，可以尝试编写更为精细的错误处理代码以理清网络请求逻辑
-    //  */
     throw new NetworkError(
         NetworkErrorType.UNKNOWN_ERROR,
         `[${response.status}] ` + data.info,
