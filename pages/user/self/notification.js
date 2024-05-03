@@ -6,7 +6,8 @@ import { BACKEND_URL } from '@/app/constants/string';
 import { store } from "@/app/redux/store";
 import { setFriends } from "@/app/redux/auth";
 
-export default function Notification() {
+export default function Notification() 
+{
     const [notifications, set_notifications] = useState([]);
     const [flash, set_flash] = useState(false);
     const self_id = store.getState().auth.id;

@@ -22,8 +22,19 @@ function Conversation()
     const [chatSocket, setSocket]=useState();
     const [generalSocket, setGeneralSocket]=useState();
 
-    const addMessage = (newMessage) => {
-        setMessages(oldMessages => [...oldMessages, newMessage]);
+    const addMessage = (newMessage) => 
+    {
+        setMessages(oldMessages => 
+        {
+            if (!oldMessages.some(message => message.id === newMessage.id)) 
+            {
+                return [...oldMessages, newMessage];
+            } 
+            else 
+            {
+                return oldMessages;
+            }
+        });
         setCount(messages.length);
     };
 
@@ -195,9 +206,9 @@ function Conversation()
                 const history = await Promise.all(promises);
                 setMessages(history);
                 setCount(history.length);
+                console.log("History restored");
+                console.log(history);
             });
-            console.log("History restored");
-            console.log(messages);
             setFirstRender(false);
         }
 
