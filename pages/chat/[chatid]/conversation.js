@@ -294,11 +294,6 @@ function Conversation()
 		.then((res) => 
         {
 			alert("成功撤回");
-            setMessages((currentMessages) => 
-            {
-                const newMessages = currentMessages.filter(obj => (obj.message_id !== message_id));
-                return newMessages;
-            });
 		})
         .catch((err) =>
         {
