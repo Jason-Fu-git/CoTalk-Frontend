@@ -276,7 +276,7 @@ function Conversation()
             <div className="sm:w-9/12 sm:m-auto pt-16 pb-16">
                 <h1 className="
                     dark:text-white text-4xl font-bold text-center">
-                聊天室
+                    聊天室
                 </h1>
                 <Link href={`/chat/${chatid}`} passHref>
                     <button className="btn btn-secondary">
