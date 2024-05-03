@@ -38,59 +38,8 @@ function Conversation()
         setCount(messages.length);
     };
 
-    useEffect(()=> {    
-        const url=`wss://cotalkbackend-Concord.app.secoder.net/ws/chat/${chatid}/`;
-        const chatSocket=new WebSocket(url);
-        setSocket(chatSocket);
-
-        //客户端收到消息时触发
-        chatSocket.onmessage=function(event) 
-        {
-            /*
-            const data=JSON.parse(event.data);
-            
-            //将新消息添加到后面
-            const dateOptions={hour: 'numeric', minute:'numeric', hour12:true};
-            const datetime=new Date(data.datetime).toLocaleString('en', dateOptions);
-            const sender_name=data.sender_name;
-            const sender_id=data.sender_id;
-            let sender_avatar="";
-            
-            request(`${BACKEND_URL}/api/user/private/${sender_id}/avatar`, "GET", false)
-            .then((url) => {
-                sender_avatar=url;
-            });
-            
-            const oldMessages=messages;
-            const newMessages=oldMessages.concat([{
-                'index': count,
-                'sender_name': sender_name,
-                'sender_id': sender_id,
-                'sender_avatar': sender_avatar,
-
-                'message': data.message,
-                'message_id': data.msg_id,
-
-                'datetime': datetime,
-
-                'onDelete': deleteMessage,
-            }]);
-                
-            setCount(count+1);
-            setMessages(newMessages);
-            */
-        };
-
-        chatSocket.onclose=function(event) 
-        {
-            console.log('Chat socket closed');
-        };
-
-        chatSocket.onopen=function(event) 
-        {
-            console.log("Open chat socket");
-        };
-
+    useEffect(()=> 
+    {    
         const generalUrl="ws://cotalkbackend-Concord.app.secoder.net/ws/main/"+
         store.getState().auth.id+"/"+store.getState().auth.token;
         const generalSocket=new WebSocket(generalUrl);
@@ -125,12 +74,6 @@ function Conversation()
             .then((res) => {
                 sender_name=res.user_name;
             });
-            // 发送人头像
-            let sender_avatar="";   
-            await request(`${BACKEND_URL}/api/user/private/${sender_id}/avatar`, "GET", false)
-            .then((url) => {
-                sender_avatar=url;
-            });
 
             const message_url=`${BACKEND_URL}/api/message/${message_id}/management?user_id=`+store.getState().auth.id;
             const message=await request(message_url, "GET", true);
@@ -139,7 +82,7 @@ function Conversation()
                 'index': count,
                 'sender_name': sender_name,
                 'sender_id': sender_id,
-                'sender_avatar': sender_avatar,
+                'sender_avatar': '',
               
                 'message': message.msg_text,
                 'message_id': message_id,
@@ -163,7 +106,7 @@ function Conversation()
 
         if (firstRender)
         {   
-            console.log("Loading history");
+            console.log("Loading history for user "+store.getState().auth.id);
             const messages_url=`${BACKEND_URL}/api/chat/${chatid}/messages?user_id=`+store.getState().auth.id;
             
             request(messages_url, "GET", true)
@@ -175,7 +118,6 @@ function Conversation()
                     .then((res) => {
                         sender_name=res.user_name;
                     });
-                    const sender_avatar = await request(`${BACKEND_URL}/api/user/private/${sender_id}/avatar`, "GET", false);
                     const dateOptions={hour: 'numeric', minute:'numeric', hour12:true};
                     const datetime = new Date(element.create_time).toLocaleString('en', dateOptions);
             
@@ -193,7 +135,7 @@ function Conversation()
                         'index': index,
                         'sender_name': sender_name,
                         'sender_id': sender_id,
-                        'sender_avatar': sender_avatar,
+                        'sender_avatar': '',
                 
                         'message': element.msg_text,
                         'message_id': element.msg_id,
@@ -213,7 +155,6 @@ function Conversation()
         }
 
         return () => {
-            chatSocket.close();
             generalSocket.close();
         }
     }, [toggle]);
@@ -250,20 +191,24 @@ function Conversation()
         }
     }
 
-    const deleteMessage=function(message_id, sender_id) {
+    const deleteMessage=function(message_id, sender_id) 
+    {
         console.log("delete function called.");
 		console.log("message id: "+message_id);
         
 		request(`${BACKEND_URL}/api/message/${message_id}/management`,
 				"DELETE", true, "application/json", 
 			{
-				"user_id": sender_id,
+				"user_id": store.getState().auth.id,
 				"is_remove": false,
 			})
-		.then((res) => {
-			if (Number(res.code)===0) {
+		.then((res) => 
+        {
+			if (Number(res.code)===0) 
+            {
 				alert("成功删除");
-                setMessages((currentMessages) => {
+                setMessages((currentMessages) => 
+                {
                     const newMessages = currentMessages.filter(obj => (obj.message_id !== message_id));
                     return newMessages;
                 });

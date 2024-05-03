@@ -8,7 +8,8 @@ function MessageCard(props)
 {
 	// sender's avatar
 	const [avatar, setAvatar] = useState('');
-	useEffect(()=>{
+	useEffect(()=>
+	{
 		request(`${BACKEND_URL}/api/user/private/${props.sender_id}/avatar`, "GET", false)
 		.then((url) => {
 			setAvatar(url);
@@ -19,14 +20,15 @@ function MessageCard(props)
 	// right click menu
 	const [contextMenu, setContextMenu] = useState({ visible: false, x: 0, y: 0 });
 
-	const onContextMenu = (event) => {
-	  event.preventDefault();
-  
-	  setContextMenu({
-		visible: true,
-		x: event.clientX,
-		y: event.clientY
-	  });
+	const onContextMenu = (event) => 
+	{
+		event.preventDefault();
+	
+		setContextMenu({
+			visible: true,
+			x: event.clientX,
+			y: event.clientY
+		});
 	};
   
 	const onClick = () => {
