@@ -1,1 +1,6 @@
-export default function InvitePage(){}
+function InvitePage()
+{
+
+}
+
+export default InvitePage;

@@ -44,7 +44,6 @@ function Search()
         setHasSearched(false);
     },[hasSearched]);
 
-
     return (
         <>
             <div className="sm:w-9/12 sm:m-auto pt-16 pb-16">
