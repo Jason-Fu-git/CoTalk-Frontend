@@ -15,7 +15,8 @@ const RegisterPage = () => {
     const router = useRouter();
     // const dispatch = store.dispatch;
     
-    const register = async() => {
+    const register = async() => 
+    {
         const formData = new FormData();
         formData.append("user_name", username);
         formData.append("password", password);
@@ -26,18 +27,17 @@ const RegisterPage = () => {
         }
         
         request(`${BACKEND_URL}/api/user/register`, "POST", false, "multipart/form-data", formData)
-        .then((res) => {
-            if (Number(res.code) === 0) {
-                // dispatch(setName(res.user_name));
-                // dispatch(setToken(res.token));
-                // dispatch(setId(res.user_id));
-                // dispatch(setEmail(res.user_email));
-                // dispatch(setDescription(res.description));
-                //alert(REGISTER_SUCCESS_PREFIX + res.user_name);
+        .then((res) => 
+        {
+            if (Number(res.code) === 0) 
+            {
                 router.push(`/user/login`);
             }
         })
-        
+        .catch((err) =>
+        {
+            alert(err);
+        });
     };
 
     return (

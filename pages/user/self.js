@@ -19,7 +19,8 @@ function Account()
 	const [current_description, setCurrentDescription] = useState("");
 	const [avatar, setAvatar] = useState("");
 
-  	useEffect(() => {
+  	useEffect(() => 
+		{
 		setCurrentName(store.getState().auth.name);
 		setCurrentEmail((store.getState().auth.email==="") ? "邮箱为空" : store.getState().auth.email);
 		setCurrentDescription((store.getState().auth.description==="") ? "目前还没有个人描述" : store.getState().auth.description);
@@ -28,26 +29,6 @@ function Account()
 		.then((url) => {
 			setAvatar(url);
 		});
-
-		const generalUrl="ws://cotalkbackend-Concord.app.secoder.net/ws/main/"+
-			store.getState().auth.id+"/"+store.getState().auth.token;
-		const generalSocket=new WebSocket(generalUrl);
-	
-		generalSocket.onmessage=function(event) {
-			console.log('General websocket receive something');
-		}
-	
-		generalSocket.onclose=function(event) {
-			console.log('General socket closed');
-		};
-	
-		generalSocket.onopen=function(event) {
-			console.log("Open general websocket");
-		};
-
-        return () => {
-            generalSocket.close();
-        }
   	}, []);
 
 	const router = useRouter();
