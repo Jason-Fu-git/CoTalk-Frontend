@@ -11,16 +11,13 @@ import { BACKEND_URL } from '@/app/constants/string';
 function Conversation()
 {
     const router = useRouter();
-    const {chatid} = router.query;
-
+    const {chatid}=router.query;
     const [messages, setMessages]=useState([]);
 
     const [count, setCount]=useState(0);
     // 第一次渲染时将所有已有消息标记为已读
     const [firstRender, setFirstRender]=useState(true);
     const [toggle, setToggle]=useState(true);
-    const [chatSocket, setSocket]=useState();
-    const [generalSocket, setGeneralSocket]=useState();
 
     const addMessage = (newMessage) => 
     {
@@ -38,60 +35,73 @@ function Conversation()
         setCount(messages.length);
     };
 
+    const replaceMessage = (newMessage, index) =>
+    {
+
+    }
+
     useEffect(()=> 
     {    
         const generalUrl="ws://cotalkbackend-Concord.app.secoder.net/ws/main/"+
         store.getState().auth.id+"/"+store.getState().auth.token;
         const generalSocket=new WebSocket(generalUrl);
-        setGeneralSocket(generalSocket);
 
         generalSocket.onmessage=async function(event) 
         {
             console.log("General socket receive something");
             const data=JSON.parse(event.data);
+            console.log(data.type);
+            console.log(data.status);
             
-            if (!data.type === "chat.message")
+            if (!(data.type === "chat.message"))
             {
                 return;
-            }
-            if (!data.status === "send message")
-            {
-                return;
-            }
-            const sender_id=data.user_id;
-            const chat_id=data.chat_id;
-            const message_id=data.msg_id;
-            if (!chat_id === chatid)
-            {
-                return;
-            }
-            // 发送时间
-            const dateOptions={hour: 'numeric', minute:'numeric', hour12:true};
-            const datetime=new Date(data.update_time).toLocaleString('en', dateOptions);
-            // 发送者
-            let sender_name="??";
-            await request(`${BACKEND_URL}/api/user/private/${sender_id}`, "GET", false)
-            .then((res) => {
-                sender_name=res.user_name;
-            });
+            }  
 
-            const message_url=`${BACKEND_URL}/api/message/${message_id}/management?user_id=`+store.getState().auth.id;
-            const message=await request(message_url, "GET", true);
+            if (data.status === "send message")
+            {
+                const sender_id=data.user_id;
+                const chat_id=data.chat_id;
+                const message_id=data.msg_id;
+                if (!chat_id === chatid)
+                {
+                    return;
+                }
+                // 发送时间
+                const dateOptions={hour: 'numeric', minute:'numeric', hour12:true};
+                const datetime=new Date(data.update_time).toLocaleString('en', dateOptions);
+                // 发送者
+                let sender_name="??";
+                await request(`${BACKEND_URL}/api/user/private/${sender_id}`, "GET", false)
+                .then((res) => {
+                    sender_name=res.user_name;
+                });
+    
+                const message_url=`${BACKEND_URL}/api/message/${message_id}/management?user_id=`+store.getState().auth.id;
+                const message=await request(message_url, "GET", true);
+    
+                addMessage({
+                    'index': count,
+                    'sender_name': sender_name,
+                    'sender_id': sender_id,
+                    'sender_avatar': '',
+                  
+                    'message': message.msg_text,
+                    'message_id': message_id,
+                  
+                    'datetime': datetime,
+                  
+                    'onDelete': deleteMessage,
+                    'onWithdrew': withdrewMessage,
 
-            addMessage({
-                'index': count,
-                'sender_name': sender_name,
-                'sender_id': sender_id,
-                'sender_avatar': '',
-              
-                'message': message.msg_text,
-                'message_id': message_id,
-              
-                'datetime': datetime,
-              
-                'onDelete': deleteMessage,
-            });
-            setToggle(!toggle);
+                    'type': 'normal',
+                });
+                setToggle(!toggle);                
+            }
+            else if (data.status === "withdraw message")
+            {
+
+            }
         }
 
         generalSocket.onclose=function(event) 
@@ -143,6 +153,9 @@ function Conversation()
                         'datetime': datetime,
 
                         'onDelete': deleteMessage,
+                        'onWithdrew': withdrewMessage,
+
+                        'type': 'normal',
                     });
                 });
                 const history = await Promise.all(promises);
@@ -165,7 +178,6 @@ function Conversation()
         const message=inputArea.value;
         if (message)
         {
-
             // 通过Http发送一份
             console.log("Send Http");
             request(`${BACKEND_URL}/api/message/send`, "POST", true, "application/json", 
@@ -175,10 +187,10 @@ function Conversation()
                 "msg_text": message,
                 "msg_type": "text",
             })
-            .then((res) => {
-                if (Number(res.code)!==0) {
-                    alert("发送失败");
-                }
+            .catch((err) =>
+            {
+                alert("发送失败");
+                console.log(err);
             });
 
             inputArea.value='';
@@ -191,7 +203,7 @@ function Conversation()
         }
     }
 
-    const deleteMessage=function(message_id, sender_id) 
+    const deleteMessage=function(message_id) 
     {
         console.log("delete function called.");
 		console.log("message id: "+message_id);
@@ -204,16 +216,45 @@ function Conversation()
 			})
 		.then((res) => 
         {
-			if (Number(res.code)===0) 
+			alert("成功删除");
+            setMessages((currentMessages) => 
             {
-				alert("成功删除");
-                setMessages((currentMessages) => 
-                {
-                    const newMessages = currentMessages.filter(obj => (obj.message_id !== message_id));
-                    return newMessages;
-                });
-			}
-		});
+                const newMessages = currentMessages.filter(obj => (obj.message_id !== message_id));
+                return newMessages;
+            });
+		})
+        .catch((err) => 
+        {
+            alert("删除失败");
+            console.log(err);
+        })
+    }
+
+    const withdrewMessage=function (message_id)
+    {
+        console.log("Withdrew function called.");
+		console.log("message id: "+message_id);
+        
+		request(`${BACKEND_URL}/api/message/${message_id}/management`,
+				"DELETE", true, "application/json", 
+			{
+				"user_id": store.getState().auth.id,
+				"is_remove": true,
+			})
+		.then((res) => 
+        {
+			alert("成功撤回");
+            setMessages((currentMessages) => 
+            {
+                const newMessages = currentMessages.filter(obj => (obj.message_id !== message_id));
+                return newMessages;
+            });
+		})
+        .catch((err) =>
+        {
+            alert("无法撤回");
+            console.log(err);
+        });
     }
 
     return (

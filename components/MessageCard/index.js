@@ -75,13 +75,14 @@ function MessageCard(props)
 							class="list-group">
 							<button 
 								type="button" 
-								class="list-group-item list-group-item-action">
+								class="list-group-item list-group-item-action"
+								onClick={()=>props.onWithdrew(props.message_id)}>
 								撤回
 							</button>
 							<button 
 								type="button" 
 								class="list-group-item list-group-item-action"
-								onClick={()=>props.onDelete(props.message_id, props.sender_id)}>
+								onClick={()=>props.onDelete(props.message_id)}>
 								删除
 							</button>
 						</div>
@@ -138,7 +139,7 @@ function MessageCard(props)
 							<button 
 								type="button" 
 								class="list-group-item list-group-item-action"
-								onClick={()=>props.onDelete(props.message_id, props.sender_id)}>
+								onClick={()=>props.onDelete(props.message_id)}>
 							删除
 							</button>
 						</div>
