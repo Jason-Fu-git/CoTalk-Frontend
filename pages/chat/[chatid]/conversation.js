@@ -79,7 +79,7 @@ function Conversation()
     
                 const message_url=`${BACKEND_URL}/api/message/${message_id}/management?user_id=`+store.getState().auth.id;
                 const message=await request(message_url, "GET", true);
-    
+ 
                 addMessage({
                     'index': count,
                     'sender_name': sender_name,
@@ -100,7 +100,56 @@ function Conversation()
             }
             else if (data.status === "withdraw message")
             {
-
+                console.log("Forced to lead all messages");
+                const messages_url=`${BACKEND_URL}/api/chat/${chatid}/messages?user_id=`+store.getState().auth.id;
+                
+                request(messages_url, "GET", true)
+                .then(async (res) => {
+                    const promises = res.messages.map(async function (element, index){
+                        const sender_id=element.sender_id;
+                        let sender_name="??";
+                        await request(`${BACKEND_URL}/api/user/private/${sender_id}`, "GET", false)
+                        .then((res) => {
+                            sender_name=res.user_name;
+                        });
+                        const dateOptions={hour: 'numeric', minute:'numeric', hour12:true};
+                        const datetime = new Date(element.create_time).toLocaleString('en', dateOptions);
+                
+                        // Mark as read
+                        if (!element.read_users.includes(store.getState().auth.id)) 
+                        {
+                            await request(`${BACKEND_URL}/api/message/${element.msg_id}/management`,
+                            "PUT", true, "application/json",
+                            {
+                                "user_id": store.getState().auth.id,
+                            });
+                        }
+                        
+                        const type= (sender_name === 'system')? 'system':'normal';
+                        return ({
+                            'index': index,
+                            'sender_name': sender_name,
+                            'sender_id': sender_id,
+                            'sender_avatar': '',
+                    
+                            'message': element.msg_text,
+                            'message_id': element.msg_id,
+            
+                            'datetime': datetime,
+    
+                            'onDelete': deleteMessage,
+                            'onWithdrew': withdrewMessage,
+    
+                            'type': type,
+                        });
+                    });
+                    const history = await Promise.all(promises);
+                    setMessages(history);
+                    setCount(history.length);
+                    console.log("History restored");
+                    console.log(history);
+                    setToggle(!toggle);
+                });               
             }
         }
 
@@ -141,6 +190,7 @@ function Conversation()
                         });
                     }
         
+                    const type= (sender_name === 'system')? 'system':'normal';
                     return ({
                         'index': index,
                         'sender_name': sender_name,
@@ -155,7 +205,7 @@ function Conversation()
                         'onDelete': deleteMessage,
                         'onWithdrew': withdrewMessage,
 
-                        'type': 'normal',
+                        'type': type,
                     });
                 });
                 const history = await Promise.all(promises);
@@ -244,11 +294,6 @@ function Conversation()
 		.then((res) => 
         {
 			alert("成功撤回");
-            setMessages((currentMessages) => 
-            {
-                const newMessages = currentMessages.filter(obj => (obj.message_id !== message_id));
-                return newMessages;
-            });
 		})
         .catch((err) =>
         {

@@ -35,7 +35,35 @@ function MessageCard(props)
 	  setContextMenu({ visible: false, x: 0, y: 0 });
 	};
 
-	if (props.sender_id === my_id)
+	if (props.type === 'system')
+	{
+		return (
+			<>
+				<div onContextMenu={onContextMenu} onClick={onClick}>
+					<span className="badge bg-secondary">
+						{props.message} - {props.datetime} 
+					</span>
+
+					{contextMenu.visible && (
+						<div 
+							style={{ 
+							top: contextMenu.y,
+							left: contextMenu.x,
+							backgroundColor: 'white' }}
+							class="list-group">
+							<button 
+								type="button" 
+								class="list-group-item list-group-item-action"
+								onClick={()=>props.onDelete(props.message_id)}>
+								删除
+							</button>
+						</div>
+					)}
+				</div>
+			</>
+		)
+	}
+	else if (props.sender_id === my_id)
 	{
 		return (
 			<>
