@@ -55,11 +55,6 @@ function Friends()
                             ml-8 mr-8 sm:mr-0 sm:ml-0">
                     <Link href={`/user/search`} passHref>
                         <div className="card" style={{width: "18rem"}}>
-                            <Image
-                                src={search}
-                                className="card-img-top" 
-                                alt="search new users"
-                            />
                             <div className="card-body">
                             <h5 className="card-title">搜索用户</h5>
                             </div>

@@ -45,7 +45,7 @@ export default function Notification() {
                         break;
                 }
                 return element;
-            });
+            }); 
             const notifications = await Promise.all(promises);
             set_notifications(notifications);
         });
