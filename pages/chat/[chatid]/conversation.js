@@ -272,7 +272,7 @@ function Conversation()
                     群聊信息
                     </button>
                 </Link>
-                <Link href={`/chat/${chatid}/search`} passHref>
+                <Link href={`/chat/${chatid}/search_history`} passHref>
                     <button className="btn btn-secondary">
                     搜索聊天记录
                     </button>
