@@ -57,7 +57,7 @@ function Conversation()
         console.log(tmp_members);
     };
 
-    useEffect(async ()=> 
+    useEffect(()=> 
     {   
         const generalUrl="wss://cotalkbackend-Concord.app.secoder.net/ws/main/"+
         store.getState().auth.id+"/"+store.getState().auth.token;
@@ -83,8 +83,11 @@ function Conversation()
                 {
                     return;
                 }
-                const correspond_user=getMember(sender_id);
-                const sender_name=correspond_user.user_name;
+                let sender_name="??";
+                await request(`${BACKEND_URL}/api/user/private/${sender_id}`, "GET", false)
+                .then((res) => {
+                    sender_name=res.user_name;
+                });
 
                 const dateOptions={hour: 'numeric', minute:'numeric', hour12:true};
                 const datetime=new Date(data.update_time).toLocaleString('en', dateOptions);
@@ -100,8 +103,11 @@ function Conversation()
                     const target_url=`${BACKEND_URL}/api/message/${reply_target}/management?user_id=`+store.getState().auth.id;
                     const target=await request(target_url, "GET", true);
 
-                    reply_name=members.find(obj => obj.user_id === target.sender_id).user_name;
                     reply_message=target.msg_text;
+                    await request(`${BACKEND_URL}/api/user/private/${target.sender_id}`, "GET", false)
+                    .then((res) => {
+                        reply_name=res.user_name;
+                    });
                 }
 
                 addMessage({
@@ -146,8 +152,11 @@ function Conversation()
                 .then(async (res) => {
                     const promises = res.messages.map(async function (element, index){
                         const sender_id=element.sender_id;
-                        const correspond_user=members.find(obj => obj.user_id === sender_id);
-                        const sender_name=correspond_user.user_name;
+                        let sender_name="??";
+                        await request(`${BACKEND_URL}/api/user/private/${sender_id}`, "GET", false)
+                        .then((res) => {
+                            sender_name=res.user_name;
+                        });
 
                         const dateOptions={hour: 'numeric', minute:'numeric', hour12:true};
                         const datetime = new Date(element.create_time).toLocaleString('en', dateOptions);
@@ -170,8 +179,11 @@ function Conversation()
                             const target_url=`${BACKEND_URL}/api/message/${reply_target}/management?user_id=`+store.getState().auth.id;
                             const target=await request(target_url, "GET", true);
     
-                            reply_name=members.find(obj => obj.user_id === target.sender_id).user_name;
                             reply_message=target.msg_text;
+                            await request(`${BACKEND_URL}/api/user/private/${target.sender_id}`, "GET", false)
+                            .then((res) => {
+                                target_name=res.user_name;
+                            });
                         }
 
                         const type= (sender_name === 'system')? 'system':'normal';
@@ -219,11 +231,6 @@ function Conversation()
 
         if (firstRender)
         {   
-            console.log("Fetching member list");
-            let tmp_members=[];
-            tmp_members=await fetchMembers();
-            console.log(tmp_members);
-
             console.log("Loading history for user "+store.getState().auth.id);
             const messages_url=`${BACKEND_URL}/api/chat/${chatid}/messages?user_id=`+store.getState().auth.id;
             
@@ -231,8 +238,11 @@ function Conversation()
             .then(async (res) => {
                 const promises = res.messages.map(async function (element, index){
                     const sender_id=element.sender_id;
-                    const correspond_user=tmp_members.find(obj => obj.user_id === sender_id);
-                    const sender_name=correspond_user.user_name;
+                    let sender_name="??";
+                    await request(`${BACKEND_URL}/api/user/private/${sender_id}`, "GET", false)
+                    .then((res) => {
+                        sender_name=res.user_name;
+                    });
 
                     const dateOptions={hour: 'numeric', minute:'numeric', hour12:true};
                     const datetime = new Date(element.create_time).toLocaleString('en', dateOptions);
@@ -255,8 +265,11 @@ function Conversation()
                         const target_url=`${BACKEND_URL}/api/message/${reply_target}/management?user_id=`+store.getState().auth.id;
                         const target=await request(target_url, "GET", true);
 
-                        reply_name=tmp_members.find(obj => obj.user_id === target.sender_id).user_name;
                         reply_message=target.msg_text;
+                        await request(`${BACKEND_URL}/api/user/private/${target.sender_id}`, "GET", false)
+                        .then((res) => {
+                            reply_name=res.user_name;
+                        });
                     }
         
                     const type= (element.is_system)? 'system':'normal';
@@ -294,7 +307,7 @@ function Conversation()
         return () => {
             generalSocket.close();
         }
-    }, [toggle, members]);
+    }, [toggle]);
 
     const sendMessage=function(event) 
     {

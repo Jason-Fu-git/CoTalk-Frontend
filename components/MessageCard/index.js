@@ -95,6 +95,14 @@ function MessageCard(props)
 								</div>
 							</div>
 						</div>
+
+						{(props.reply_target !== -1)&& (
+						<div class="card-footer text-muted">
+							<h1 className="text-white text-3xl font-bold">
+							回复{props.reply_name}: {props.reply_message}
+							</h1>
+						</div>
+						)}
 					</div>
 
 					{contextMenu.visible && (
@@ -183,8 +191,16 @@ function MessageCard(props)
 					<div class="modal-dialog">
 						<div class="modal-content">
 							<div class="modal-header">
-								<h5 class="modal-title" id="exampleModalLabel">回复 {props.sender_name}</h5>
-								<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+								<h5 class="modal-title" 
+									id="exampleModalLabel">
+								回复 {props.sender_name}
+								</h5>
+								<button 
+									type="button" 
+									class="btn-close" 
+									data-bs-dismiss="modal"
+									aria-label="Close">
+								</button>
 							</div>
 							<div class="modal-body">
 								<textarea
@@ -196,7 +212,13 @@ function MessageCard(props)
 								/>
 							</div>
 							<div class="modal-footer">
-								<button type="button" class="btn btn-primary">发送</button>
+								<button 
+									type="button" 
+									class="btn btn-primary"
+									onClick={()=>props.onReply(props.message_id)}
+									>
+								发送
+								</button>
 							</div>
 						</div>
 					</div>
