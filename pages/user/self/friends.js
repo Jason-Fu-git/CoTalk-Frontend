@@ -1,13 +1,11 @@
 import 'bootstrap/dist/css/bootstrap.css';
 import React, { useState, useEffect } from "react";
 import Link from 'next/link';
-import Image from 'next/image';
 
 import UserCard from '@/components/UserCard';
 import { BACKEND_URL } from '@/app/constants/string';
 import { request } from "@/app/utils/network";
 import { store } from "@/app/redux/store";
-import search from "@/public/Search.jpg";
 import { setFriends } from "@/app/redux/auth";
 
 function Friends() 
@@ -24,6 +22,10 @@ function Friends()
             res.friends.forEach(function (element, index, array){
                 friend_ids.push(element.user_id);
                 element.user_tag="好友";
+                //如果groups里不包含element.group,则将element.group加入groups
+                if (element.group!="ungrouped"&&!groups.includes(element.group)){
+                    setGroups([...groups, element.group]);
+                }
             });
             console.log(friend_ids);
             store.dispatch(setFriends(friend_ids));
@@ -59,13 +61,22 @@ function Friends()
                 </h1>
                 <div className="grid gap-8 grid-cols-1 sm:grid-cols-3 mt-14
                             ml-8 mr-8 sm:mr-0 sm:ml-0">
-                    <Link href={`/self/friends/create_group`} passHref>
+                    <Link href={`/user/self/friends/create_group`} passHref>
                         <div className="card" style={{width: "18rem"}}>
                             <div className="card-body">
                             <h5 className="card-title">新建分组</h5>
                             </div>
                         </div>
                     </Link>
+                    {groups.map((group) => (
+                        <Link href={`/user/self/friends/${group}`} passHref>
+                            <div className="card" style={{width: "18rem"}}>
+                                <div className="card-body">
+                                <h5 className="card-title">{group}</h5>
+                                </div>
+                            </div>
+                        </Link>
+                    ))}
                 </div>
             </div> 
         </>

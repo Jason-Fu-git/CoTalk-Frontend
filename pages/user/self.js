@@ -18,6 +18,7 @@ function Account()
 	const [current_email, setCurrentEmail] = useState("");
 	const [current_description, setCurrentDescription] = useState("");
 	const [avatar, setAvatar] = useState("");
+	const [isLoading, setIsLoading] = useState(true);
 
   	useEffect(() => 
 		{
@@ -28,6 +29,7 @@ function Account()
 		request(`${BACKEND_URL}/api/user/private/${store.getState().auth.id}/avatar`, "GET", false)
 		.then((url) => {
 			setAvatar(url);
+			setIsLoading(false);
 		});
   	}, []);
 
@@ -42,7 +44,9 @@ function Account()
             }
         });
 	}
-
+	if (isLoading) {
+		return <div>Loading...</div>;  // 或者你可以返回一个加载指示器
+	}
     return (
         <div className="pt-0 sm:pt-16">
 			<div className="dark:bg-gray-800 text-white w-12/12 shadow-lg sm:w-9/12 sm:m-auto">
@@ -54,7 +58,7 @@ function Account()
 				/>
 				<div className="bg-gray-800 bg-opacity-50 absolute flex items-end	w-full h-full top-0 left-0 p-8">
 					<Image
-					src={(avatar.url) ? (avatar.url): (avatar.src)}
+					src={avatar.url}
 					alt={current_name}
 					width={avatar.width}
 					height={avatar.height}

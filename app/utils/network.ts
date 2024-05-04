@@ -52,9 +52,6 @@ export const request = async (
         body: body,
         headers,
     });
-    if(url.includes("avatar")&&response.status===500){
-        return default_avatar;
-    }
     if (response.headers.get("Content-Type") === "image/jpeg" ||
     response.headers.get("Content-Type") === "image/png" ||
     response.headers.get("Content-Type") === "image/jpg") {
