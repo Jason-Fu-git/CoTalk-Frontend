@@ -97,8 +97,8 @@ function MessageCard(props)
 						</div>
 
 						{(props.reply_target !== -1)&& (
-						<div class="card-footer text-muted">
-							<h1 className="text-white text-3xl font-bold">
+						<div class="card-footer">
+							<h1 className="dark:text-white text-3xl font-bold">
 							回复{props.reply_name}: {props.reply_message}
 							</h1>
 						</div>
@@ -161,6 +161,14 @@ function MessageCard(props)
 								</div>
 							</div>
 						</div>
+
+						{(props.reply_target !== -1)&& (
+						<div class="card-footer">
+							<h1 className="dark:text-white text-3xl font-bold">
+							回复{props.reply_name}: {props.reply_message}
+							</h1>
+						</div>
+						)}
 					</div>
 
 					{contextMenu.visible && (
