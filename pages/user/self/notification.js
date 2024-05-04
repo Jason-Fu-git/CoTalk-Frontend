@@ -38,7 +38,7 @@ export default function Notification()
                         break;
                     case ("user.friend.request", "accept request"):
                         element.header="好友申请";
-                        element.message="已同意 "+element.sender_name+" 的好友申请";
+                        element.message=element.sender_name+"已同意你的好友申请";
                         break;
                     case ("chat.management", "make invitation"):
                         element.header="群聊邀请";

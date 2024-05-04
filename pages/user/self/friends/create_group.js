@@ -1,1 +1,82 @@
-// 创建好友分组，与创建群聊类似
+import 'bootstrap/dist/css/bootstrap.css';
+import React,{useState, useEffect}  from "react";
+import { BACKEND_URL } from '@/app/constants/string';
+import { request } from "@/app/utils/network";
+import { store } from "@/app/redux/store";
+import { useRouter } from "next/router";
+
+export default function Createpage(){
+    const [groupName, setGroupName] = useState("");
+    const [memberid, setMemberid] = useState([]);
+    const [friends, setFriends] = useState([]);
+    const [showModel, setShowModel] = useState(false);
+    const selfid = store.getState().auth.id;
+    const router = useRouter();
+    useEffect(() => {
+        request(`${BACKEND_URL}/api/user/private/${selfid}/friends`, "GET", true)
+        .then((res) => {
+            setFriends(res.friends);
+            setShowModel(true);
+        });
+    }, []);
+
+    const createChat = () => {
+        for(let i = 0; i < memberid.length; i++){
+            request(`${BACKEND_URL}/api/user/private/${selfid}/friends`, "PUT", true,"application/json",{
+                "friend_id": memberid[i],
+                "group": groupName
+            })
+        }
+        router.push("/user/self/friends");
+    }
+
+    return (
+        <div className="sm:w-9/12 sm:m-auto pt-16 pb-16">
+            <h1 className="
+                dark:text-white text-4xl font-bold text-center">
+                请选择好友来创建分组
+            </h1>
+            {showModel && (
+                <div>
+                    {friends.map((friend) => (
+                        <div class="form-check">
+                        <input 
+                            type="checkbox" 
+                            class="btn-check" 
+                            id="btn-check-outlined" 
+                            autocomplete="off"
+                            onChange={(e) => {
+                                if (e.target.checked) {
+                                    setMemberid([...memberid, friend.user_id]);
+                                } else {
+                                    setMemberid(memberid.filter(id => id !== friend.user_id));
+                                }
+                            }}/>
+                        <label class="btn btn-outline-primary" for="btn-check-outlined">
+                        {friend.user_name}
+                        </label>
+                        </div>
+                    ))}
+                </div>
+            )}
+
+            <div className="input-group mb-3">
+                <input
+                    className="form-control col_auto"
+                    type="text"
+                    placeholder="请输入分组名称"
+                    value={groupName}
+                    onChange={(e) =>setGroupName(e.target.value)}
+                />
+                <div className="col-auto">
+                    <button 
+                        className="btn btn-primary"
+                        disabled={groupName===''||memberid.length===0}
+                        onClick={createChat}>
+                        创建分组
+                    </button>
+                </div>
+            </div>
+        </div>
+    )
+}
