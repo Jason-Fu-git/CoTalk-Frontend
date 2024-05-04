@@ -7,12 +7,14 @@ import MessageCard from '@/components/MessageCard';
 import { store } from "@/app/redux/store";
 import { request } from "@/app/utils/network";
 import { BACKEND_URL } from '@/app/constants/string';
+import '@/public/style.css';
 
 function Conversation()
 {
     const router = useRouter();
     const {chatid}=router.query;
     const [messages, setMessages]=useState([]);
+    const [members, setMembers]=useState([]);
 
     const [count, setCount]=useState(0);
     // 第一次渲染时将所有已有消息标记为已读
@@ -23,7 +25,8 @@ function Conversation()
     {
         setMessages(oldMessages => 
         {
-            if (!oldMessages.some(message => message.id === newMessage.id)) 
+            if (!oldMessages.some(message => 
+                message.message_id === newMessage.message_id)) 
             {
                 return [...oldMessages, newMessage];
             } 
@@ -32,17 +35,31 @@ function Conversation()
                 return oldMessages;
             }
         });
-        setCount(messages.length);
+        setCount(count+1);
     };
 
-    const replaceMessage = (newMessage, index) =>
+    const fetchMembers = async () => 
     {
+        const members_url=`${BACKEND_URL}/api/chat/${chatid}/members?user_id=`+store.getState().auth.id;
+        let tmp_members = [];
 
-    }
+        const res = await request(members_url, "GET", true);
+        const promises = res.members.map(async function (element) {
+            return ({
+                'user_name': element.user_name,
+                'user_id': element.user_id,
+            });
+        });
+
+        tmp_members = await Promise.all(promises);
+        console.log("Members restored: ");
+        setMembers(tmp_members);
+        console.log(tmp_members);
+    };
 
     useEffect(()=> 
-    {    
-        const generalUrl="ws://cotalkbackend-Concord.app.secoder.net/ws/main/"+
+    {   
+        const generalUrl="wss://cotalkbackend-Concord.app.secoder.net/ws/main/"+
         store.getState().auth.id+"/"+store.getState().auth.token;
         const generalSocket=new WebSocket(generalUrl);
 
@@ -50,14 +67,13 @@ function Conversation()
         {
             console.log("General socket receive something");
             const data=JSON.parse(event.data);
-            console.log(data.type);
-            console.log(data.status);
+            console.log("TYPE: "+data.type);
+            console.log("STATUS: "+data.status);
             
             if (!(data.type === "chat.message"))
             {
                 return;
             }  
-
             if (data.status === "send message")
             {
                 const sender_id=data.user_id;
@@ -67,19 +83,33 @@ function Conversation()
                 {
                     return;
                 }
-                // 发送时间
-                const dateOptions={hour: 'numeric', minute:'numeric', hour12:true};
-                const datetime=new Date(data.update_time).toLocaleString('en', dateOptions);
-                // 发送者
                 let sender_name="??";
                 await request(`${BACKEND_URL}/api/user/private/${sender_id}`, "GET", false)
                 .then((res) => {
                     sender_name=res.user_name;
                 });
+
+                const dateOptions={hour: 'numeric', minute:'numeric', hour12:true};
+                const datetime=new Date(data.update_time).toLocaleString('en', dateOptions);
     
                 const message_url=`${BACKEND_URL}/api/message/${message_id}/management?user_id=`+store.getState().auth.id;
                 const message=await request(message_url, "GET", true);
- 
+
+                const reply_target=message.reply_to;
+                let reply_name="??";
+                let reply_message="??";
+                if (reply_target !== -1)
+                {
+                    const target_url=`${BACKEND_URL}/api/message/${reply_target}/management?user_id=`+store.getState().auth.id;
+                    const target=await request(target_url, "GET", true);
+
+                    reply_message=target.msg_text;
+                    await request(`${BACKEND_URL}/api/user/private/${target.sender_id}`, "GET", false)
+                    .then((res) => {
+                        reply_name=res.user_name;
+                    });
+                }
+
                 addMessage({
                     'index': count,
                     'sender_name': sender_name,
@@ -93,14 +123,29 @@ function Conversation()
                   
                     'onDelete': deleteMessage,
                     'onWithdrew': withdrewMessage,
+                    'onReply': replyMessage,
 
                     'type': 'normal',
+
+                    'reply_target': reply_target,
+                    'reply_name': reply_name,
+                    'reply_message': reply_message,
                 });
+
+                // Mark as read
+                if (!message.read_users.includes(store.getState().auth.id)) 
+                {
+                    await request(`${BACKEND_URL}/api/message/${message_id}/management`,
+                    "PUT", true, "application/json",
+                    {
+                        "user_id": store.getState().auth.id,
+                    });
+                }
                 setToggle(!toggle);                
             }
             else if (data.status === "withdraw message")
             {
-                console.log("Forced to lead all messages");
+                console.log("Forced to load all messages");
                 const messages_url=`${BACKEND_URL}/api/chat/${chatid}/messages?user_id=`+store.getState().auth.id;
                 
                 request(messages_url, "GET", true)
@@ -112,6 +157,7 @@ function Conversation()
                         .then((res) => {
                             sender_name=res.user_name;
                         });
+
                         const dateOptions={hour: 'numeric', minute:'numeric', hour12:true};
                         const datetime = new Date(element.create_time).toLocaleString('en', dateOptions);
                 
@@ -124,7 +170,22 @@ function Conversation()
                                 "user_id": store.getState().auth.id,
                             });
                         }
-                        
+
+                        const reply_target=element.reply_to;
+                        let reply_name="??";
+                        let reply_message="??";
+                        if (reply_target !== -1)
+                        {
+                            const target_url=`${BACKEND_URL}/api/message/${reply_target}/management?user_id=`+store.getState().auth.id;
+                            const target=await request(target_url, "GET", true);
+    
+                            reply_message=target.msg_text;
+                            await request(`${BACKEND_URL}/api/user/private/${target.sender_id}`, "GET", false)
+                            .then((res) => {
+                                target_name=res.user_name;
+                            });
+                        }
+
                         const type= (sender_name === 'system')? 'system':'normal';
                         return ({
                             'index': index,
@@ -139,8 +200,13 @@ function Conversation()
     
                             'onDelete': deleteMessage,
                             'onWithdrew': withdrewMessage,
+                            'onReply': replyMessage,
     
                             'type': type,
+
+                            'reply_target': reply_target,
+                            'reply_name': reply_name,
+                            'reply_message': reply_message,
                         });
                     });
                     const history = await Promise.all(promises);
@@ -177,6 +243,7 @@ function Conversation()
                     .then((res) => {
                         sender_name=res.user_name;
                     });
+
                     const dateOptions={hour: 'numeric', minute:'numeric', hour12:true};
                     const datetime = new Date(element.create_time).toLocaleString('en', dateOptions);
             
@@ -189,8 +256,23 @@ function Conversation()
                             "user_id": store.getState().auth.id,
                         });
                     }
+
+                    const reply_target=element.reply_to;
+                    let reply_name="??";
+                    let reply_message="??";
+                    if (reply_target !== -1)
+                    {
+                        const target_url=`${BACKEND_URL}/api/message/${reply_target}/management?user_id=`+store.getState().auth.id;
+                        const target=await request(target_url, "GET", true);
+
+                        reply_message=target.msg_text;
+                        await request(`${BACKEND_URL}/api/user/private/${target.sender_id}`, "GET", false)
+                        .then((res) => {
+                            reply_name=res.user_name;
+                        });
+                    }
         
-                    const type= (sender_name === 'system')? 'system':'normal';
+                    const type= (element.is_system)? 'system':'normal';
                     return ({
                         'index': index,
                         'sender_name': sender_name,
@@ -204,8 +286,13 @@ function Conversation()
 
                         'onDelete': deleteMessage,
                         'onWithdrew': withdrewMessage,
+                        'onReply': replyMessage,
 
                         'type': type,
+
+                        'reply_target': reply_target,
+                        'reply_name': reply_name,
+                        'reply_message': reply_message,
                     });
                 });
                 const history = await Promise.all(promises);
@@ -253,7 +340,7 @@ function Conversation()
         }
     }
 
-    const deleteMessage=function(message_id) 
+    const deleteMessage=function (message_id) 
     {
         console.log("delete function called.");
 		console.log("message id: "+message_id);
@@ -302,6 +389,42 @@ function Conversation()
         });
     }
 
+    const replyMessage=function (message_id)
+    {
+        let inputArea=document.getElementById('reply-input');
+        const message=inputArea.value;
+        if (message)
+        {
+            // 通过Http发送一份
+            console.log("Send Http");
+            request(`${BACKEND_URL}/api/message/send`, "POST", true, "application/json", 
+            {
+                "user_id": store.getState().auth.id,
+                "chat_id": chatid,
+                "msg_text": message,
+                "msg_type": "text",
+                "reply_to": message_id,
+            })
+            .then((res) =>
+            {
+                alert("回复成功");
+            })
+            .catch((err) =>
+            {
+                alert("回复失败");
+                console.log(err);
+            });
+
+            inputArea.value='';
+            inputArea.focus();
+        }
+        else
+        {
+            inputArea.value='';
+            inputArea.focus();
+        }       
+    }
+
     return (
         <>
             <div className="sm:w-9/12 sm:m-auto pt-16 pb-16">
@@ -320,7 +443,7 @@ function Conversation()
                     </button>
                 </Link>
 
-                <div>
+                <div className="chat-container">
                 {messages.map((message) => (
                         <div key={message.index}>
                             <MessageCard {...message}/>
@@ -328,7 +451,7 @@ function Conversation()
                 ))}
                 </div>
 
-                <div className="input-group mb-3">
+                <div className="input-group mb-3 fixed-input">
                     <input
                         className="form-control col_auto"
                         type="text"
@@ -345,7 +468,6 @@ function Conversation()
                         </button>
                     </div>
                 </div>
-
             </div>
         </>
     );
