@@ -7,6 +7,7 @@ import MessageCard from '@/components/MessageCard';
 import { store } from "@/app/redux/store";
 import { request } from "@/app/utils/network";
 import { BACKEND_URL } from '@/app/constants/string';
+import '@/public/style.css';
 
 function Conversation()
 {
@@ -23,7 +24,8 @@ function Conversation()
     {
         setMessages(oldMessages => 
         {
-            if (!oldMessages.some(message => message.id === newMessage.id)) 
+            if (!oldMessages.some(message => 
+                message.message_id === newMessage.message_id)) 
             {
                 return [...oldMessages, newMessage];
             } 
@@ -32,17 +34,12 @@ function Conversation()
                 return oldMessages;
             }
         });
-        setCount(messages.length);
+        setCount(count+1);
     };
-
-    const replaceMessage = (newMessage, index) =>
-    {
-
-    }
 
     useEffect(()=> 
     {    
-        const generalUrl="ws://cotalkbackend-Concord.app.secoder.net/ws/main/"+
+        const generalUrl="wss://cotalkbackend-Concord.app.secoder.net/ws/main/"+
         store.getState().auth.id+"/"+store.getState().auth.token;
         const generalSocket=new WebSocket(generalUrl);
 
@@ -50,14 +47,13 @@ function Conversation()
         {
             console.log("General socket receive something");
             const data=JSON.parse(event.data);
-            console.log(data.type);
-            console.log(data.status);
+            console.log("TYPE: "+data.type);
+            console.log("STATUS: "+data.status);
             
             if (!(data.type === "chat.message"))
             {
                 return;
             }  
-
             if (data.status === "send message")
             {
                 const sender_id=data.user_id;
@@ -79,7 +75,7 @@ function Conversation()
     
                 const message_url=`${BACKEND_URL}/api/message/${message_id}/management?user_id=`+store.getState().auth.id;
                 const message=await request(message_url, "GET", true);
- 
+
                 addMessage({
                     'index': count,
                     'sender_name': sender_name,
@@ -96,11 +92,21 @@ function Conversation()
 
                     'type': 'normal',
                 });
+
+                // Mark as read
+                if (!message.read_users.includes(store.getState().auth.id)) 
+                {
+                    await request(`${BACKEND_URL}/api/message/${message_id}/management`,
+                    "PUT", true, "application/json",
+                    {
+                        "user_id": store.getState().auth.id,
+                    });
+                }
                 setToggle(!toggle);                
             }
             else if (data.status === "withdraw message")
             {
-                console.log("Forced to lead all messages");
+                console.log("Forced to load all messages");
                 const messages_url=`${BACKEND_URL}/api/chat/${chatid}/messages?user_id=`+store.getState().auth.id;
                 
                 request(messages_url, "GET", true)
@@ -320,7 +326,7 @@ function Conversation()
                     </button>
                 </Link>
 
-                <div>
+                <div className="chat-container">
                 {messages.map((message) => (
                         <div key={message.index}>
                             <MessageCard {...message}/>
@@ -328,7 +334,7 @@ function Conversation()
                 ))}
                 </div>
 
-                <div className="input-group mb-3">
+                <div className="input-group mb-3 fixed-input">
                     <input
                         className="form-control col_auto"
                         type="text"
