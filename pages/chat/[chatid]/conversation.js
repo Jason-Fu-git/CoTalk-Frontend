@@ -14,6 +14,7 @@ function Conversation()
     const router = useRouter();
     const {chatid}=router.query;
     const [messages, setMessages]=useState([]);
+    const [members, setMembers]=useState([]);
 
     const [count, setCount]=useState(0);
     // 第一次渲染时将所有已有消息标记为已读
@@ -37,8 +38,27 @@ function Conversation()
         setCount(count+1);
     };
 
-    useEffect(()=> 
-    {    
+    const fetchMembers = async () => 
+    {
+        const members_url=`${BACKEND_URL}/api/chat/${chatid}/members?user_id=`+store.getState().auth.id;
+        let tmp_members = [];
+
+        const res = await request(members_url, "GET", true);
+        const promises = res.members.map(async function (element) {
+            return ({
+                'user_name': element.user_name,
+                'user_id': element.user_id,
+            });
+        });
+
+        tmp_members = await Promise.all(promises);
+        console.log("Members restored: ");
+        setMembers(tmp_members);
+        console.log(tmp_members);
+    };
+
+    useEffect(async ()=> 
+    {   
         const generalUrl="wss://cotalkbackend-Concord.app.secoder.net/ws/main/"+
         store.getState().auth.id+"/"+store.getState().auth.token;
         const generalSocket=new WebSocket(generalUrl);
@@ -63,18 +83,26 @@ function Conversation()
                 {
                     return;
                 }
-                // 发送时间
+                const correspond_user=getMember(sender_id);
+                const sender_name=correspond_user.user_name;
+
                 const dateOptions={hour: 'numeric', minute:'numeric', hour12:true};
                 const datetime=new Date(data.update_time).toLocaleString('en', dateOptions);
-                // 发送者
-                let sender_name="??";
-                await request(`${BACKEND_URL}/api/user/private/${sender_id}`, "GET", false)
-                .then((res) => {
-                    sender_name=res.user_name;
-                });
     
                 const message_url=`${BACKEND_URL}/api/message/${message_id}/management?user_id=`+store.getState().auth.id;
                 const message=await request(message_url, "GET", true);
+
+                const reply_target=message.reply_to;
+                let reply_name="??";
+                let reply_message="??";
+                if (reply_target !== -1)
+                {
+                    const target_url=`${BACKEND_URL}/api/message/${reply_target}/management?user_id=`+store.getState().auth.id;
+                    const target=await request(target_url, "GET", true);
+
+                    reply_name=members.find(obj => obj.user_id === target.sender_id).user_name;
+                    reply_message=target.msg_text;
+                }
 
                 addMessage({
                     'index': count,
@@ -89,8 +117,13 @@ function Conversation()
                   
                     'onDelete': deleteMessage,
                     'onWithdrew': withdrewMessage,
+                    'onReply': replyMessage,
 
                     'type': 'normal',
+
+                    'reply_target': reply_target,
+                    'reply_name': reply_name,
+                    'reply_message': reply_message,
                 });
 
                 // Mark as read
@@ -113,11 +146,9 @@ function Conversation()
                 .then(async (res) => {
                     const promises = res.messages.map(async function (element, index){
                         const sender_id=element.sender_id;
-                        let sender_name="??";
-                        await request(`${BACKEND_URL}/api/user/private/${sender_id}`, "GET", false)
-                        .then((res) => {
-                            sender_name=res.user_name;
-                        });
+                        const correspond_user=members.find(obj => obj.user_id === sender_id);
+                        const sender_name=correspond_user.user_name;
+
                         const dateOptions={hour: 'numeric', minute:'numeric', hour12:true};
                         const datetime = new Date(element.create_time).toLocaleString('en', dateOptions);
                 
@@ -130,7 +161,19 @@ function Conversation()
                                 "user_id": store.getState().auth.id,
                             });
                         }
-                        
+
+                        const reply_target=element.reply_to;
+                        let reply_name="??";
+                        let reply_message="??";
+                        if (reply_target !== -1)
+                        {
+                            const target_url=`${BACKEND_URL}/api/message/${reply_target}/management?user_id=`+store.getState().auth.id;
+                            const target=await request(target_url, "GET", true);
+    
+                            reply_name=members.find(obj => obj.user_id === target.sender_id).user_name;
+                            reply_message=target.msg_text;
+                        }
+
                         const type= (sender_name === 'system')? 'system':'normal';
                         return ({
                             'index': index,
@@ -145,8 +188,13 @@ function Conversation()
     
                             'onDelete': deleteMessage,
                             'onWithdrew': withdrewMessage,
+                            'onReply': replyMessage,
     
                             'type': type,
+
+                            'reply_target': reply_target,
+                            'reply_name': reply_name,
+                            'reply_message': reply_message,
                         });
                     });
                     const history = await Promise.all(promises);
@@ -171,6 +219,11 @@ function Conversation()
 
         if (firstRender)
         {   
+            console.log("Fetching member list");
+            let tmp_members=[];
+            tmp_members=await fetchMembers();
+            console.log(tmp_members);
+
             console.log("Loading history for user "+store.getState().auth.id);
             const messages_url=`${BACKEND_URL}/api/chat/${chatid}/messages?user_id=`+store.getState().auth.id;
             
@@ -178,11 +231,9 @@ function Conversation()
             .then(async (res) => {
                 const promises = res.messages.map(async function (element, index){
                     const sender_id=element.sender_id;
-                    let sender_name="??";
-                    await request(`${BACKEND_URL}/api/user/private/${sender_id}`, "GET", false)
-                    .then((res) => {
-                        sender_name=res.user_name;
-                    });
+                    const correspond_user=tmp_members.find(obj => obj.user_id === sender_id);
+                    const sender_name=correspond_user.user_name;
+
                     const dateOptions={hour: 'numeric', minute:'numeric', hour12:true};
                     const datetime = new Date(element.create_time).toLocaleString('en', dateOptions);
             
@@ -195,8 +246,20 @@ function Conversation()
                             "user_id": store.getState().auth.id,
                         });
                     }
+
+                    const reply_target=element.reply_to;
+                    let reply_name="??";
+                    let reply_message="??";
+                    if (reply_target !== -1)
+                    {
+                        const target_url=`${BACKEND_URL}/api/message/${reply_target}/management?user_id=`+store.getState().auth.id;
+                        const target=await request(target_url, "GET", true);
+
+                        reply_name=tmp_members.find(obj => obj.user_id === target.sender_id).user_name;
+                        reply_message=target.msg_text;
+                    }
         
-                    const type= (sender_name === 'system')? 'system':'normal';
+                    const type= (element.is_system)? 'system':'normal';
                     return ({
                         'index': index,
                         'sender_name': sender_name,
@@ -210,8 +273,13 @@ function Conversation()
 
                         'onDelete': deleteMessage,
                         'onWithdrew': withdrewMessage,
+                        'onReply': replyMessage,
 
                         'type': type,
+
+                        'reply_target': reply_target,
+                        'reply_name': reply_name,
+                        'reply_message': reply_message,
                     });
                 });
                 const history = await Promise.all(promises);
@@ -226,7 +294,7 @@ function Conversation()
         return () => {
             generalSocket.close();
         }
-    }, [toggle]);
+    }, [toggle, members]);
 
     const sendMessage=function(event) 
     {
@@ -259,7 +327,7 @@ function Conversation()
         }
     }
 
-    const deleteMessage=function(message_id) 
+    const deleteMessage=function (message_id) 
     {
         console.log("delete function called.");
 		console.log("message id: "+message_id);
@@ -308,6 +376,42 @@ function Conversation()
         });
     }
 
+    const replyMessage=function (message_id)
+    {
+        let inputArea=document.getElementById('reply-input');
+        const message=inputArea.value;
+        if (message)
+        {
+            // 通过Http发送一份
+            console.log("Send Http");
+            request(`${BACKEND_URL}/api/message/send`, "POST", true, "application/json", 
+            {
+                "user_id": store.getState().auth.id,
+                "chat_id": chatid,
+                "msg_text": message,
+                "msg_type": "text",
+                "reply_to": message_id,
+            })
+            .then((res) =>
+            {
+                alert("回复成功");
+            })
+            .catch((err) =>
+            {
+                alert("回复失败");
+                console.log(err);
+            });
+
+            inputArea.value='';
+            inputArea.focus();
+        }
+        else
+        {
+            inputArea.value='';
+            inputArea.focus();
+        }       
+    }
+
     return (
         <>
             <div className="sm:w-9/12 sm:m-auto pt-16 pb-16">
@@ -351,7 +455,6 @@ function Conversation()
                         </button>
                     </div>
                 </div>
-
             </div>
         </>
     );
