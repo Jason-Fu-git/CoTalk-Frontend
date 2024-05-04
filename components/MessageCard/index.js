@@ -1,6 +1,9 @@
-import { store } from "@/app/redux/store";
+import 'bootstrap/dist/css/bootstrap.css';
+import 'bootstrap/dist/js/bootstrap.bundle.min';
 import Image from 'next/image';
 import React,{ useState, useEffect } from "react";
+
+import { store } from "@/app/redux/store";
 import { BACKEND_URL } from '@/app/constants/string';
 import { request } from "@/app/utils/network";
 
@@ -92,6 +95,14 @@ function MessageCard(props)
 								</div>
 							</div>
 						</div>
+
+						{(props.reply_target !== -1)&& (
+						<div class="card-footer">
+							<h1 className="dark:text-white text-3xl font-bold">
+							回复{props.reply_name}: {props.reply_message}
+							</h1>
+						</div>
+						)}
 					</div>
 
 					{contextMenu.visible && (
@@ -129,7 +140,7 @@ function MessageCard(props)
 						</div>
 						<div class="card-body">
 							<div class="row g-0">
-								<div class="col-md-4">
+								<div class="col-md-3">
 									<Image
 										src={(avatar.url) ? 
 										(avatar.url):
@@ -150,6 +161,14 @@ function MessageCard(props)
 								</div>
 							</div>
 						</div>
+
+						{(props.reply_target !== -1)&& (
+						<div class="card-footer">
+							<h1 className="dark:text-white text-3xl font-bold">
+							回复{props.reply_name}: {props.reply_message}
+							</h1>
+						</div>
+						)}
 					</div>
 
 					{contextMenu.visible && (
@@ -161,7 +180,9 @@ function MessageCard(props)
 							class="list-group">
 							<button 
 								type="button" 
-								class="list-group-item list-group-item-action">
+								class="list-group-item list-group-item-action"
+								data-bs-toggle="modal" 
+								data-bs-target="#replyModal">
 							回复
 							</button>
 							<button 
@@ -172,6 +193,43 @@ function MessageCard(props)
 							</button>
 						</div>
 					)}
+				</div>
+
+				<div class="modal fade" id="replyModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+					<div class="modal-dialog">
+						<div class="modal-content">
+							<div class="modal-header">
+								<h5 class="modal-title" 
+									id="exampleModalLabel">
+								回复 {props.sender_name}
+								</h5>
+								<button 
+									type="button" 
+									class="btn-close" 
+									data-bs-dismiss="modal"
+									aria-label="Close">
+								</button>
+							</div>
+							<div class="modal-body">
+								<textarea
+									className="form-control col_auto"
+									type="text"
+									placeholder="请输入回复内容"
+									id="reply-input"
+									rows="5"
+								/>
+							</div>
+							<div class="modal-footer">
+								<button 
+									type="button" 
+									class="btn btn-primary"
+									onClick={()=>props.onReply(props.message_id)}
+									>
+								发送
+								</button>
+							</div>
+						</div>
+					</div>
 				</div>
 			</>
 		);
