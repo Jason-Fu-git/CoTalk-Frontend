@@ -69,13 +69,15 @@ function Friends()
                         </div>
                     </Link>
                     {groups.map((group) => (
-                        <Link href={`/user/self/friends/${group}`} passHref key={group}>
-                            <div className="card" style={{width: "18rem"}}>
-                                <div className="card-body">
-                                <h5 className="card-title">{group}</h5>
+                        <div>
+                            <Link href={`/user/self/friends/${group}`} passHref key={group}>
+                                <div className="card" style={{width: "18rem"}}>
+                                    <div className="card-body">
+                                    <h5 className="card-title">{group}</h5>
+                                    </div>
                                 </div>
-                            </div>
-                        </Link>
+                            </Link>
+                        </div>
                     ))}
                 </div>
             </div> 
