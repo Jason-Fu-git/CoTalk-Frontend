@@ -110,6 +110,11 @@ function Chat()
         setToggle(!toggle);
     }
 
+    const exit = function()
+    {
+        // 推出群聊
+    }
+
     return (
         <>
             <div className="sm:w-9/12 sm:m-auto pt-16 pb-16">
@@ -139,9 +144,7 @@ function Chat()
                     (my_privilege !== 'O')&&(
                         <button 
                             className="btn btn-secondary"
-                            onClick={()=>{
-
-                            }}>
+                            onClick={()=>exit()}>
                             退出群聊
                         </button>
                     )
