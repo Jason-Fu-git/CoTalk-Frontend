@@ -45,7 +45,7 @@ function InvitePage()
             {showModel && (
                 <div>
                     {friends.map((friend) => (
-                        <div class="form-check">
+                        <div class="form-check" key={friend.user_id}>
                         <input 
                             type="checkbox" 
                             class="btn-check" 
