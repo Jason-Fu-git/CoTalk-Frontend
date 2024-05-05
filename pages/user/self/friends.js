@@ -49,7 +49,9 @@ function Friends()
                         </div>
                     </Link>
                     {friends.map((user) => (
-                        <UserCard key={user.user_id} {...user}/>
+                        <div key={user.user_id}>
+                            <UserCard {...user}/>
+                        </div>
                     ))}
                 </div>
 
