@@ -72,7 +72,6 @@ function SearchHistory()
 
         const url=`${BACKEND_URL}/api/chat/${chatid}/messages?user_id=`+
             store.getState().auth.id+
-            "&filter_user="+store.getState().auth.id+
             "&filter_text="+query;
 
         console.log("Loading search result: "+url);
