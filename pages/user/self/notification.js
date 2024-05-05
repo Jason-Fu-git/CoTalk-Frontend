@@ -114,12 +114,12 @@ export default function Notification()
                 </div>
                     {notifications.map((notification,index) => (
                         <div key={index}>
-                            <div class="card">
-                                <div class="card-header">
+                            <div className="card">
+                                <div className="card-header">
                                     {notification.header}
                                 </div>
-                                <div class="card-body">
-                                    <h5 class="card-title">{notification.message}</h5>
+                                <div className="card-body">
+                                    <h5 className="card-title">{notification.message}</h5>
                                 </div>  
                                 <div className="row gx-1">
                                     <div className="col">
