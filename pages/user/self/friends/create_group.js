@@ -38,13 +38,13 @@ export default function Createpage(){
             </h1>
             {showModel && (
                 <div>
-                    {friends.map((friend) => (
-                        <div class="form-check">
+                    {friends.map((friend, index) => (
+                        <div key={index}>
                         <input 
                             type="checkbox" 
-                            class="btn-check" 
-                            id="btn-check-outlined" 
-                            autocomplete="off"
+                            className="btn-check" 
+                            autoComplete="off"
+                            id={friend.user_id}
                             onChange={(e) => {
                                 if (e.target.checked) {
                                     setMemberid([...memberid, friend.user_id]);
@@ -52,7 +52,9 @@ export default function Createpage(){
                                     setMemberid(memberid.filter(id => id !== friend.user_id));
                                 }
                             }}/>
-                        <label class="btn btn-outline-primary" for="btn-check-outlined">
+                        <label 
+                            className="btn btn-outline-primary" 
+                            htmlFor={friend.user_id}>
                         {friend.user_name}
                         </label>
                         </div>
