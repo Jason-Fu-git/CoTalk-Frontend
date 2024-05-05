@@ -75,22 +75,63 @@ function Chat()
     const makeAdmin = function (user_id)
     {
         // 将user_id指定为管理员
-
-        setToggle(!toggle);
+        request(`${BACKEND_URL}/api/chat/${chatid}/management`, "PUT", true,"application/json",{
+            "user_id":my_id,
+            "member_id":user_id,
+            "change_to":"admin"
+        })
+        .then((res) =>{
+            if (Number(res.code) === 0) {
+                alert("提拔成功");
+            }
+            setToggle(!toggle);
+        });
     }
 
     const unmakeAdmin = function (user_id)
     {
         // 将user_id从管理员变成普通成员
-
-        setToggle(!toggle);
+        request(`${BACKEND_URL}/api/chat/${chatid}/management`, "PUT", true,"application/json",{
+            "user_id":my_id,
+            "member_id":user_id,
+            "change_to":"member"
+        })
+        .then((res) =>{
+            if (Number(res.code) === 0) {
+                alert("降级成功");
+            }
+            setToggle(!toggle);
+        });
     }
-
+    const makeOwner = function (user_id)
+    {
+        // 将user_id指定为群主
+        request(`${BACKEND_URL}/api/chat/${chatid}/management`, "PUT", true,"application/json",{
+            "user_id":my_id,
+            "member_id":user_id,
+            "change_to":"owner"
+        })
+        .then((res) =>{
+            if (Number(res.code) === 0) {
+                alert("移交成功");
+                setToggle(!toggle);
+            }
+        });
+    }
     const kick = function (user_id)
     {
         // 将user_id踢出群聊
-
-        setToggle(!toggle);
+        request(`${BACKEND_URL}/api/chat/${chatid}/members`, "PUT", true,"application/json",{
+            "user_id":my_id,
+            "member_id":user_id,
+            "approve":false
+        })
+        .then((res) =>{
+            if (Number(res.code) === 0) {
+                alert("踢出成功");
+            }
+            setToggle(!toggle);
+        });
     }
 
     const sendNotice = function ()
@@ -112,7 +153,16 @@ function Chat()
 
     const exit = function()
     {
-        // 推出群聊
+        // 退出群聊
+        request(`${BACKEND_URL}/api/user/private/${my_id}/chats`, "DELETE", true,"application/json",{
+            "chat_id":chatid
+        })
+        .then((res) =>{
+            if (Number(res.code) === 0) {
+                alert("退出成功");
+                router.push("/user/self/chats");
+            }
+        });
     }
 
     return (
@@ -141,7 +191,7 @@ function Chat()
                     所有成员
                 </h1>
                 {
-                    (my_privilege !== 'O')&&(
+                    (
                         <button 
                             className="btn btn-secondary"
                             onClick={()=>exit()}>
@@ -172,6 +222,9 @@ function Chat()
                                     <button 
                                         type="button" class="btn btn-success"
                                         onClick={()=>makeAdmin(user.user_id)}>提拔为管理员</button>
+                                    <button 
+                                        type="button" class="btn btn-success"
+                                        onClick={()=>makeOwner(user.user_id)}>转让群主</button>
                                     </div>
                                 )
                             }
@@ -195,6 +248,9 @@ function Chat()
                                     <button 
                                         type="button" class="btn btn-warning"
                                         onClick={()=>unmakeAdmin(user.user_id)}>降级为普通成员</button>
+                                    <button 
+                                        type="button" class="btn btn-success"
+                                        onClick={()=>makeOwner(user.user_id)}>转让群主</button>
                                     </div>
                                 )                                
                             }
@@ -206,7 +262,7 @@ function Chat()
             <div 
                 class="modal fade" 
                 id="noticeModal" 
-                tabindex="-1" 
+                tabIndex="-1" 
                 aria-labelledby="exampleModalLabel" 
                 aria-hidden="true">
 				<div class="modal-dialog">
