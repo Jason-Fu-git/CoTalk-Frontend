@@ -68,8 +68,8 @@ function Friends()
                             </div>
                         </div>
                     </Link>
-                    {groups.map((group) => (
-                        <div>
+                    {groups.map((group, index) => (
+                        <div key={index}>
                             <Link href={`/user/self/friends/${group}`} passHref key={group}>
                                 <div className="card" style={{width: "18rem"}}>
                                     <div className="card-body">
