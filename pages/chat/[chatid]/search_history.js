@@ -6,53 +6,60 @@ import { BACKEND_URL } from '@/app/constants/string';
 import { request } from "@/app/utils/network";
 import { store } from "@/app/redux/store";
 
-function getMessageCard(props)
-{
-    console.log("Making message card for: "+props);
-    const my_id=store.getState().auth.id;
-
-    if (props.sender_id === my_id)
-	{
-		return (
-			<>
-			    <div class="card text-white bg-success mb-3">
-					<div class="card-header">
-                        {props.sender_name} - {props.datetime}
-					</div>
-					<div class="card-body">
-                        {props.message}
-					</div>
-				</div>
-			</>
-		);
-	}
-	else
-	{
-		return (
-			<>
-				<div class="card">
-					<div class="card-header">
-                        {props.sender_name} - {props.datetime}
-					</div>
-					<div class="card-body">
-                        {props.message}
-					</div>
-				</div>
-			</>
-		);
-	}
-}
-
 function SearchHistory() 
 {
     const router = useRouter();
     const {chatid} = router.query;
 
-    const [query, setQuery] = useState("");
     const [searchResult, setSearchResult] = useState([]);
-    const [hassubmitsearch, setHassubmitsearch] = useState(false);
-    const [hasSearched, setHasSearched] = useState(false);
     const [firstRender, setFirstRender]=useState(true);
+    const [toggle, setToggle]=useState(true);
+
+    const updateSearch = function (search)
+    {
+        setSearchResult(oldMessages => 
+        {
+            return search;
+        });
+    };
+
+    const getMessageCard=function (props)
+    {
+        console.log("Making message card for: ");
+        console.log(props);
+        const my_id=store.getState().auth.id;
+    
+        if (props.sender_id === my_id)
+        {
+            return (
+                <>
+                    <div class="card text-white bg-success mb-3">
+                        <div class="card-header">
+                            {props.sender_name} - {props.datetime}
+                        </div>
+                        <div class="card-body">
+                            {props.message}
+                        </div>
+                    </div>
+                </>
+            );
+        }
+        else
+        {
+            return (
+                <>
+                    <div class="card">
+                        <div class="card-header">
+                            {props.sender_name} - {props.datetime}
+                        </div>
+                        <div class="card-body">
+                            {props.message}
+                        </div>
+                    </div>
+                </>
+            );
+        }
+    }
 
     useEffect(() => {
         if(firstRender){
@@ -60,10 +67,13 @@ function SearchHistory()
             return;
         }
 
+        let inputArea=document.getElementById('search-input');
+        const query=inputArea.value;
+
         const url=`${BACKEND_URL}/api/chat/${chatid}/messages?user_id=`+
             store.getState().auth.id+
             "&filter_user="+store.getState().auth.id+
-            "&filter_text='"+query+"'";
+            "&filter_text="+query;
 
         console.log("Loading search result: "+url);
 
@@ -83,6 +93,7 @@ function SearchHistory()
     
                 return ({
                     'index': index,
+                    'sender_id': sender_id,
                     'sender_name': sender_name,
             
                     'message': element.msg_text,
@@ -91,12 +102,11 @@ function SearchHistory()
                 });
             });
             const search= await Promise.all(promises); 
-            console.log("Search result: "+search);
-            setSearchResult(search);
+            updateSearch(search)
+            inputArea.value='';
+            inputArea.focus();
         });
-
-        setHasSearched(false);
-    },[hasSearched]);
+    },[toggle]);
 
     return (
         <>
@@ -110,34 +120,30 @@ function SearchHistory()
                         className="form-control col_auto"
                         type="text"
                         placeholder="搜索关键词"
-                        value={query}
-                        onChange={(e) => setQuery(e.target.value)}
+                        id="search-input"
                     />
                     <div className="col-auto">
                         <button 
                             name="submit"
                             className="btn btn-primary"
                             onClick={() => {
-                                setHasSearched(true);
+                                setToggle(!toggle);
                             }}
                         >
                         搜索
                         </button>
                     </div>
                 </div>
-                <div className="grid gap-8 grid-cols-1 sm:grid-cols-3 mt-14
-                    ml-8 mr-8 sm:mr-0 sm:ml-0">
-                    {hassubmitsearch&&(searchResult.length > 0 ? (
-                        searchResult.map((message) => 
-                        (
-                            <div key={message.index}>
-                                {getMessageCard(message)}
-                            </div>
-                        )
+                {(searchResult.length > 0 ? (
+                    searchResult.map((message) => 
+                    (
+                        <div key={message.index}>
+                            {getMessageCard(message)}
+                        </div>
+                    )
                     )) : (
                         <p>没有搜索结果</p>
-                    ))}
-                </div>
+                ))}
             </div>
         </>
     )

@@ -7,6 +7,21 @@ import {request} from "@/app/utils/network";
 import { store } from "@/app/redux/store";
 import Link from 'next/link';
 
+function adminPage()
+{
+
+}
+
+function ownerPage()
+{
+
+}
+
+function memberPage()
+{
+    
+}
+
 function Chat() 
 {
     const router = useRouter();
