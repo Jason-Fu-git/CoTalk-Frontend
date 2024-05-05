@@ -16,9 +16,11 @@ const LoginScreen = () => {
     const router = useRouter();
     const dispatch = store.dispatch;
 
-    const login = () => {
+    const login = () => 
+    {
         request(`${BACKEND_URL}/api/user/login`, "POST", false, "application/json",{"user_name": user_name, "password": password})
-        .then((res) => {
+        .then((res) => 
+            {
             if (Number(res.code) === 0) {
                 dispatch(setName(res.user_name));
                 dispatch(setToken(res.token));
@@ -29,6 +31,10 @@ const LoginScreen = () => {
                 router.push(`/user/self`);
             }
         })
+        .catch((err) =>
+        {
+            alert(err);
+        })
     };
     dispatch(resetAuth());
     return (
@@ -36,6 +42,7 @@ const LoginScreen = () => {
             <p className="lead">登录</p>
             <div className="input-group mb-3">
             <input
+                id="name-input"
                 className="form-control"
                 type="text"
                 placeholder="用户名"
@@ -45,6 +52,7 @@ const LoginScreen = () => {
             </div>
             <div className="input-group mb-3">
             <input 
+                id="password-input"
                 className="form-control"
                 type="password"
                 placeholder="密码"

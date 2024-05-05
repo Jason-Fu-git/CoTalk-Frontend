@@ -6,7 +6,8 @@ import { BACKEND_URL } from '@/app/constants/string';
 import { store } from "@/app/redux/store";
 import { setFriends } from "@/app/redux/auth";
 
-export default function Notification() {
+export default function Notification() 
+{
     const [notifications, set_notifications] = useState([]);
     const [flash, set_flash] = useState(false);
     const self_id = store.getState().auth.id;
@@ -21,12 +22,14 @@ export default function Notification() {
                 element.content = JSON.parse(element.content.replace(/'/g, '"').replace(/True/g, 'true').replace(/False/g, 'false')); // Replace single quotes with double quotes
                 // set the sender's name
                 const sender_id=element.sender_id;
+
                 let sender_name="??";
                 await request(`${BACKEND_URL}/api/user/private/${sender_id}`, "GET", false)
                 .then((res) => {
                     sender_name=res.user_name;
                     element.sender_name=sender_name; // Add new property to element
                 });
+                
                 // set the notification's content
                 switch ((element.content.type, element.content.status)) {
                     case ("user.friend.request", "make request"):
@@ -35,7 +38,7 @@ export default function Notification() {
                         break;
                     case ("user.friend.request", "accept request"):
                         element.header="好友申请";
-                        element.message="已同意 "+element.sender_name+" 的好友申请";
+                        element.message=element.sender_name+"已同意你的好友申请";
                         break;
                     case ("chat.management", "make invitation"):
                         element.header="群聊邀请";
@@ -43,7 +46,7 @@ export default function Notification() {
                         break;
                 }
                 return element;
-            });
+            }); 
             const notifications = await Promise.all(promises);
             set_notifications(notifications);
         });
@@ -111,12 +114,12 @@ export default function Notification() {
                 </div>
                     {notifications.map((notification,index) => (
                         <div key={index}>
-                            <div class="card">
-                                <div class="card-header">
+                            <div className="card">
+                                <div className="card-header">
                                     {notification.header}
                                 </div>
-                                <div class="card-body">
-                                    <h5 class="card-title">{notification.message}</h5>
+                                <div className="card-body">
+                                    <h5 className="card-title">{notification.message}</h5>
                                 </div>  
                                 <div className="row gx-1">
                                     <div className="col">

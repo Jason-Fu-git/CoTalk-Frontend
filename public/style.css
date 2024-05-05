@@ -1,0 +1,13 @@
+.chat-container 
+{
+    height: calc(100vh - 100px);
+    overflow-y: auto;
+}
+  
+.fixed-input 
+{
+    position: fixed;
+    bottom: 0;
+    width: inherit;
+}
+  
