@@ -1,23 +1,54 @@
 import 'bootstrap/dist/css/bootstrap.css';
 import React, { useState, useEffect } from "react";
 import Link from 'next/link';
-import Image from 'next/image';
 
 import ChatCard from '@/components/ChatCard';
 import { BACKEND_URL } from '@/app/constants/string';
 import { request } from "@/app/utils/network";
 import { store } from "@/app/redux/store";
-import modern from "@/public/ModernArt.jpg"
 
 function Chats() 
 {
     const [chats, setChats] = useState([]);
 
-    useEffect(() => {
-        console.log("Get "+store.getState().auth.name+"'s chats");
+    useEffect(() => 
+    {
+        console.log("Loading chats");
         request(`${BACKEND_URL}/api/user/private/${store.getState().auth.id}/chats`, "GET", true)
-        .then((res) => {
-        setChats(res.chats);
+        .then(async (res) => 
+        {
+            const promises = res.chats.map(async function (chat, index)
+            {
+                const chat_name=chat.chat_name;
+                const chat_id=chat.chat_id;
+
+                const my_id=store.getState().auth.id;
+                const url=`${BACKEND_URL}/api/chat/${chat_id}/messages?`+
+                    "user_id="+my_id;
+
+                let unread_count=0;
+                await request(url, "GET", true)
+                .then((res) => {
+                    res.messages.forEach(function (message)
+                    {
+                        if (!message.read_users.includes(my_id))
+                        {
+                            unread_count=unread_count+1;
+                        }
+                    })
+                });
+    
+                return ({
+                    'chat_name': chat_name,
+                    'chat_id': chat_id,
+
+                    'unread_count': unread_count,
+                });
+            });
+            const myChats = await Promise.all(promises);
+            setChats(myChats);
+            console.log("Finish loading chats: ");
+            console.log(myChats);
         });
     }, []);
 

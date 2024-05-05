@@ -6,6 +6,7 @@ import { setName, setId, setToken,setEmail,setDescription} from "../../redux/aut
 import {store} from "@/app/redux/store";
 import 'bootstrap/dist/css/bootstrap.css'
 import {request} from '@/app/utils/network'
+
 const RegisterPage = () => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
@@ -13,9 +14,11 @@ const RegisterPage = () => {
     const [avatar, setAvatar] = useState(typeof window !== 'undefined' ? new File([], "") : null);
     const [description, setdescription] = useState('');
     const router = useRouter();
+    const defaultAvatar='/DefaultAvatar.jpg';
     // const dispatch = store.dispatch;
     
-    const register = async() => {
+    const register = async() => 
+    {
         const formData = new FormData();
         formData.append("user_name", username);
         formData.append("password", password);
@@ -24,20 +27,20 @@ const RegisterPage = () => {
         if (avatar!=null&&avatar.size !== 0) {
             formData.append("avatar", avatar);
         }
+        else{
+            //使用默认图片
+            const defaultAvatarBlob = await fetch(defaultAvatar).then((res) => res.blob());
+            formData.append("avatar", new File([defaultAvatarBlob], "DefaultAvatar.jpg"));
+        }
         
         request(`${BACKEND_URL}/api/user/register`, "POST", false, "multipart/form-data", formData)
-        .then((res) => {
-            if (Number(res.code) === 0) {
-                // dispatch(setName(res.user_name));
-                // dispatch(setToken(res.token));
-                // dispatch(setId(res.user_id));
-                // dispatch(setEmail(res.user_email));
-                // dispatch(setDescription(res.description));
-                //alert(REGISTER_SUCCESS_PREFIX + res.user_name);
+        .then((res) => 
+        {
+            if (Number(res.code) === 0) 
+            {
                 router.push(`/user/login`);
             }
         })
-        
     };
 
     return (
