@@ -136,6 +136,7 @@ function Chat()
     const sendNotice = function ()
     {
         // 将message作为群公告发出
+        if(typeof document !== 'undefined') {
         let inputArea=document.getElementById('notice-input');
         const message=inputArea.value;
         if (message === '')
@@ -148,6 +149,7 @@ function Chat()
         inputArea.value='';
         inputArea.focus();
         setToggle(!toggle);
+    }
     }
 
     const exit = function()
