@@ -14,8 +14,6 @@ function SearchHistory()
     const [searchResult, setSearchResult] = useState([]);
     const [firstRender, setFirstRender]=useState(true);
     const [toggle, setToggle]=useState(true);
-    const [selectedUser,setSelectedUser]=useState('');
-    const [members,setMembers]=useState([]);
 
     const updateSearch = function (search)
     {
@@ -63,25 +61,19 @@ function SearchHistory()
         }
     }
 
-
     useEffect(() => {
         if(firstRender){
             setFirstRender(false);
-            request(`${BACKEND_URL}/api/chat/${chatid}/members?user_id=${store.getState().auth.id}`, "GET", true)
-            .then((res) => {
-                setMembers(res.members);
-            });  
             return;
         }
+
         let inputArea=document.getElementById('search-input');
         const query=inputArea.value;
 
-        let url=`${BACKEND_URL}/api/chat/${chatid}/messages?user_id=`+
+        const url=`${BACKEND_URL}/api/chat/${chatid}/messages?user_id=`+
             store.getState().auth.id+
             "&filter_text="+query;
-        if(selectedUser!=''){
-            url+="&filter_user="+selectedUser;
-        }
+
         console.log("Loading search result: "+url);
 
         request(url, "GET", true)
@@ -140,47 +132,6 @@ function SearchHistory()
                         搜索
                         </button>
                     </div>
-                </div>
-                <div>
-                    <p>请选择一个用户：</p>
-                    <div>
-                        <input 
-                            type="radio" 
-                            className="btn-check" 
-                            autoComplete="off"
-                            id="none"
-                            checked={selectedUser === ''}
-                            onChange={(e) => {
-                                if (e.target.checked) {
-                                    setSelectedUser('');
-                                }
-                            }}/>
-                        <label 
-                            className="btn btn-outline-primary" 
-                            htmlFor="none">
-                        不选择任何用户
-                        </label>
-                    </div>
-                    {members.map((member, index) => (
-                        <div key={index}>
-                            <input 
-                                type="radio" 
-                                className="btn-check" 
-                                autoComplete="off"
-                                id={member.user_id}
-                                checked={selectedUser === member.user_id}
-                                onChange={(e) => {
-                                    if (e.target.checked) {
-                                        setSelectedUser(member.user_id);
-                                    }
-                                }}/>
-                            <label 
-                                className="btn btn-outline-primary" 
-                                htmlFor={member.user_id}>
-                            {member.user_name}
-                            </label>
-                        </div>
-                    ))}
                 </div>
                 {(searchResult.length > 0 ? (
                     searchResult.map((message) => 
