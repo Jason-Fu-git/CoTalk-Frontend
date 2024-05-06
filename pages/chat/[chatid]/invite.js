@@ -15,6 +15,8 @@ function InvitePage()
     useEffect(() => {
         request(`${BACKEND_URL}/api/user/private/${store.getState().auth.id}/friends`, "GET", true)
         .then((res1) => {
+            setMyFriends(res1.friends);
+            console.log(res1.friends);
             request(`${BACKEND_URL}/api/chat/${chatid}/members?user_id=${store.getState().auth.id}`, "GET", true)
             .then((res2) => {
                 let member=[]
