@@ -95,8 +95,8 @@ function SearchHistory()
                 .then((res) => {
                     sender_name=res.user_name;
                 });
-                const dateOptions={ hour: 'numeric', minute: 'numeric', hour12: true, timeZone: 'Asia/Shanghai' };
-                const datetime = new Date(element.create_time*1000).toLocaleString('en-US', dateOptions);
+                const dateOptions={hour: 'numeric', minute:'numeric', hour12:true};
+                const datetime = new Date(element.create_time).toLocaleString('en', dateOptions);
     
                 return ({
                     'index': index,
