@@ -152,7 +152,7 @@ function Chat()
         request(`${BACKEND_URL}/api/message/send`, "POST", true,"application/json",{
             "user_id":my_id,
             "chat_id":chatid,
-            "msg_text":message,
+            "msg_text":notice,
             "msg_type":"group_notice"
         })
         .then((res) =>{
