@@ -1,4 +1,5 @@
-import 'bootstrap';
+import 'bootstrap/dist/css/bootstrap.css';
+//import 'bootstrap/dist/js/bootstrap.bundle.min';
 import Image from 'next/image';
 import React,{ useState, useEffect } from "react";
 
