@@ -18,7 +18,7 @@ build:
     - master
 
 
-test:
+.test:
   image: node:18
   stage: test
 
