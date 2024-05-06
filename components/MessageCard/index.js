@@ -1,5 +1,4 @@
 import 'bootstrap/dist/css/bootstrap.css';
-//import 'bootstrap/dist/js/bootstrap.bundle.min';
 import Image from 'next/image';
 import React,{ useState, useEffect } from "react";
 
@@ -11,6 +10,31 @@ function MessageCard(props)
 {
 	// sender's avatar
 	const [avatar, setAvatar] = useState('');
+	const [reply, setReply]=useState(false);
+	const [toggle, setToggle]=useState(true);
+
+	const [replyValue, setReplyValue] = useState('');
+
+	const handleReplyChange = (event) => 
+	{
+	  	setReplyValue(event.target.value);
+	};
+
+	const handleSend = (event) =>
+	{
+		if (replyValue)
+		{
+			props.onReply(props.message_id, replyValue);
+			setReplyValue('');
+		}
+		else
+		{
+			setReplyValue('');
+		}
+		setReply(false);
+		setToggle(!toggle);
+	};
+
 	useEffect(()=>
 	{
 		if (props.type !== 'system')
@@ -20,7 +44,7 @@ function MessageCard(props)
 				setAvatar(url);
 			});
 		}
-	}, []);
+	}, [toggle]);
 	const my_id=store.getState().auth.id;
 
 	// right click menu
@@ -184,8 +208,10 @@ function MessageCard(props)
 							<button 
 								type="button" 
 								class="list-group-item list-group-item-action"
-								data-bs-toggle="modal" 
-								data-bs-target="#replyModal">
+								onClick={()=>{
+									setReply(true);
+									setToggle(!toggle);
+							}}>
 							回复
 							</button>
 							<button 
@@ -196,43 +222,41 @@ function MessageCard(props)
 							</button>
 						</div>
 					)}
-				</div>
-
-				<div class="modal fade" id="replyModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-					<div class="modal-dialog">
-						<div class="modal-content">
-							<div class="modal-header">
-								<h5 class="modal-title" 
-									id="exampleModalLabel">
-								回复 {props.sender_name}
-								</h5>
+					{
+						reply && (
+						<div 
+							className="list-group-item"
+							style={{ display: 'flex', justifyContent: 'center', gap: '10px' }}>
+							<input
+								className="form-control col_auto"
+								type="text"
+								placeholder="请输入回复内容"
+								value={replyValue}
+								onChange={handleReplyChange}
+							/>
+							<div className="col-auto">
 								<button 
-									type="button" 
-									class="btn-close" 
-									data-bs-dismiss="modal"
-									aria-label="Close">
-								</button>
-							</div>
-							<div class="modal-body">
-								<textarea
-									className="form-control col_auto"
-									type="text"
-									placeholder="请输入回复内容"
-									id="reply-input"
-									rows="5"
-								/>
-							</div>
-							<div class="modal-footer">
-								<button 
-									type="button" 
-									class="btn btn-primary"
-									onClick={()=>props.onReply(props.message_id)}
-									>
+									name="submit"
+									className="btn btn-primary"
+									onClick={handleSend}
+								>
 								发送
 								</button>
 							</div>
+							<div className="col-auto">
+								<button 
+									name="submit"
+									className="btn btn-primary"
+									onClick={()=>{
+										setReply(false);
+										setToggle(!toggle);
+									}}
+								>
+								取消
+								</button>
+							</div>
 						</div>
-					</div>
+					)}
 				</div>
 			</>
 		);
