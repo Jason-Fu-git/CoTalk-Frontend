@@ -70,9 +70,11 @@ function Chat()
         request(url, "GET", true)
         .then((res) => 
         {
+            console.log(res);
             if (res.messages.length>0)
             {
-
+                const ntc=res.messages[res.messages.length-1].msg_text;
+                setNotice(ntc);
             }
         });
     }, [toggle]);

@@ -95,6 +95,10 @@ function Conversation()
                 const message_url=`${BACKEND_URL}/api/message/${message_id}/management?user_id=`+store.getState().auth.id;
                 const message=await request(message_url, "GET", true);
 
+                if (message.msg_type !== 'T')
+                {
+                    return;
+                }
                 const reply_target=message.reply_to;
                 let reply_name="??";
                 let reply_message="??";
@@ -203,6 +207,7 @@ function Conversation()
                             'onReply': replyMessage,
     
                             'type': type,
+                            'msg_type': element.msg_type,
 
                             'reply_target': reply_target,
                             'reply_name': reply_name,
@@ -210,10 +215,11 @@ function Conversation()
                         });
                     });
                     const history = await Promise.all(promises);
-                    setMessages(history);
-                    setCount(history.length);
+                    const history2=history.filter(obj=>obj.msg_type!=='G');
+                    setMessages(history2);
+                    setCount(history2.length);
                     console.log("History restored");
-                    console.log(history);
+                    console.log(history2);
                     setToggle(!toggle);
                 });               
             }
@@ -289,6 +295,7 @@ function Conversation()
                         'onReply': replyMessage,
 
                         'type': type,
+                        'msg_type': element.msg_type,
 
                         'reply_target': reply_target,
                         'reply_name': reply_name,
@@ -296,10 +303,11 @@ function Conversation()
                     });
                 });
                 const history = await Promise.all(promises);
-                setMessages(history);
-                setCount(history.length);
+                const history2=history.filter(obj=>obj.msg_type!=='G');
+                setMessages(history2);
+                setCount(history2.length);
                 console.log("History restored");
-                console.log(history);
+                console.log(history2);
             });
             setFirstRender(false);
         }
