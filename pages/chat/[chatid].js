@@ -148,7 +148,6 @@ function Chat()
             alert("群公告不能为空");
             return;
         }
-<<<<<<< pages/chat/[chatid].js
         setNotice(message);
         inputArea.value='';
         inputArea.focus();
@@ -165,10 +164,6 @@ function Chat()
             }
             setToggle(!toggle);
         });
-=======
-
-        setToggle(!toggle);
->>>>>>> pages/chat/[chatid].js
     }
 
     const exit = function()
