@@ -20,14 +20,13 @@ export default function Createpage(){
         });
     }, []);
 
-    const createChat = async () => {
-        const promises = memberid.map(id => 
+    const createChat = () => {
+        for(let i = 0; i < memberid.length; i++){
             request(`${BACKEND_URL}/api/user/private/${selfid}/friends`, "PUT", true,"application/json",{
-                "friend_id": id,
+                "friend_id": memberid[i],
                 "group": groupName
             })
-        );
-        await Promise.all(promises);
+        }
         router.push("/user/self/friends");
     }
 
