@@ -23,6 +23,7 @@
     "antd": "^5.15.3",
     "axios": "^1.6.8",
     "babel-jest": "^29.7.0",
+    "bootstrap": "^5.3.3",
     "eslint": "^8.57.0",
     "esm": "^3.2.25",
     "framer-motion": "4",
