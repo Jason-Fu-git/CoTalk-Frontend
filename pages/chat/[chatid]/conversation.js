@@ -90,7 +90,7 @@ function Conversation()
                 });
 
                 const dateOptions={ hour: 'numeric', minute: 'numeric', hour12: true, timeZone: 'Asia/Shanghai' };
-                const datetime = new Date(element.create_time*1000).toLocaleString('en-US', dateOptions);
+                const datetime = new Date(data.update_time*1000).toLocaleString('en-US', dateOptions);
     
                 const message_url=`${BACKEND_URL}/api/message/${message_id}/management?user_id=`+store.getState().auth.id;
                 const message=await request(message_url, "GET", true);
