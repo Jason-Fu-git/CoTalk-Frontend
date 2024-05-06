@@ -18,14 +18,14 @@ build:
     - master
 
 
-.test:
- image: node:18
- stage: test
+test:
+  image: node:18
+  stage: test
 
- before_script:
-   - yarn config set registry https://registry.npmmirror.com
-   - yarn
-   - yarn upgrade
+  before_script:
+    - yarn config set registry https://registry.npmmirror.com
+    - yarn
+    - yarn upgrade
 
 
 unit-test:
