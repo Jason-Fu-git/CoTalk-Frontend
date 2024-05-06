@@ -60,20 +60,7 @@ function TopBar()
                 </button>
       		</Link>
 		</div>
-		<div className="w-10/12 m-auto">
-			<Link href={`/chat/piazza`} passHref>
-                <button className="
-                    dark:bg-blue-400
-                    dark:text-gray-800
-                    bg-blue-400
-                    text-white
-                    font-semibold
-                    p-2
-                    rounded-md">
-				广场
-                </button>
-            </Link>
-		</div>
+
 		<div className="w-10/12 m-auto">
 			<Link href={`/`} passHref>
                 <button className="

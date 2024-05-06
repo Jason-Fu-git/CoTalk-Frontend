@@ -90,7 +90,11 @@ function Conversation()
                 });
 
                 const dateOptions={ hour: 'numeric', minute: 'numeric', hour12: true, timeZone: 'Asia/Shanghai' };
+<<<<<<< pages/chat/[chatid]/conversation.js
                 const datetime=new Date(data.update_time).toLocaleString('en-US', dateOptions);
+=======
+                const datetime = new Date(data.update_time*1000).toLocaleString('en-US', dateOptions);
+>>>>>>> pages/chat/[chatid]/conversation.js
     
                 const message_url=`${BACKEND_URL}/api/message/${message_id}/management?user_id=`+store.getState().auth.id;
                 const message=await request(message_url, "GET", true);
@@ -159,7 +163,11 @@ function Conversation()
                         });
 
                         const dateOptions={ hour: 'numeric', minute: 'numeric', hour12: true, timeZone: 'Asia/Shanghai' };
+<<<<<<< pages/chat/[chatid]/conversation.js
                         const datetime = new Date(element.create_time).toLocaleString('en-US', dateOptions);
+=======
+                        const datetime = new Date(element.create_time*1000).toLocaleString('en-US', dateOptions);
+>>>>>>> pages/chat/[chatid]/conversation.js
                 
                         // Mark as read
                         if (!element.read_users.includes(store.getState().auth.id)) 
@@ -245,7 +253,11 @@ function Conversation()
                     });
 
                     const dateOptions={ hour: 'numeric', minute: 'numeric', hour12: true, timeZone: 'Asia/Shanghai' };
+<<<<<<< pages/chat/[chatid]/conversation.js
                     const datetime = new Date(element.create_time).toLocaleString('en-US', dateOptions);
+=======
+                    const datetime = new Date(element.create_time*1000).toLocaleString('en-US', dateOptions);
+>>>>>>> pages/chat/[chatid]/conversation.js
             
                     // Mark as read
                     if (!element.read_users.includes(store.getState().auth.id)) 
@@ -311,6 +323,7 @@ function Conversation()
 
     const sendMessage=function(event) 
     {
+        if(typeof document !== 'undefined'){
         let inputArea=document.getElementById('chat-message-input');
         const message=inputArea.value;
         if (message)
@@ -338,6 +351,7 @@ function Conversation()
             inputArea.value='';
             inputArea.focus();
         }
+    }
     }
 
     const deleteMessage=function (message_id) 
@@ -391,6 +405,7 @@ function Conversation()
 
     const replyMessage=function (message_id)
     {
+        if(typeof document !== 'undefined'){
         let inputArea=document.getElementById('reply-input');
         const message=inputArea.value;
         if (message)
@@ -423,6 +438,7 @@ function Conversation()
             inputArea.value='';
             inputArea.focus();
         }       
+    }
     }
 
     return (

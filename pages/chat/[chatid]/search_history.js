@@ -73,6 +73,7 @@ function SearchHistory()
             });  
             return;
         }
+        if(typeof document !== 'undefined') {
         let inputArea=document.getElementById('search-input');
         const query=inputArea.value;
 
@@ -95,8 +96,8 @@ function SearchHistory()
                 .then((res) => {
                     sender_name=res.user_name;
                 });
-                const dateOptions={hour: 'numeric', minute:'numeric', hour12:true};
-                const datetime = new Date(element.create_time).toLocaleString('en', dateOptions);
+                const dateOptions={ hour: 'numeric', minute: 'numeric', hour12: true, timeZone: 'Asia/Shanghai' };
+                const datetime = new Date(element.create_time*1000).toLocaleString('en-US', dateOptions);
     
                 return ({
                     'index': index,
@@ -113,6 +114,7 @@ function SearchHistory()
             inputArea.value='';
             inputArea.focus();
         });
+    }
     },[toggle]);
 
     return (
