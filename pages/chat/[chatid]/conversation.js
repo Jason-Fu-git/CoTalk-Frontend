@@ -389,40 +389,28 @@ function Conversation()
         });
     }
 
-    const replyMessage=function (message_id)
+    const replyMessage = function (message_id, message)
     {
-        let inputArea=document.getElementById('reply-input');
-        const message=inputArea.value;
-        if (message)
+        // 通过Http发送一份
+        console.log("Reply: "+message);
+        console.log("Send Http");
+        request(`${BACKEND_URL}/api/message/send`, "POST", true, "application/json", 
         {
-            // 通过Http发送一份
-            console.log("Send Http");
-            request(`${BACKEND_URL}/api/message/send`, "POST", true, "application/json", 
-            {
-                "user_id": store.getState().auth.id,
-                "chat_id": chatid,
-                "msg_text": message,
-                "msg_type": "text",
-                "reply_to": message_id,
-            })
-            .then((res) =>
-            {
-                alert("回复成功");
-            })
-            .catch((err) =>
-            {
-                alert("回复失败");
-                console.log(err);
-            });
-
-            inputArea.value='';
-            inputArea.focus();
-        }
-        else
+            "user_id": store.getState().auth.id,
+            "chat_id": chatid,
+            "msg_text": message,
+            "msg_type": "text",
+            "reply_to": message_id,
+        })
+        .then((res) =>
         {
-            inputArea.value='';
-            inputArea.focus();
-        }       
+            alert("回复成功");
+        })
+        .catch((err) =>
+        {
+            alert("回复失败");
+            console.log(err);
+        });    
     }
 
     return (
@@ -445,7 +433,7 @@ function Conversation()
 
                 <div className="chat-container">
                 {messages.map((message) => (
-                        <div key={message.index}>
+                        <div key={message.message_id}>
                             <MessageCard {...message}/>
                         </div>
                 ))}

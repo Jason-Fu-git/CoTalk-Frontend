@@ -16,6 +16,7 @@ function Chat()
     const [my_privilege, setMyPrivilege] = useState("");
     const [toggle, setToggle]=useState(true);
     const [notice, setNotice]=useState("没有群公告");
+    const [editNotice, setEditNotice]=useState(false);
 
     const {chatid} = router.query;
     const my_friends = store.getState().auth.friends;
@@ -28,6 +29,11 @@ function Chat()
             return m;
         });
     }
+
+    const handleNoticeChange = (event) => 
+    {
+        setNotice(event.target.value);
+    };
 
     useEffect(() => 
     {
@@ -137,17 +143,12 @@ function Chat()
     const sendNotice = function ()
     {
         // 将message作为群公告发出
-        let inputArea=document.getElementById('notice-input');
-        const message=inputArea.value;
-        if (message === '')
+        if (notice === '')
         {
             alert("群公告不能为空");
             return;
         }
 
-        setNotice(message);
-        inputArea.value='';
-        inputArea.focus();
         setToggle(!toggle);
     }
 
@@ -176,16 +177,54 @@ function Chat()
                     dark:text-white text-3xl font-bold text-center">
                     群公告
                 </h1>
-                <p>{notice}</p>
                 {
-                    (my_privilege === 'O')&&(
-                        <button 
-                            class="btn btn-secondary"
-                            data-bs-toggle="modal" 
-                            data-bs-target="#noticeModal">
-                        发布群公告
-                        </button>
+                    (my_privilege === 'O') && (!editNotice) &&(
+                        <>
+                            <p>{notice}</p>
+                            <button 
+                                class="btn btn-secondary"
+                                onClick={()=>{
+                                    setEditNotice(true);
+                                    setToggle(!toggle);
+                            }}>
+                            发布群公告
+                            </button>
+                        </>
                 )}
+				{
+					editNotice && (
+					<div 
+						className="list-group-item"
+						style={{ display: 'flex', justifyContent: 'center', gap: '10px' }}>
+						<input
+							className="form-control col_auto"
+							type="text"
+							value={notice}
+							onChange={handleNoticeChange}
+						/>
+						<div className="col-auto">
+							<button 
+								name="submit"
+								className="btn btn-primary"
+								onClick={()=>sendNotice()}
+							>
+							发送
+							</button>
+						</div>
+						<div className="col-auto">
+							<button 
+								name="submit"
+								className="btn btn-primary"
+								onClick={()=>{
+								setEditNotice(false);
+									setToggle(!toggle);
+								}}
+							>
+							取消
+							</button>
+						</div>
+					</div>
+				)}
                 <h1 className="
                     dark:text-white text-3xl font-bold text-center">
                     所有成员
