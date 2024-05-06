@@ -1,4 +1,3 @@
-import 'bootstrap/dist/css/bootstrap.css';
 import React, { useState, useEffect } from 'react';
 import {useRouter} from 'next/router';
 import Link from 'next/link';
@@ -20,7 +19,9 @@ function Conversation()
     // 第一次渲染时将所有已有消息标记为已读
     const [firstRender, setFirstRender]=useState(true);
     const [toggle, setToggle]=useState(true);
-
+    useEffect(() => {
+        import('bootstrap/dist/css/bootstrap.css');
+      }, []);
     const addMessage = (newMessage) => 
     {
         setMessages(oldMessages => 
