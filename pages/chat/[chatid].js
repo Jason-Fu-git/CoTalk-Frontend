@@ -157,8 +157,8 @@ function Chat()
         .then((res) =>{
             if (Number(res.code) === 0) {
                 alert("群公告发布成功");
-                setToggle(!toggle);
             }
+            setToggle(!toggle);
         });
     }
 
