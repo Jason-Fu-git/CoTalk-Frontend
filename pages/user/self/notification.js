@@ -12,11 +12,13 @@ export default function Notification()
     const [flash, set_flash] = useState(false);
     const self_id = store.getState().auth.id;
 
-    useEffect(() => {
+    useEffect(() => 
+    {
         const later_than=0;
         const only_unread=false;
         request(`${BACKEND_URL}/api/user/private/${store.getState().auth.id}/notifications?only_unread=${only_unread}&later_than=${later_than}`, "GET", true)
-        .then(async (res) => {
+        .then(async (res) => 
+        {
             const promises = res.notifications.map(async function (element){
                 // modify every notification
                 element.content = JSON.parse(element.content.replace(/'/g, '"').replace(/True/g, 'true').replace(/False/g, 'false')); // Replace single quotes with double quotes
@@ -25,7 +27,8 @@ export default function Notification()
 
                 let sender_name="??";
                 await request(`${BACKEND_URL}/api/user/private/${sender_id}`, "GET", false)
-                .then((res) => {
+                .then((res) => 
+                {
                     sender_name=res.user_name;
                     element.sender_name=sender_name; // Add new property to element
                 });
@@ -52,11 +55,18 @@ export default function Notification()
         });
     }, [flash]);
 
-    const deleteNotification = (notification_id) => {
+    const deleteNotification = (notification_id) => 
+    {
         request(`${BACKEND_URL}/api/user/private/${store.getState().auth.id}/notification/${notification_id}`, "DELETE", true)
         .then((res) => {
-            if (Number(res.code) === 0) {
+            if (Number(res.code) === 0) 
+            {
                 alert("删除成功");
+                set_notifications((currentNotifications) => 
+                {
+                    const newMessages = currentNotifications.filter(obj => (obj.notification_id !== notification_id));
+                    return newMessages;
+                });
             }
         });
     }
@@ -84,13 +94,14 @@ export default function Notification()
         });
     }
 
-    const approveChat = (chat_id,sender_id) => {
+    const approveChat = (chat_id, sender_id) => 
+    {
         request(`${BACKEND_URL}/api/chat/${chat_id}/members`, "PUT", true,"application/json",
         {
             "user_id": self_id,
             "member_id": self_id,
             "approve": true
-          })
+        })
         .then((res) => {
             if (Number(res.code) === 0) {
                 alert("已加入聊天室");
@@ -112,7 +123,7 @@ export default function Notification()
                 </button>
                 <div>
                 </div>
-                    {notifications.map((notification,index) => (
+                    {notifications.map((notification, index) => (
                         <div key={index}>
                             <div className="card">
                                 <div className="card-header">
@@ -150,9 +161,10 @@ export default function Notification()
                                                     className="btn btn-success"
                                                     onClick={() => {
                                                         approveFriend(notification.sender_id);
+                                                        markAsRead(notification.notification_id)
                                                         set_flash(!flash);}}
                                                 >
-                                                    同意
+                                                同意
                                                 </button>
                                             )
                                         }
@@ -164,6 +176,7 @@ export default function Notification()
                                                 className="btn btn-success"
                                                 onClick={() => {
                                                     approveChat(notification.content.chat_id, notification.sender_id);
+                                                    markAsRead(notification.notification_id)
                                                     set_flash(!flash);}}
                                                 >
                                                     同意聊天室邀请
@@ -174,7 +187,7 @@ export default function Notification()
                                             name="delete"
                                             className="btn btn-primary"
                                             onClick={() => {
-                                                deleteNotification(notification.notification_id)
+                                                deleteNotification(notification.notification_id);
                                                 set_flash(!flash);}}>
                                             删除此条通知
                                         </button>
