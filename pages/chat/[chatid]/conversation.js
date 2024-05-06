@@ -89,8 +89,8 @@ function Conversation()
                     sender_name=res.user_name;
                 });
 
-                const dateOptions={hour: 'numeric', minute:'numeric', hour12:true};
-                const datetime=new Date(data.update_time).toLocaleString('en', dateOptions);
+                const dateOptions={ hour: 'numeric', minute: 'numeric', hour12: true, timeZone: 'Asia/Shanghai' };
+                const datetime = new Date(element.create_time*1000).toLocaleString('en-US', dateOptions);
     
                 const message_url=`${BACKEND_URL}/api/message/${message_id}/management?user_id=`+store.getState().auth.id;
                 const message=await request(message_url, "GET", true);
@@ -158,8 +158,8 @@ function Conversation()
                             sender_name=res.user_name;
                         });
 
-                        const dateOptions={hour: 'numeric', minute:'numeric', hour12:true};
-                        const datetime = new Date(element.create_time).toLocaleString('en', dateOptions);
+                        const dateOptions={ hour: 'numeric', minute: 'numeric', hour12: true, timeZone: 'Asia/Shanghai' };
+                        const datetime = new Date(element.create_time*1000).toLocaleString('en-US', dateOptions);
                 
                         // Mark as read
                         if (!element.read_users.includes(store.getState().auth.id)) 
@@ -244,8 +244,8 @@ function Conversation()
                         sender_name=res.user_name;
                     });
 
-                    const dateOptions={hour: 'numeric', minute:'numeric', hour12:true};
-                    const datetime = new Date(element.create_time).toLocaleString('en', dateOptions);
+                    const dateOptions={ hour: 'numeric', minute: 'numeric', hour12: true, timeZone: 'Asia/Shanghai' };
+                    const datetime = new Date(element.create_time*1000).toLocaleString('en-US', dateOptions);
             
                     // Mark as read
                     if (!element.read_users.includes(store.getState().auth.id)) 
