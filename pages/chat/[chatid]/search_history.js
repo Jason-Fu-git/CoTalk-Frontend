@@ -73,6 +73,7 @@ function SearchHistory()
             });  
             return;
         }
+        if(typeof document !== 'undefined') {
         let inputArea=document.getElementById('search-input');
         const query=inputArea.value;
 
@@ -113,6 +114,7 @@ function SearchHistory()
             inputArea.value='';
             inputArea.focus();
         });
+    }
     },[toggle]);
 
     return (
