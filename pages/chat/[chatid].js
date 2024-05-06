@@ -146,29 +146,23 @@ function Chat()
         if (notice === '')
         {
             alert("群公告不能为空");
+            setEditNotice(false);
+            setToggle(!toggle);
             return;
         }
-<<<<<<< pages/chat/[chatid].js
-        setNotice(message);
-        inputArea.value='';
-        inputArea.focus();
         request(`${BACKEND_URL}/api/message/send`, "POST", true,"application/json",{
             "user_id":my_id,
             "chat_id":chatid,
             "msg_text":message,
             "msg_type":"group_notice"
-        }
-        )
+        })
         .then((res) =>{
             if (Number(res.code) === 0) {
                 alert("群公告发布成功");
             }
+            setEditNotice(false);
             setToggle(!toggle);
         });
-=======
-
-        setToggle(!toggle);
->>>>>>> pages/chat/[chatid].js
     }
 
     const exit = function()
