@@ -19,14 +19,16 @@ function Friends()
         .then((res) => {
             setMyFriends(res.friends);
             let friend_ids=[];
-            res.friends.forEach(function (element, index, array){
+            let group_ids=[];
+            res.friends.forEach(function (element){
                 friend_ids.push(element.user_id);
                 element.user_tag="好友";
                 //如果groups里不包含element.group,则将element.group加入groups
-                if (element.group!="ungrouped"&&!groups.includes(element.group)){
-                    setGroups([...groups, element.group]);
+                if (element.group!="ungrouped"&&!group_ids.includes(element.group)){
+                    group_ids.push(element.group);
                 }
             });
+            setGroups(group_ids);
             console.log(friend_ids);
             store.dispatch(setFriends(friend_ids));
         });
