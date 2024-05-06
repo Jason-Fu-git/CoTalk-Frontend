@@ -1,3 +1,4 @@
+import 'bootstrap/dist/css/bootstrap.css';
 import React, { useState, useEffect } from 'react';
 import {useRouter} from 'next/router';
 import Link from 'next/link';
@@ -19,9 +20,7 @@ function Conversation()
     // 第一次渲染时将所有已有消息标记为已读
     const [firstRender, setFirstRender]=useState(true);
     const [toggle, setToggle]=useState(true);
-    useEffect(() => {
-        import('bootstrap/dist/css/bootstrap.css');
-      }, []);
+
     const addMessage = (newMessage) => 
     {
         setMessages(oldMessages => 
@@ -312,6 +311,7 @@ function Conversation()
 
     const sendMessage=function(event) 
     {
+        if(typeof document !== 'undefined'){
         let inputArea=document.getElementById('chat-message-input');
         const message=inputArea.value;
         if (message)
@@ -339,6 +339,7 @@ function Conversation()
             inputArea.value='';
             inputArea.focus();
         }
+    }
     }
 
     const deleteMessage=function (message_id) 
@@ -392,6 +393,7 @@ function Conversation()
 
     const replyMessage=function (message_id)
     {
+        if(typeof document !== 'undefined'){
         let inputArea=document.getElementById('reply-input');
         const message=inputArea.value;
         if (message)
@@ -424,6 +426,7 @@ function Conversation()
             inputArea.value='';
             inputArea.focus();
         }       
+    }
     }
 
     return (
