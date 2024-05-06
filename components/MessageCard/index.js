@@ -1,5 +1,5 @@
 import 'bootstrap/dist/css/bootstrap.css';
-//import 'bootstrap/dist/js/bootstrap.bundle.min';
+import 'bootstrap/dist/js/bootstrap.bundle.min';
 import Image from 'next/image';
 import React,{ useState, useEffect } from "react";
 
@@ -13,9 +13,6 @@ function MessageCard(props)
 	const [avatar, setAvatar] = useState('');
 	useEffect(()=>
 	{
-		if (typeof window !== 'undefined') {
-			import('bootstrap/dist/js/bootstrap.bundle.min');
-		  }
 		if (props.type !== 'system')
 		{
 			request(`${BACKEND_URL}/api/user/private/${props.sender_id}/avatar`, "GET", false)
