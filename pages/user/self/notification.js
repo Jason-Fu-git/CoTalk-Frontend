@@ -150,6 +150,7 @@ export default function Notification()
                                                     className="btn btn-success"
                                                     onClick={() => {
                                                         approveFriend(notification.sender_id);
+                                                        markAsRead(notification.notification_id);
                                                         set_flash(!flash);}}
                                                 >
                                                     同意
@@ -164,6 +165,7 @@ export default function Notification()
                                                 className="btn btn-success"
                                                 onClick={() => {
                                                     approveChat(notification.content.chat_id, notification.sender_id);
+                                                    markAsRead(notification.notification_id);
                                                     set_flash(!flash);}}
                                                 >
                                                     同意聊天室邀请
@@ -174,7 +176,7 @@ export default function Notification()
                                             name="delete"
                                             className="btn btn-primary"
                                             onClick={() => {
-                                                deleteNotification(notification.notification_id)
+                                                deleteNotification(notification.notification_id);
                                                 set_flash(!flash);}}>
                                             删除此条通知
                                         </button>
