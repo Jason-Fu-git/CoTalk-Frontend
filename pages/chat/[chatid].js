@@ -1,5 +1,4 @@
-import 'bootstrap/dist/scss/bootstrap.css';
-import 'bootstrap/dist/js/bootstrap.bundle.min';
+import 'bootstrap';
 import React, { useState,useEffect, useRef } from "react";
 import {useRouter} from 'next/router';
 import Link from 'next/link';
