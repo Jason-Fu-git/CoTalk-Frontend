@@ -15,7 +15,7 @@ function Conversation()
     const {chatid}=router.query;
     const [messages, setMessages]=useState([]);
     const [members, setMembers]=useState([]);
-
+    let id2name={};
     const [count, setCount]=useState(0);
     // 第一次渲染时将所有已有消息标记为已读
     const [firstRender, setFirstRender]=useState(true);
@@ -83,17 +83,37 @@ function Conversation()
                 {
                     return;
                 }
+
                 let sender_name="??";
-                await request(`${BACKEND_URL}/api/user/private/${sender_id}`, "GET", false)
-                .then((res) => {
-                    sender_name=res.user_name;
-                });
+                if (!Object.keys(id2name).includes(sender_id))
+                {
+                    await request(`${BACKEND_URL}/api/user/private/${sender_id}`, "GET", false)
+                    .then((res) => 
+                    {
+                        sender_name=res.user_name;
+                        id2name[sender_id]=res.user_name;
+                    });    
+                }
+                else
+                {
+                    sender_name=id2name[sender_id];
+                }
 
                 const dateOptions={ hour: 'numeric', minute: 'numeric', hour12: true, timeZone: 'Asia/Shanghai' };
                 const datetime=new Date(data.update_time*1000).toLocaleString('en-US', dateOptions);
     
                 const message_url=`${BACKEND_URL}/api/message/${message_id}/management?user_id=`+store.getState().auth.id;
                 const message=await request(message_url, "GET", true);
+
+                // Mark as read
+                if (!message.read_users.includes(store.getState().auth.id)) 
+                {
+                    await request(`${BACKEND_URL}/api/message/${message.msg_id}/management`,
+                    "PUT", true, "application/json",
+                    {
+                        "user_id": store.getState().auth.id,
+                    });
+                }
 
                 if (message.msg_type !== 'T')
                 {
@@ -108,10 +128,41 @@ function Conversation()
                     const target=await request(target_url, "GET", true);
 
                     reply_message=target.msg_text;
-                    await request(`${BACKEND_URL}/api/user/private/${target.sender_id}`, "GET", false)
-                    .then((res) => {
-                        reply_name=res.user_name;
-                    });
+                    if (!Object.keys(id2name).includes(target.sender_id))
+                    {
+                        await request(`${BACKEND_URL}/api/user/private/${target.sender_id}`, "GET", false)
+                        .then((res) => {
+                            reply_name=res.user_name;
+                            id2name[sender_id]=res.user_name;
+                        });    
+                    }
+                    else
+                    {
+                        reply_name=id2name[sender_id];
+                    }
+                }
+
+                let hasread="已读成员: ";
+                for (var i=0; i<message.read_users.length; i++)
+                {
+                    if (message.read_users[i] === store.getState().auth.id)
+                    {
+                        continue;
+                    }
+                    let hasread_username="??";
+                    if (!Object.keys(id2name).includes(message.read_users[i]))
+                    {
+                        await request(`${BACKEND_URL}/api/user/private/${message.read_users[i]}`, "GET", false)
+                        .then((res) => {
+                            hasread_username=res.user_name;
+                            id2name[message.read_users[i]]=res.user_name;
+                        });    
+                    }
+                    else
+                    {
+                        hasread_username=id2name[message.read_users[i]];
+                    }
+                    hasread=hasread+" "+hasread_username+" ";
                 }
 
                 addMessage({
@@ -134,6 +185,8 @@ function Conversation()
                     'reply_target': reply_target,
                     'reply_name': reply_name,
                     'reply_message': reply_message,
+
+                    'hasread': hasread,
                 });
 
                 // Mark as read
@@ -156,11 +209,21 @@ function Conversation()
                 .then(async (res) => {
                     const promises = res.messages.map(async function (element, index){
                         const sender_id=element.sender_id;
+
                         let sender_name="??";
-                        await request(`${BACKEND_URL}/api/user/private/${sender_id}`, "GET", false)
-                        .then((res) => {
-                            sender_name=res.user_name;
-                        });
+                        if (!Object.keys(id2name).includes(sender_id))
+                        {
+                            await request(`${BACKEND_URL}/api/user/private/${sender_id}`, "GET", false)
+                            .then((res) => 
+                            {
+                                sender_name=res.user_name;
+                                id2name[sender_id]=res.user_name;
+                            });    
+                        }
+                        else
+                        {
+                            sender_name=id2name[sender_id];
+                        }
 
                         const dateOptions={ hour: 'numeric', minute: 'numeric', hour12: true, timeZone: 'Asia/Shanghai' };
                         const datetime = new Date(element.create_time*1000).toLocaleString('en-US', dateOptions);
@@ -184,13 +247,41 @@ function Conversation()
                             const target=await request(target_url, "GET", true);
     
                             reply_message=target.msg_text;
-                            await request(`${BACKEND_URL}/api/user/private/${target.sender_id}`, "GET", false)
-                            .then((res) => {
-                                target_name=res.user_name;
-                            });
+
+                            if (!Object.keys(id2uaer).includes(target.sender_id))
+                            {
+                                await request(`${BACKEND_URL}/api/user/private/${target.sender_id}`, "GET", false)
+                                .then((res) => {
+                                    target_name=res.user_name;
+                                    id2user[target.sender_id]=res.user_name;
+                                });
+                            }
                         }
 
                         const type= (sender_name === 'system')? 'system':'normal';
+
+                        let hasread="已读成员: ";
+                        for (var i=0; i<element.read_users.length; i++)
+                        {
+                            if (element.read_users[i] === store.getState().auth.id)
+                            {
+                                continue;
+                            }
+                            let hasread_username="??"
+                            if (!Object.keys(id2name).includes(element.read_users[i]))
+                            {
+                                await request(`${BACKEND_URL}/api/user/private/${element.read_users[i]}`, "GET", false)
+                                .then((res) => {
+                                    hasread_username=res.user_name;
+                                    id2name[element.read_users[i]]=res.user_name;
+                                });    
+                            }
+                            else
+                            {
+                                hasread_username=id2name[element.read_users[i]];
+                            }
+                            hasread=hasread+" "+hasread_username+" ";
+                        }
                         return ({
                             'index': index,
                             'sender_name': sender_name,
@@ -212,6 +303,8 @@ function Conversation()
                             'reply_target': reply_target,
                             'reply_name': reply_name,
                             'reply_message': reply_message,
+
+                            'hasread': hasread,
                         });
                     });
                     const history = await Promise.all(promises);
@@ -241,14 +334,26 @@ function Conversation()
             const messages_url=`${BACKEND_URL}/api/chat/${chatid}/messages?user_id=`+store.getState().auth.id;
             
             request(messages_url, "GET", true)
-            .then(async (res) => {
+            .then(async (res) => 
+            {
                 const promises = res.messages.map(async function (element, index){
                     const sender_id=element.sender_id;
+
                     let sender_name="??";
-                    await request(`${BACKEND_URL}/api/user/private/${sender_id}`, "GET", false)
-                    .then((res) => {
-                        sender_name=res.user_name;
-                    });
+                    if (!Object.keys(id2name).includes(sender_id))
+                    {
+                        await request(`${BACKEND_URL}/api/user/private/${sender_id}`, "GET", false)
+                        .then((res) => {
+                            sender_name=res.user_name;
+                            id2name[sender_id]=res.user_name;
+                        });    
+                    }
+                    else
+                    {
+                        sender_name=id2name[sender_id];
+                    }
+                    console.log("ID TO NAME: ");
+                    console.log(id2name);
 
                     const dateOptions={ hour: 'numeric', minute: 'numeric', hour12: true, timeZone: 'Asia/Shanghai' };
                     const datetime = new Date(element.create_time*1000).toLocaleString('en-US', dateOptions);
@@ -272,13 +377,46 @@ function Conversation()
                         const target=await request(target_url, "GET", true);
 
                         reply_message=target.msg_text;
-                        await request(`${BACKEND_URL}/api/user/private/${target.sender_id}`, "GET", false)
-                        .then((res) => {
-                            reply_name=res.user_name;
-                        });
+
+                        if (!Object.keys(id2name).includes(target.sender_id))
+                        {
+                            await request(`${BACKEND_URL}/api/user/private/${target.sender_id}`, "GET", false)
+                            .then((res) => {
+                                reply_name=res.user_name;
+                                id2name[target.sender_id]=res.user_name;
+                            });    
+                        }
+                        else
+                        {
+                            reply_name=id2name[target.sender_id];
+                        }
                     }
         
                     const type= (element.is_system)? 'system':'normal';
+
+                    let hasread="已读成员: ";
+                    for (var i=0; i<element.read_users.length; i++)
+                    {
+                        if (element.read_users[i] === store.getState().auth.id)
+                        {
+                            continue;
+                        }
+                        let hasread_username="??"
+                        if (!Object.keys(id2name).includes(element.read_users[i]))
+                        {
+                            await request(`${BACKEND_URL}/api/user/private/${element.read_users[i]}`, "GET", false)
+                            .then((res) => {
+                                hasread_username=res.user_name;
+                                id2name[element.read_users[i]]=res.user_name;
+                            });    
+                        }
+                        else
+                        {
+                            hasread_username=id2name[element.read_users[i]];
+                        }
+                        hasread=hasread+" "+hasread_username+" ";
+                    }
+
                     return ({
                         'index': index,
                         'sender_name': sender_name,
@@ -300,6 +438,8 @@ function Conversation()
                         'reply_target': reply_target,
                         'reply_name': reply_name,
                         'reply_message': reply_message,
+
+                        'hasread': hasread,
                     });
                 });
                 const history = await Promise.all(promises);
