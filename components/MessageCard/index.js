@@ -122,6 +122,7 @@ function MessageCard(props)
 								</div>
 							</div>
 						</div>
+						{props.hasread}
 
 						{(props.reply_target !== -1)&& (
 						<div class="card-footer">
@@ -188,6 +189,7 @@ function MessageCard(props)
 								</div>
 							</div>
 						</div>
+						{props.hasread}
 
 						{(props.reply_target !== -1)&& (
 						<div class="card-footer">
