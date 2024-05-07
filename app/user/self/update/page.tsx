@@ -17,8 +17,9 @@ const Update = () => {
     const [avatar, setAvatar] = useState(typeof window !== 'undefined' ? new File([], "") : null);
     const [prev_name, setPrevName] = useState("");
     const [prev_email, setPrevEmail] = useState("");
+    const [code, setCode] = useState("");
     const [prev_description, setPrevDescription] = useState("");
-
+    const [disabled,setDisabled] = useState(true);
     const router = useRouter();
     const dispatch = store.dispatch;
 
@@ -27,8 +28,14 @@ const Update = () => {
         setPrevEmail(store.getState().auth.email);
         setPrevDescription(store.getState().auth.description);
     }, []);
-
-    const update = () => {
+        useEffect(() => {
+            let isDisabled = user_name === "" && description === "" && user_email === "" && avatar !== null && avatar.size === 0 && password === "";
+            if(code!==""&&password===""){
+                isDisabled=true;
+            }
+            setDisabled(isDisabled);
+        }, [user_name, description, user_email, avatar, password]);
+        const update = () => {
         const formData = new FormData();
         if(user_name!==""){
             formData.append("user_name", user_name);
@@ -38,6 +45,10 @@ const Update = () => {
         }
         if(description!==""){
             formData.append("description", description);
+        }
+        if(password!==""){
+            formData.append("password", password);
+
         }
         if (avatar!=null&&avatar.size !== 0) {
             formData.append("avatar", avatar);
@@ -59,17 +70,15 @@ const Update = () => {
             }
         })
     };
-    const delete_user = () => {
-        request(`${BACKEND_URL}/api/user/private/${store.getState().auth.id}`, "DELETE", true)
+
+    const sendcode = () => {
+        request(`${BACKEND_URL}/api/user/private/${store.getState().auth.id}/verification`, "PUT", true)
         .then((res) => {
             if (Number(res.code) === 0) {
-                dispatch(resetAuth());
-                alert(DELETE_SUCCESS);
-                router.push(`/`);
+                alert("验证码已发送，请查看邮箱");
             }
-        })
+        });
     }
-
     return (
         <>
             <p className="lead">修改个人信息</p>
@@ -112,18 +121,36 @@ const Update = () => {
                 onChange={(e) => set_description(e.target.value)}
             />
             </div>
+            <div className="mb-3">
+            <label htmlFor="exampleFormControlInput1" className="form-label">新密码</label>
+            <input
+                className="form-control"
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+            />
+            </div>
+            <div className="mb-3">
+            <label htmlFor="exampleFormControlInput1" className="form-label">6位验证码</label>
+            <input
+                className="form-control"
+                type="text"
+                value={code}
+                onChange={(e) => setCode(e.target.value)}
+            />
+            </div>
+            <button 
+                name="code"
+                className="btn btn-secondary"
+                onClick={sendcode}>
+                发送验证码
+            </button>
             <button 
                 name="submit"
                 className="btn btn-primary"
                 onClick={update} 
-                disabled={user_name === ""&&description===""&&user_email===""&&avatar!=null&&avatar.size=== 0}>
+                disabled={disabled}>
                 确认修改
-            </button>
-            <button 
-                name="delete"
-                className="btn btn-secondary"
-                onClick={delete_user}>
-                注销用户
             </button>
         </>
     );
