@@ -97,14 +97,11 @@ function SearchHistory()
                 });
                 const dateOptions={ hour: 'numeric', minute: 'numeric', hour12: true, timeZone: 'Asia/Shanghai' };
                 const datetime = new Date(element.create_time).toLocaleString('en-US', dateOptions);
-    
                 return ({
                     'index': index,
                     'sender_id': sender_id,
                     'sender_name': sender_name,
-            
                     'message': element.msg_text,
-    
                     'datetime': datetime,
                 });
             });
