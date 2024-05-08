@@ -16,6 +16,8 @@ function Conversation()
     const [messages, setMessages]=useState([]);
     const [members, setMembers]=useState([]);
     let id2name={};
+    let msg2ref={};
+
     const [count, setCount]=useState(0);
     // 第一次渲染时将所有已有消息标记为已读
     const [firstRender, setFirstRender]=useState(true);
@@ -119,26 +121,35 @@ function Conversation()
                 {
                     return;
                 }
-                const reply_target=message.reply_to;
+                let reply_target=message.reply_to;
                 let reply_name="??";
                 let reply_message="??";
                 if (reply_target !== -1)
                 {
                     const target_url=`${BACKEND_URL}/api/message/${reply_target}/management?user_id=`+store.getState().auth.id;
-                    const target=await request(target_url, "GET", true);
+                    try
+                    {
+                        const target=await request(target_url, "GET", true);
 
-                    reply_message=target.msg_text;
-                    if (!Object.keys(id2name).includes(target.sender_id))
-                    {
-                        await request(`${BACKEND_URL}/api/user/private/${target.sender_id}`, "GET", false)
-                        .then((res) => {
-                            reply_name=res.user_name;
-                            id2name[sender_id]=res.user_name;
-                        });    
+                        reply_message=target.msg_text;
+                        if (!Object.keys(id2name).includes(target.sender_id))
+                        {
+                            await request(`${BACKEND_URL}/api/user/private/${target.sender_id}`, "GET", false)
+                            .then((res) => {
+                                reply_name=res.user_name;
+                                id2name[sender_id]=res.user_name;
+                            });    
+                        }
+                        else
+                        {
+                            reply_name=id2name[sender_id];
+                        }
                     }
-                    else
+                    catch(err)
                     {
-                        reply_name=id2name[sender_id];
+                        reply_message="消息已删除";
+                        reply_name="";
+                        reply_target=-2;
                     }
                 }
 
@@ -179,6 +190,7 @@ function Conversation()
                     'onDelete': deleteMessage,
                     'onWithdrew': withdrewMessage,
                     'onReply': replyMessage,
+                    'onJump': jump2Message,
 
                     'type': 'normal',
 
@@ -238,23 +250,32 @@ function Conversation()
                             });
                         }
 
-                        const reply_target=element.reply_to;
+                        let reply_target=element.reply_to;
                         let reply_name="??";
                         let reply_message="??";
                         if (reply_target !== -1)
                         {
                             const target_url=`${BACKEND_URL}/api/message/${reply_target}/management?user_id=`+store.getState().auth.id;
-                            const target=await request(target_url, "GET", true);
-    
-                            reply_message=target.msg_text;
-
-                            if (!Object.keys(id2uaer).includes(target.sender_id))
+                            try
                             {
-                                await request(`${BACKEND_URL}/api/user/private/${target.sender_id}`, "GET", false)
-                                .then((res) => {
-                                    target_name=res.user_name;
-                                    id2user[target.sender_id]=res.user_name;
-                                });
+                                const target=await request(target_url, "GET", true);
+        
+                                reply_message=target.msg_text;
+
+                                if (!Object.keys(id2uaer).includes(target.sender_id))
+                                {
+                                    await request(`${BACKEND_URL}/api/user/private/${target.sender_id}`, "GET", false)
+                                    .then((res) => {
+                                        target_name=res.user_name;
+                                        id2user[target.sender_id]=res.user_name;
+                                    });
+                                }                                
+                            }
+                            catch(err)
+                            {
+                                reply_message="消息已删除";
+                                reply_name="";
+                                reply_target=-2;
                             }
                         }
 
@@ -296,6 +317,7 @@ function Conversation()
                             'onDelete': deleteMessage,
                             'onWithdrew': withdrewMessage,
                             'onReply': replyMessage,
+                            'onJump': jump2Message,
     
                             'type': type,
                             'msg_type': element.msg_type,
@@ -368,27 +390,36 @@ function Conversation()
                         });
                     }
 
-                    const reply_target=element.reply_to;
+                    let reply_target=element.reply_to;
                     let reply_name="??";
                     let reply_message="??";
                     if (reply_target !== -1)
                     {
                         const target_url=`${BACKEND_URL}/api/message/${reply_target}/management?user_id=`+store.getState().auth.id;
-                        const target=await request(target_url, "GET", true);
-
-                        reply_message=target.msg_text;
-
-                        if (!Object.keys(id2name).includes(target.sender_id))
+                        try
                         {
-                            await request(`${BACKEND_URL}/api/user/private/${target.sender_id}`, "GET", false)
-                            .then((res) => {
-                                reply_name=res.user_name;
-                                id2name[target.sender_id]=res.user_name;
-                            });    
+                            const target=await request(target_url, "GET", true);
+
+                            reply_message=target.msg_text;
+    
+                            if (!Object.keys(id2name).includes(target.sender_id))
+                            {
+                                await request(`${BACKEND_URL}/api/user/private/${target.sender_id}`, "GET", false)
+                                .then((res) => {
+                                    reply_name=res.user_name;
+                                    id2name[target.sender_id]=res.user_name;
+                                });    
+                            }
+                            else
+                            {
+                                reply_name=id2name[target.sender_id];
+                            }
                         }
-                        else
+                        catch(err)
                         {
-                            reply_name=id2name[target.sender_id];
+                            reply_message="消息已删除";
+                            reply_name="";
+                            reply_target=-2;
                         }
                     }
         
@@ -431,6 +462,7 @@ function Conversation()
                         'onDelete': deleteMessage,
                         'onWithdrew': withdrewMessage,
                         'onReply': replyMessage,
+                        'onJump': jump2Message,
 
                         'type': type,
                         'msg_type': element.msg_type,
@@ -561,6 +593,11 @@ function Conversation()
         });    
     }
 
+    const jump2Message = function (message_id)
+    {
+        msg2ref[message_id].current.scrollToCard();
+    }
+
     return (
         <>
             <div className="sm:w-9/12 sm:m-auto pt-16 pb-16">
@@ -580,11 +617,25 @@ function Conversation()
                 </Link>
 
                 <div className="chat-container">
-                {messages.map((message) => (
-                        <div key={message.message_id}>
-                            <MessageCard {...message}/>
-                        </div>
-                ))}
+                {messages.map((message) => {
+                    
+                    if (!Object.keys(msg2ref).includes(message.message_id))
+                    {
+                        let componentRef=React.createRef();
+                        msg2ref[message.message_id]=componentRef;
+                        return (
+                            <div key={message.message_id}>
+                                <MessageCard {...message} ref={msg2ref[message.message_id]}/>
+                            </div>);
+                    }
+                    else
+                    {
+                        return (
+                            <div key={message.message_id}>
+                                <MessageCard {...message} ref={msg2ref[message.message_id]}/>
+                            </div>);
+                    }
+                })}
                 </div>
 
                 <div className="input-group mb-3 fixed-input">
