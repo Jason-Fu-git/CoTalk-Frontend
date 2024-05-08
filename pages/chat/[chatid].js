@@ -191,10 +191,10 @@ function Chat()
                     dark:text-white text-3xl font-bold text-center">
                     群公告
                 </h1>
+                <p>{notice}</p>
                 {
                     (my_privilege === 'O') && (!editNotice) &&(
                         <>
-                            <p>{notice}</p>
                             <button 
                                 class="btn btn-secondary"
                                 onClick={()=>{
