@@ -8,6 +8,7 @@ import { request } from "@/app/utils/network";
 
 class MessageCard extends React.Component
 {
+	cardRef = React.createRef();
 	constructor (props)
 	{
 		super(props);
@@ -26,7 +27,6 @@ class MessageCard extends React.Component
 			onDelete: props.onDelete,
 			onWithdrew: props.onWithdrew,
 			onReply: props.onReply,
-			onJump: props.onJump,
 
 			type: props.type,
 
@@ -41,7 +41,6 @@ class MessageCard extends React.Component
 		};
 		// Create a reference to the "card" component
 		this.id=store.getState().auth.id;
-		this.cardRef = React.createRef();
 		if (props.type !== 'system')
 		{
 			request(`${BACKEND_URL}/api/user/private/${props.sender_id}/avatar`, "GET", false)
@@ -49,6 +48,7 @@ class MessageCard extends React.Component
 				this.setState({sender_avatar: url});
 			});
 		}
+		this.reply_ref=props.reply_ref;
 	}
 
 	handleReplyChange = (event) =>
@@ -79,14 +79,21 @@ class MessageCard extends React.Component
 		}
 		else
 		{
-			this.state.onJump(target_id);
-			return;
+			console.log("JUMP REFERENCE:");
+			console.log(this.reply_ref);
+			console.log("CURRENT OF JUMP REFERENCE:");
+			console.log(this.reply_ref.current);
+			this.reply_ref.current.scrollToCard();
 		}
 	}
 
 	scrollToCard = () =>
 	{
-		// Use the `scrollIntoView` method to scroll to the "card" component
+		console.log("SELF REFERENCE: ");
+		console.log(this.cardRef);
+		console.log("CURRENT OF SELF REFERENCE:");
+		console.log(this.cardRef.current);
+
 		this.cardRef.current.scrollIntoView({ behavior: 'smooth' });
 	}
 
@@ -115,7 +122,7 @@ class MessageCard extends React.Component
 		if (this.state.type === 'system')
 		{
 			return (
-				<>
+				<div ref={this.cardRef}>
 					<div onContextMenu={this.onContextMenu} onClick={this.onClick}>
 						<span className="badge bg-secondary">
 							{this.state.message} - {this.state.datetime} 
@@ -137,13 +144,13 @@ class MessageCard extends React.Component
 							</div>
 						)}
 					</div>
-				</>
+				</div>
 			)
 		}
 		else if (this.state.sender_id === this.id)
 		{
 			return (
-				<>
+				<div ref={this.cardRef}>
 					<div onContextMenu={this.onContextMenu} onClick={this.onClick}>
 						<div class="card text-white bg-success mb-3">
 							<div class="card-header">
@@ -213,13 +220,13 @@ class MessageCard extends React.Component
 							</div>
 						)}
 					</div>
-				</>
+				</div>
 			)
 		}
 		else
 		{
 			return (
-				<>
+				<div ref={this.cardRef}>
 					<div onContextMenu={this.onContextMenu} onClick={this.onClick}>
 						<div class="card">
 							<div class="card-header">
@@ -327,7 +334,7 @@ class MessageCard extends React.Component
 							</div>
 						)}
 					</div>
-				</>
+				</div>
 			);
 		}
 	}

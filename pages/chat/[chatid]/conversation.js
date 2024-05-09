@@ -190,7 +190,6 @@ function Conversation()
                     'onDelete': deleteMessage,
                     'onWithdrew': withdrewMessage,
                     'onReply': replyMessage,
-                    'onJump': jump2Message,
 
                     'type': 'normal',
 
@@ -317,7 +316,6 @@ function Conversation()
                             'onDelete': deleteMessage,
                             'onWithdrew': withdrewMessage,
                             'onReply': replyMessage,
-                            'onJump': jump2Message,
     
                             'type': type,
                             'msg_type': element.msg_type,
@@ -462,7 +460,6 @@ function Conversation()
                         'onDelete': deleteMessage,
                         'onWithdrew': withdrewMessage,
                         'onReply': replyMessage,
-                        'onJump': jump2Message,
 
                         'type': type,
                         'msg_type': element.msg_type,
@@ -593,9 +590,39 @@ function Conversation()
         });    
     }
 
-    const jump2Message = function (message_id)
+    const prepareCards = function()
     {
-        msg2ref[message_id].current.scrollToCard();
+        messages.forEach(function(message)
+        {
+            if (!Object.keys(msg2ref).includes(message.message_id))
+            {
+                console.log("ADD REFERENCE FOR: "+message.message_id);
+                let componentRef=React.createRef();
+                msg2ref[message.message_id]=componentRef;
+            }            
+        });
+        
+        return messages.map((message) => 
+        {         
+            if (message.reply_target>=0)
+            {
+                return (
+                    <div key={message.message_id}>
+                        <MessageCard {...message} 
+                            ref={msg2ref[message.message_id]}
+                            reply_ref={msg2ref[message.reply_target]}/>
+                    </div>);
+            }
+            else
+            {
+                return (
+                    <div key={message.message_id}>
+                        <MessageCard {...message}
+                            ref={msg2ref[message.message_id]}
+                            reply_ref={null}/>
+                    </div>);
+            }
+        });
     }
 
     return (
@@ -617,25 +644,9 @@ function Conversation()
                 </Link>
 
                 <div className="chat-container">
-                {messages.map((message) => {
-                    
-                    if (!Object.keys(msg2ref).includes(message.message_id))
-                    {
-                        let componentRef=React.createRef();
-                        msg2ref[message.message_id]=componentRef;
-                        return (
-                            <div key={message.message_id}>
-                                <MessageCard {...message} ref={msg2ref[message.message_id]}/>
-                            </div>);
-                    }
-                    else
-                    {
-                        return (
-                            <div key={message.message_id}>
-                                <MessageCard {...message} ref={msg2ref[message.message_id]}/>
-                            </div>);
-                    }
-                })}
+                {
+                    prepareCards()
+                }
                 </div>
 
                 <div className="input-group mb-3 fixed-input">
