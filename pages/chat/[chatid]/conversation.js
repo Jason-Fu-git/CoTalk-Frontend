@@ -69,8 +69,7 @@ function Conversation()
         {
             console.log("General socket receive something");
             const data=JSON.parse(event.data);
-            console.log("TYPE: "+data.type);
-            console.log("STATUS: "+data.status);
+            console.log("TYPE= "+data.type+", STATUS= "+data.status);
             
             if (!(data.type === "chat.message"))
             {
@@ -372,8 +371,6 @@ function Conversation()
                     {
                         sender_name=id2name[sender_id];
                     }
-                    console.log("ID TO NAME: ");
-                    console.log(id2name);
 
                     const dateOptions={ hour: 'numeric', minute: 'numeric', hour12: true, timeZone: 'Asia/Shanghai' };
                     const datetime = new Date(element.create_time*1000).toLocaleString('en-US', dateOptions);
@@ -596,7 +593,6 @@ function Conversation()
         {
             if (!Object.keys(msg2ref).includes(message.message_id))
             {
-                console.log("ADD REFERENCE FOR: "+message.message_id);
                 let componentRef=React.createRef();
                 msg2ref[message.message_id]=componentRef;
             }            
@@ -606,6 +602,8 @@ function Conversation()
         {         
             if (message.reply_target>=0)
             {
+                console.log("SET JUMP TARGET FOR "+message.message_id);
+                console.log(msg2ref[message.reply_target]);
                 return (
                     <div key={message.message_id}>
                         <MessageCard {...message} 

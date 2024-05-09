@@ -48,7 +48,13 @@ class MessageCard extends React.Component
 				this.setState({sender_avatar: url});
 			});
 		}
-		this.reply_ref=props.reply_ref;
+
+		if (this.state.reply_target>0)
+		{
+			console.log("RECEIVE TARGET REF FOR: "+this.state.message_id);
+			console.log(props.reply_ref);
+			this.reply_ref=props.reply_ref;
+		}
 	}
 
 	handleReplyChange = (event) =>
@@ -79,21 +85,12 @@ class MessageCard extends React.Component
 		}
 		else
 		{
-			console.log("JUMP REFERENCE:");
-			console.log(this.reply_ref);
-			console.log("CURRENT OF JUMP REFERENCE:");
-			console.log(this.reply_ref.current);
 			this.reply_ref.current.scrollToCard();
 		}
 	}
 
 	scrollToCard = () =>
 	{
-		console.log("SELF REFERENCE: ");
-		console.log(this.cardRef);
-		console.log("CURRENT OF SELF REFERENCE:");
-		console.log(this.cardRef.current);
-
 		this.cardRef.current.scrollIntoView({ behavior: 'smooth' });
 	}
 
@@ -117,6 +114,16 @@ class MessageCard extends React.Component
 		})
 	};
 
+	componentDidUpdate(prevProps)
+	{
+		if (this.state.reply_target>0)
+		{
+			console.log("UPDATE JUMP REFERENCE FOR "+this.state.message_id);
+			console.log(this.props.reply_ref);
+			this.reply_ref=this.props.reply_ref;
+		}
+	}
+
 	render() 
 	{
 		if (this.state.type === 'system')
@@ -134,10 +141,10 @@ class MessageCard extends React.Component
 								top: this.state.contextMenu.y,
 								left: this.state.contextMenu.x,
 								backgroundColor: 'white' }}
-								class="list-group">
+								className="list-group">
 								<button 
 									type="button" 
-									class="list-group-item list-group-item-action"
+									className="list-group-item list-group-item-action"
 									onClick={()=>this.state.onDelete(this.state.message_id)}>
 									删除
 								</button>
@@ -152,20 +159,20 @@ class MessageCard extends React.Component
 			return (
 				<div ref={this.cardRef}>
 					<div onContextMenu={this.onContextMenu} onClick={this.onClick}>
-						<div class="card text-white bg-success mb-3">
-							<div class="card-header">
+						<div className="card text-white bg-success mb-3">
+							<div className="card-header">
 							</div>
-							<div class="card-body">
-								<div class="row g-0">
-									<div class="col-md-3">
+							<div className="card-body">
+								<div className="row g-0">
+									<div className="col-md-3">
 										<Image
 											src={this.state.sender_avatar.src ? this.state.sender_avatar.src : this.state.sender_avatar.url}
 											alt={this.state.sender_name}
 											width={this.state.sender_avatar.width}
 											height={this.state.sender_avatar.height}/>
 									</div>
-									<div class="col-md-8">
-										<div class="card-body">
+									<div className="col-md-8">
+										<div className="card-body">
 										<h1 className="dark:text-white text-3xl font-bold">
 										{this.state.sender_name} {this.state.datetime}
 										</h1>
@@ -180,7 +187,7 @@ class MessageCard extends React.Component
 
 							{(this.state.reply_target !== -1)&& (
 							<div 
-								class="card-footer"
+								className="card-footer"
 								style={{ display: 'flex', justifyContent: 'center', gap: '10px' }}>
 								<h1 className="dark:text-white text-2xl font-bold">
 								回复{this.state.reply_name}: {this.state.reply_message}
@@ -204,16 +211,16 @@ class MessageCard extends React.Component
 								top: this.state.contextMenu.y,
 								left: this.state.contextMenu.x,
 								backgroundColor: 'white' }}
-								class="list-group">
+								className="list-group">
 								<button 
 									type="button" 
-									class="list-group-item list-group-item-action"
+									className="list-group-item list-group-item-action"
 									onClick={()=>this.state.onWithdrew(this.state.message_id)}>
 									撤回
 								</button>
 								<button 
 									type="button" 
-									class="list-group-item list-group-item-action"
+									className="list-group-item list-group-item-action"
 									onClick={()=>this.state.onDelete(this.state.message_id)}>
 									删除
 								</button>
@@ -228,12 +235,12 @@ class MessageCard extends React.Component
 			return (
 				<div ref={this.cardRef}>
 					<div onContextMenu={this.onContextMenu} onClick={this.onClick}>
-						<div class="card">
-							<div class="card-header">
+						<div className="card">
+							<div className="card-header">
 							</div>
-							<div class="card-body">
-								<div class="row g-0">
-									<div class="col-md-3">
+							<div className="card-body">
+								<div className="row g-0">
+									<div className="col-md-3">
 										<Image
 											src={(this.state.sender_avatar.url) ? 
 											(this.state.sender_avatar.url):
@@ -242,8 +249,8 @@ class MessageCard extends React.Component
 											width={this.state.sender_avatar.width}
 											height={this.state.sender_avatar.height}/>
 									</div>
-									<div class="col-md-8">
-										<div class="card-body">
+									<div className="col-md-8">
+										<div className="card-body">
 										<h1 className="dark:text-white text-3xl font-bold">
 										{this.state.sender_name} {this.state.datetime}
 										</h1>
@@ -258,7 +265,7 @@ class MessageCard extends React.Component
 
 							{(this.state.reply_target !== -1)&& (
 							<div 
-								class="card-footer"
+								className="card-footer"
 								style={{ display: 'flex', justifyContent: 'center', gap: '10px' }}>
 								<h1 className="dark:text-white text-2xl font-bold">
 								回复{this.state.reply_name}: {this.state.reply_message}
@@ -280,10 +287,10 @@ class MessageCard extends React.Component
 								top: this.state.contextMenu.y,
 								left: this.state.contextMenu.x,
 								backgroundColor: 'white' }}
-								class="list-group">
+								className="list-group">
 								<button 
 									type="button" 
-									class="list-group-item list-group-item-action"
+									className="list-group-item list-group-item-action"
 									onClick={()=>{
 										this.state.reply=true;
 								}}>
@@ -291,7 +298,7 @@ class MessageCard extends React.Component
 								</button>
 								<button 
 									type="button" 
-									class="list-group-item list-group-item-action"
+									className="list-group-item list-group-item-action"
 									onClick={()=>this.state.onDelete(this.state.message_id)}>
 								删除
 								</button>
