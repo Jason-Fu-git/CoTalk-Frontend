@@ -31,8 +31,8 @@ class MessageCard extends React.Component
 			type: props.type,
 
 			reply_target: props.reply_target,
-			reply_name: props.reply_name,
-			reply_message: props.reply_message,
+			reply_name: (props.reply_target===-2) ? '':props.reply_name,
+			reply_message: (props.reply_target===-2) ? '消息已删除':props.reply_message,
 
 			hasread: props.hasread,
 
@@ -121,6 +121,14 @@ class MessageCard extends React.Component
 			console.log("UPDATE JUMP REFERENCE FOR "+this.state.message_id);
 			console.log(this.props.reply_ref);
 			this.reply_ref=this.props.reply_ref;
+		}
+		if ((this.props.reply_target===-2)&&(this.state.reply_name!==''))
+		{
+			this.setState({
+				reply_target:-2,
+				reply_name:'',
+				reply_message:'消息已删除',
+			})
 		}
 	}
 

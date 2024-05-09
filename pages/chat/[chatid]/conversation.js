@@ -146,8 +146,6 @@ function Conversation()
                     }
                     catch(err)
                     {
-                        reply_message="消息已删除";
-                        reply_name="";
                         reply_target=-2;
                     }
                 }
@@ -271,8 +269,6 @@ function Conversation()
                             }
                             catch(err)
                             {
-                                reply_message="消息已删除";
-                                reply_name="";
                                 reply_target=-2;
                             }
                         }
@@ -412,8 +408,6 @@ function Conversation()
                         }
                         catch(err)
                         {
-                            reply_message="消息已删除";
-                            reply_name="";
                             reply_target=-2;
                         }
                     }
@@ -531,6 +525,13 @@ function Conversation()
             setMessages((currentMessages) => 
             {
                 const newMessages = currentMessages.filter(obj => (obj.message_id !== message_id));
+                newMessages.forEach(function(element)
+                {
+                    if (element.reply_target===message_id)
+                    {
+                        element.reply_target=-2;
+                    }
+                })
                 return newMessages;
             });
 		})
