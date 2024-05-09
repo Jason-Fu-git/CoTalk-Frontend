@@ -16,6 +16,8 @@ function Conversation()
     const [messages, setMessages]=useState([]);
     const [members, setMembers]=useState([]);
     let id2name={};
+    let msg2ref={};
+
     const [count, setCount]=useState(0);
     // 第一次渲染时将所有已有消息标记为已读
     const [firstRender, setFirstRender]=useState(true);
@@ -67,8 +69,7 @@ function Conversation()
         {
             console.log("General socket receive something");
             const data=JSON.parse(event.data);
-            console.log("TYPE: "+data.type);
-            console.log("STATUS: "+data.status);
+            console.log("TYPE= "+data.type+", STATUS= "+data.status);
             
             if (!(data.type === "chat.message"))
             {
@@ -119,26 +120,33 @@ function Conversation()
                 {
                     return;
                 }
-                const reply_target=message.reply_to;
+                let reply_target=message.reply_to;
                 let reply_name="??";
                 let reply_message="??";
                 if (reply_target !== -1)
                 {
                     const target_url=`${BACKEND_URL}/api/message/${reply_target}/management?user_id=`+store.getState().auth.id;
-                    const target=await request(target_url, "GET", true);
+                    try
+                    {
+                        const target=await request(target_url, "GET", true);
 
-                    reply_message=target.msg_text;
-                    if (!Object.keys(id2name).includes(target.sender_id))
-                    {
-                        await request(`${BACKEND_URL}/api/user/private/${target.sender_id}`, "GET", false)
-                        .then((res) => {
-                            reply_name=res.user_name;
-                            id2name[sender_id]=res.user_name;
-                        });    
+                        reply_message=target.msg_text;
+                        if (!Object.keys(id2name).includes(target.sender_id))
+                        {
+                            await request(`${BACKEND_URL}/api/user/private/${target.sender_id}`, "GET", false)
+                            .then((res) => {
+                                reply_name=res.user_name;
+                                id2name[sender_id]=res.user_name;
+                            });    
+                        }
+                        else
+                        {
+                            reply_name=id2name[sender_id];
+                        }
                     }
-                    else
+                    catch(err)
                     {
-                        reply_name=id2name[sender_id];
+                        reply_target=-2;
                     }
                 }
 
@@ -238,23 +246,30 @@ function Conversation()
                             });
                         }
 
-                        const reply_target=element.reply_to;
+                        let reply_target=element.reply_to;
                         let reply_name="??";
                         let reply_message="??";
                         if (reply_target !== -1)
                         {
                             const target_url=`${BACKEND_URL}/api/message/${reply_target}/management?user_id=`+store.getState().auth.id;
-                            const target=await request(target_url, "GET", true);
-    
-                            reply_message=target.msg_text;
-
-                            if (!Object.keys(id2uaer).includes(target.sender_id))
+                            try
                             {
-                                await request(`${BACKEND_URL}/api/user/private/${target.sender_id}`, "GET", false)
-                                .then((res) => {
-                                    target_name=res.user_name;
-                                    id2user[target.sender_id]=res.user_name;
-                                });
+                                const target=await request(target_url, "GET", true);
+        
+                                reply_message=target.msg_text;
+
+                                if (!Object.keys(id2uaer).includes(target.sender_id))
+                                {
+                                    await request(`${BACKEND_URL}/api/user/private/${target.sender_id}`, "GET", false)
+                                    .then((res) => {
+                                        target_name=res.user_name;
+                                        id2user[target.sender_id]=res.user_name;
+                                    });
+                                }                                
+                            }
+                            catch(err)
+                            {
+                                reply_target=-2;
                             }
                         }
 
@@ -352,8 +367,6 @@ function Conversation()
                     {
                         sender_name=id2name[sender_id];
                     }
-                    console.log("ID TO NAME: ");
-                    console.log(id2name);
 
                     const dateOptions={ hour: 'numeric', minute: 'numeric', hour12: true, timeZone: 'Asia/Shanghai' };
                     const datetime = new Date(element.create_time*1000).toLocaleString('en-US', dateOptions);
@@ -368,27 +381,34 @@ function Conversation()
                         });
                     }
 
-                    const reply_target=element.reply_to;
+                    let reply_target=element.reply_to;
                     let reply_name="??";
                     let reply_message="??";
                     if (reply_target !== -1)
                     {
                         const target_url=`${BACKEND_URL}/api/message/${reply_target}/management?user_id=`+store.getState().auth.id;
-                        const target=await request(target_url, "GET", true);
-
-                        reply_message=target.msg_text;
-
-                        if (!Object.keys(id2name).includes(target.sender_id))
+                        try
                         {
-                            await request(`${BACKEND_URL}/api/user/private/${target.sender_id}`, "GET", false)
-                            .then((res) => {
-                                reply_name=res.user_name;
-                                id2name[target.sender_id]=res.user_name;
-                            });    
+                            const target=await request(target_url, "GET", true);
+
+                            reply_message=target.msg_text;
+    
+                            if (!Object.keys(id2name).includes(target.sender_id))
+                            {
+                                await request(`${BACKEND_URL}/api/user/private/${target.sender_id}`, "GET", false)
+                                .then((res) => {
+                                    reply_name=res.user_name;
+                                    id2name[target.sender_id]=res.user_name;
+                                });    
+                            }
+                            else
+                            {
+                                reply_name=id2name[target.sender_id];
+                            }
                         }
-                        else
+                        catch(err)
                         {
-                            reply_name=id2name[target.sender_id];
+                            reply_target=-2;
                         }
                     }
         
@@ -505,6 +525,13 @@ function Conversation()
             setMessages((currentMessages) => 
             {
                 const newMessages = currentMessages.filter(obj => (obj.message_id !== message_id));
+                newMessages.forEach(function(element)
+                {
+                    if (element.reply_target===message_id)
+                    {
+                        element.reply_target=-2;
+                    }
+                })
                 return newMessages;
             });
 		})
@@ -561,6 +588,42 @@ function Conversation()
         });    
     }
 
+    const prepareCards = function()
+    {
+        messages.forEach(function(message)
+        {
+            if (!Object.keys(msg2ref).includes(message.message_id))
+            {
+                let componentRef=React.createRef();
+                msg2ref[message.message_id]=componentRef;
+            }            
+        });
+        
+        return messages.map((message) => 
+        {         
+            if (message.reply_target>=0)
+            {
+                console.log("SET JUMP TARGET FOR "+message.message_id);
+                console.log(msg2ref[message.reply_target]);
+                return (
+                    <div key={message.message_id}>
+                        <MessageCard {...message} 
+                            ref={msg2ref[message.message_id]}
+                            reply_ref={msg2ref[message.reply_target]}/>
+                    </div>);
+            }
+            else
+            {
+                return (
+                    <div key={message.message_id}>
+                        <MessageCard {...message}
+                            ref={msg2ref[message.message_id]}
+                            reply_ref={null}/>
+                    </div>);
+            }
+        });
+    }
+
     return (
         <>
             <div className="sm:w-9/12 sm:m-auto pt-16 pb-16">
@@ -580,11 +643,9 @@ function Conversation()
                 </Link>
 
                 <div className="chat-container">
-                {messages.map((message) => (
-                        <div key={message.message_id}>
-                            <MessageCard {...message}/>
-                        </div>
-                ))}
+                {
+                    prepareCards()
+                }
                 </div>
 
                 <div className="input-group mb-3 fixed-input">
