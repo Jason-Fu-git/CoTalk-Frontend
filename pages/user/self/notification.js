@@ -12,6 +12,13 @@ export default function Notification() {
     const [flash, set_flash] = useState(false);
     const self_id = store.getState().auth.id;
 
+    request(`${BACKEND_URL}/api/user/private/${store.getState().auth.id}/chats`, "GET", true)
+        .then(async (res) => {
+            for (const chat of res.chats) {
+                store.dispatch(setChats([...store.getState().auth.chats, chat.chat_id]));
+            }
+        });
+
     useEffect(() => {
         const later_than = 0;
         const only_unread = false;
@@ -99,7 +106,6 @@ export default function Notification() {
             .then((res) => {
                 if (Number(res.code) === 0) {
                     store.dispatch(setChats([...store.getState().auth.chats, chat_id]));
-                    console.log(store.getState().auth.chats);
                     alert("已加入聊天室");
                 }
             });
@@ -176,6 +182,18 @@ export default function Notification() {
                                         )
                                     }
                                     {
+                                        store.getState().auth.friends.includes(notification.sender_id) &&
+                                        notification.content.status === "make request" &&
+                                        (
+                                            <span style={{
+                                                marginRight: "10px",
+                                                background: "#49a353",
+                                                color: "white",
+                                                padding: "5px",
+                                                borderRadius: "5px"
+                                            }}>已同意</span>)
+                                    }
+                                    {
                                         notification.content.status === "make invitation" &&
                                         !store.getState().auth.chats.includes(notification.content.chat_id) &&
                                         (
@@ -192,6 +210,17 @@ export default function Notification() {
                                                 同意聊天室邀请
                                             </button>
                                         )
+                                    }
+                                    {
+                                        notification.content.status === "make invitation" &&
+                                        store.getState().auth.chats.includes(notification.content.chat_id) &&
+                                        (<span style={{
+                                            marginRight: "10px",
+                                            background: "#49a353",
+                                            color: "white",
+                                            padding: "5px",
+                                            borderRadius: "5px"
+                                        }}>已同意</span>)
                                     }
                                     <button
                                         name="delete"
