@@ -13,7 +13,6 @@ function ChatCard(props) {
 		if(props.chat_name.includes("Private")){
 			setchat_type("私聊");
 			const nums = props.chat_name.split(' ')[1].split('&');
-			console.log(nums);
 			const friendid = nums[0] === store.getState().auth.id.toString() ? nums[1] : nums[0];
 			request(`${BACKEND_URL}/api/user/private/${friendid}`, "GET", false)
 			.then((res) => {
