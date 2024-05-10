@@ -113,7 +113,7 @@ export default function Notification()
                 <div>
                 </div>
                     {notifications.map((notification,index) => (
-                        <div key={index}>
+                        <div key={index} style={{marginBottom: "10px", marginTop: "10px"}}>
                             <div className="card">
                                 <div className="card-header">
                                     {notification.header}
@@ -122,12 +122,13 @@ export default function Notification()
                                     <h5 className="card-title">{notification.message}</h5>
                                 </div>  
                                 <div className="row gx-1">
-                                    <div className="col">
+                                    <div className="col" style={{marginBottom: "10px"}}>
                                         {
                                             notification.is_read === false && 
                                             (
                                                 <button 
                                                     name="markAsRead"
+                                                    style={{marginRight: "10px", marginLeft: "10px"}}
                                                     className="btn btn-secondary"
                                                     onClick={() => {
                                                         markAsRead(notification.notification_id);
@@ -139,7 +140,8 @@ export default function Notification()
                                         }
                                         {
                                             notification.is_read === true && (
-                                            <span>已读</span>
+                                            <span style={{marginRight:"10px", marginLeft:"10px", background:"#49a353", color:"white",
+                                                padding: "5px", borderRadius: "5px"}}>已读</span>
                                         )}
                                         {   
                                             !store.getState().auth.friends.includes(notification.sender_id) && 
@@ -147,6 +149,7 @@ export default function Notification()
                                             (
                                                 <button
                                                     name="approve_friend"
+                                                    style={{marginRight: "10px"}}
                                                     className="btn btn-success"
                                                     onClick={() => {
                                                         approveFriend(notification.sender_id);
@@ -162,6 +165,7 @@ export default function Notification()
                                             (
                                                 <button
                                                 name="approve_chat"
+                                                style={{marginRight: "10px"}}
                                                 className="btn btn-success"
                                                 onClick={() => {
                                                     approveChat(notification.content.chat_id, notification.sender_id);
