@@ -1,11 +1,12 @@
 import 'bootstrap/dist/css/bootstrap.css';
-import React,{useState, useEffect}  from "react";
-import { BACKEND_URL } from '@/app/constants/string';
-import { request } from "@/app/utils/network";
-import { store } from "@/app/redux/store";
-import { useRouter } from "next/router";
+import React, {useState, useEffect} from "react";
+import {BACKEND_URL} from '@/app/constants/string';
+import {request} from "@/app/utils/network";
+import {store} from "@/app/redux/store";
+import UserCard from '@/components/UserCard';
+import {useRouter} from "next/router";
 
-export default function Createpage(){
+export default function Createpage() {
     const [groupName, setGroupName] = useState("");
     const [memberid, setMemberid] = useState([]);
     const [friends, setFriends] = useState([]);
@@ -14,15 +15,15 @@ export default function Createpage(){
     const router = useRouter();
     useEffect(() => {
         request(`${BACKEND_URL}/api/user/private/${selfid}/friends`, "GET", true)
-        .then((res) => {
-            setFriends(res.friends);
-            setShowModel(true);
-        });
+            .then((res) => {
+                setFriends(res.friends);
+                setShowModel(true);
+            });
     }, []);
 
     const createChat = async () => {
-        const promises = memberid.map(id => 
-            request(`${BACKEND_URL}/api/user/private/${selfid}/friends`, "PUT", true,"application/json",{
+        const promises = memberid.map(id =>
+            request(`${BACKEND_URL}/api/user/private/${selfid}/friends`, "PUT", true, "application/json", {
                 "friend_id": id,
                 "group": groupName
             })
@@ -35,51 +36,63 @@ export default function Createpage(){
         <div className="sm:w-9/12 sm:m-auto pt-16 pb-16">
             <h1 className="
                 dark:text-white text-4xl font-bold text-center">
-                请选择好友来创建分组
+                创建分组
             </h1>
-            {showModel && (
-                <div>
-                    {friends.map((friend, index) => (
-                        <div key={index}>
-                        <input 
-                            type="checkbox" 
-                            className="btn-check" 
-                            autoComplete="off"
-                            id={friend.user_id}
-                            onChange={(e) => {
-                                if (e.target.checked) {
-                                    setMemberid([...memberid, friend.user_id]);
-                                } else {
-                                    setMemberid(memberid.filter(id => id !== friend.user_id));
-                                }
-                            }}/>
-                        <label 
-                            className="btn btn-outline-primary" 
-                            htmlFor={friend.user_id}>
-                        {friend.user_name}
-                        </label>
-                        </div>
-                    ))}
-                </div>
-            )}
 
-            <div className="input-group mb-3">
+
+            <div className="input-group mb-3" style={{margin:"40px"}}>
                 <input
                     className="form-control col_auto"
                     type="text"
                     placeholder="请输入分组名称"
                     value={groupName}
-                    onChange={(e) =>setGroupName(e.target.value)}
+                    onChange={(e) => setGroupName(e.target.value)}
                 />
                 <div className="col-auto">
-                    <button 
+                    <button
                         className="btn btn-primary"
-                        disabled={groupName===''||memberid.length===0}
+                        disabled={groupName === '' || memberid.length === 0}
                         onClick={createChat}>
                         创建分组
                     </button>
                 </div>
             </div>
+
+            {showModel && (
+                <div className="grid gap-8 grid-cols-1 sm:grid-cols-3 mt-14
+                            ml-8 mr-8 sm:mr-0 sm:ml-0">
+                    {friends.map((friend, index) => (
+
+                        <div key={index}>
+                            <div>
+                                <input
+                                    type="checkbox"
+                                    className="btn-check"
+                                    autoComplete="off"
+                                    id={friend.user_id}
+                                    onChange={(e) => {
+                                        if (e.target.checked) {
+                                            setMemberid([...memberid, friend.user_id]);
+                                        } else {
+                                            setMemberid(memberid.filter(id => id !== friend.user_id));
+                                        }
+                                    }}/>
+                                <label
+                                    className="btn btn-outline-primary"
+                                    htmlFor={friend.user_id}>
+                                     选择
+                                </label>
+                            </div>
+                            <div key={friend.user_id}>
+                                <UserCard {...friend}/>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            )}
+
         </div>
+
+
     )
 }
