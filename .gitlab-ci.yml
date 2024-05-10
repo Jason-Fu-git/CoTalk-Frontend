@@ -1,4 +1,3 @@
-
 image: registry.secoder.net/tool/deployer
 
 stages:
@@ -8,7 +7,7 @@ stages:
 
 build:
   stage: build
-  script: 
+  script:
     - export BUILD_IMAGE_NAME=$CI_REGISTRY_IMAGE
     - export BUILD_IMAGE_TAG=$CI_COMMIT_REF_SLUG
     - export BUILD_IMAGE_USERNAME=$CI_REGISTRY_USER
@@ -19,31 +18,34 @@ build:
 
 
 .test:
- image: node:18
- stage: test
+  image: node:18
+  stage: test
 
- before_script:
-   - yarn config set registry https://registry.npmmirror.com
-   - yarn
-   - yarn upgrade
+  before_script:
+    - yarn config set registry https://registry.npmmirror.com
+    - yarn
+    - yarn upgrade
 
 
 unit-test:
- extends: .test
- script:
-   - yarn test
- after_script:
-   - SUFFIX=$RANDOM
-   - curl "http://api.secoder.net/static/sonar-scanner.tar.gz" -s -o "/tmp/sonar-$SUFFIX.tar.gz"
-   - tar -xf "/tmp/sonar-$SUFFIX.tar.gz" -C /opt
-   - /opt/sonar-scanner/bin/sonar-scanner
+  extends: .test
+  script:
+    - yarn test
+  after_script:
+    - SUFFIX=$RANDOM
+    - curl "http://api.secoder.net/static/sonar-scanner.tar.gz" -s -o "/tmp/sonar-$SUFFIX.tar.gz"
+    - tar -xf "/tmp/sonar-$SUFFIX.tar.gz" -C /opt
+    - /opt/sonar-scanner/bin/sonar-scanner
+  only:
+    - master
 
 style-test:
- extends: .test
- script:
-   - yarn lint
- only:
+  extends: .test
+  script:
+    - yarn lint
+  only:
     - master
+
 deploy:
   stage: deploy
   script:
