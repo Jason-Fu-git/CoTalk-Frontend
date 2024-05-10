@@ -285,7 +285,7 @@ class MessageCard extends React.Component {
                                     type="button"
                                     className="list-group-item list-group-item-action"
                                     onClick={() => {
-                                        this.state.reply = true;
+                                        this.setState({reply: true})
                                     }}>
                                     回复
                                 </button>
