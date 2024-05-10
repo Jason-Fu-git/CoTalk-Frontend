@@ -1,4 +1,4 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import {createSlice, PayloadAction} from "@reduxjs/toolkit";
 
 interface AuthState {
     token: string;
@@ -7,6 +7,7 @@ interface AuthState {
     email: string;
     description: string;
     friends: Array<number>;
+    chats: Array<number>;
 }
 
 const initialState: AuthState = {
@@ -16,6 +17,7 @@ const initialState: AuthState = {
     email: "邮箱为空",
     description: "目前还没有个人描述",
     friends: [],
+    chats: [],
 };
 
 export const authSlice = createSlice({
@@ -38,19 +40,25 @@ export const authSlice = createSlice({
             state.description = action.payload;
         },
         setFriends: (state, action: PayloadAction<Array<number>>) => {
-            state.friends=action.payload.concat();
+            state.friends = action.payload.concat();
+        },
+        setChats: (state, action: PayloadAction<Array<number>>) => {
+            state.chats = action.payload.concat();
         },
         resetAuth: (state) => {
             state.token = "";
             state.name = "";
             state.id = 0;
-            state.email="邮箱为空";
-            state.description="目前还没有个人描述";
-            state.friends=[];
+            state.email = "邮箱为空";
+            state.description = "目前还没有个人描述";
+            state.friends = [];
+            state.chats = [];
         },
     },
 });
 
-export const {setToken, setName, setId, setEmail,
-            setDescription, setFriends, resetAuth} = authSlice.actions;
+export const {
+    setToken, setName, setId, setEmail,
+    setDescription, setFriends, setChats, resetAuth
+} = authSlice.actions;
 export default authSlice.reducer;

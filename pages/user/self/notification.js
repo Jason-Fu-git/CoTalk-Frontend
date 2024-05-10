@@ -5,11 +5,11 @@ import {request} from "@/app/utils/network";
 import {BACKEND_URL} from '@/app/constants/string';
 import {store} from "@/app/redux/store";
 import {setFriends} from "@/app/redux/auth";
+import {setChats} from "@/app/redux/auth";
 
 export default function Notification() {
     const [notifications, set_notifications] = useState([]);
     const [flash, set_flash] = useState(false);
-    const [chat_approved, set_chat_approved] = useState({});
     const self_id = store.getState().auth.id;
 
     useEffect(() => {
@@ -41,8 +41,13 @@ export default function Notification() {
                             element.message = element.sender_name + "已同意你的好友申请";
                             break;
                         case ("chat.management", "make invitation"):
+                            let chat_name = ""
+                            await request(`${BACKEND_URL}/api/chat/${element.content.chat_id}/detail`, "GET", false)
+                                .then((res) => {
+                                    chat_name = " \"" + res.chat_name + "\"";
+                                })
                             element.header = "群聊邀请";
-                            element.message = element.sender_name + " 邀请你加入群聊";
+                            element.message = element.sender_name + " 邀请你加入群聊" + chat_name;
                             break;
                     }
                     return element;
@@ -50,7 +55,7 @@ export default function Notification() {
                 const notifications = await Promise.all(promises);
                 set_notifications(notifications);
             });
-    }, [flash, chat_approved]);
+    }, [flash]);
 
     const deleteNotification = (notification_id) => {
         request(`${BACKEND_URL}/api/user/private/${store.getState().auth.id}/notification/${notification_id}`, "DELETE", true)
@@ -93,8 +98,9 @@ export default function Notification() {
             })
             .then((res) => {
                 if (Number(res.code) === 0) {
+                    store.dispatch(setChats([...store.getState().auth.chats, chat_id]));
+                    console.log(store.getState().auth.chats);
                     alert("已加入聊天室");
-                    set_chat_approved(obj => ({...obj, [chat_id]: true}))
                 }
             });
     }
@@ -171,7 +177,7 @@ export default function Notification() {
                                     }
                                     {
                                         notification.content.status === "make invitation" &&
-                                        chat_approved[notification.content.chat_id] === undefined &&
+                                        !store.getState().auth.chats.includes(notification.content.chat_id) &&
                                         (
                                             <button
                                                 name="approve_chat"
