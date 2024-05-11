@@ -168,6 +168,7 @@ class MessageCard extends React.Component {
 
                             <div style={{marginTop: "20px", marginRight: "20px"}}>
                             <span style={{
+                                display: "inline-block",
                                 background: '#90EE90',
                                 padding: '10px',
                                 borderRadius: '10px'
@@ -251,6 +252,7 @@ class MessageCard extends React.Component {
 
                             <div style={{marginTop: "20px", marginLeft: "20px"}}>
                             <span style={{
+                                display: "inline-block",
                                 background: '#f2f2f2',
                                 padding: '10px',
                                 borderRadius: '10px'
