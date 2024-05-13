@@ -14,7 +14,7 @@ function Conversation()
     const router = useRouter();
     const [messages, setMessages]=useState([]);
     const [members, setMembers]=useState([]);
-    let chatid=0;
+    const {chatid}=router.query();
     const [count, setCount]=useState(0);
     // 第一次渲染时将所有已有消息标记为已读
     const [firstRender, setFirstRender]=useState(true);
