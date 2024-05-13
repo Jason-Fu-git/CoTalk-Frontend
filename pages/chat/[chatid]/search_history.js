@@ -34,7 +34,7 @@ function timestampToBeijingTime(timestamp) {
 
 function SearchHistory() {
     const router = useRouter();
-
+    let chatid;
     const [searchResult, setSearchResult] = useState([]);
     const [firstRender, setFirstRender] = useState(true);
     const [toggle, setToggle] = useState(true);
@@ -113,7 +113,7 @@ function SearchHistory() {
 
 
     useEffect(() => {
-        let chatid = localStorage.getItem("chatid");
+        chatid = localStorage.getItem("chatid");
         if(router.query.chatid){
             chatid=router.query.chatid;
             localStorage.setItem("chatid", chatid);

@@ -18,11 +18,11 @@ function Account()
 	const [description, setDescription] = useState("");
 	const [avatar, setAvatar] = useState('');
 	const [is_friend, setIsFriend] = useState(false);
+	let userid;
 
 	useEffect(()=> {
-		let userid=localStorage.getItem("userid");
+		userid=localStorage.getItem("userid");
 		if(router.query.userid){
-			console.log("yes");
 			userid=router.query.userid;
 			localStorage.setItem("userid", userid);
 		}

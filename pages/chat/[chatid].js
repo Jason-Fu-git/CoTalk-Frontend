@@ -16,7 +16,7 @@ function Chat()
     const [toggle, setToggle]=useState(true);
     const [notice, setNotice]=useState("没有群公告");
     const [editNotice, setEditNotice]=useState(false);
-
+    let chatid;
 
     const my_friends = store.getState().auth.friends;
     const my_id=store.getState().auth.id;
@@ -36,7 +36,7 @@ function Chat()
 
     useEffect(() => 
     {
-        let chatid = localStorage.getItem("chatid");
+        chatid = localStorage.getItem("chatid");
         if(router.query.chatid){
             chatid=router.query.chatid;
             localStorage.setItem("chatid", chatid);
