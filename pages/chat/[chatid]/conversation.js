@@ -14,7 +14,7 @@ function Conversation()
     const router = useRouter();
     const [messages, setMessages]=useState([]);
     const [members, setMembers]=useState([]);
-
+    let chatid=0;
     const [count, setCount]=useState(0);
     // 第一次渲染时将所有已有消息标记为已读
     const [firstRender, setFirstRender]=useState(true);
@@ -58,11 +58,7 @@ function Conversation()
 
     useEffect(()=> 
     {   
-        let chatid = localStorage.getItem("chatid");
-        if(router.query.chatid){
-            chatid=router.query.chatid;
-            localStorage.setItem("chatid", chatid);
-        }
+
         const generalUrl="wss://cotalkbackend-Concord.app.secoder.net/ws/main/"+
         store.getState().auth.id+"/"+store.getState().auth.token;
         const generalSocket=new WebSocket(generalUrl);

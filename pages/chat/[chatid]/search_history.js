@@ -34,7 +34,7 @@ function timestampToBeijingTime(timestamp) {
 
 function SearchHistory() {
     const router = useRouter();
-    let chatid;
+    let chatid=0;
     const [searchResult, setSearchResult] = useState([]);
     const [firstRender, setFirstRender] = useState(true);
     const [toggle, setToggle] = useState(true);
