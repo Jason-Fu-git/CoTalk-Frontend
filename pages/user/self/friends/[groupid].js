@@ -14,8 +14,14 @@ export default function Friendgroup() {
     const [memberid, setMemberid] = useState([]);
     const [showModel, setShowModel] = useState(false);
     const [flash, setFlash] = useState(false);
-    const {groupid} = router.query;
+    
     useEffect(() => {
+        let groupid = localStorage.getItem("groupid");
+        if(router.query.groupid){
+            groupid = router.query.groupid;
+            localStorage.setItem("groupid", groupid);
+        }
+
         request(`${BACKEND_URL}/api/user/private/${store.getState().auth.id}/friends`, "GET", true)
             .then((res1) => {
                 request(`${BACKEND_URL}/api/user/private/${store.getState().auth.id}/friends`, "GET", true)

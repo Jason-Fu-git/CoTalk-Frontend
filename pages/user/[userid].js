@@ -20,7 +20,12 @@ function Account()
 	const [is_friend, setIsFriend] = useState(false);
 
 	useEffect(()=> {
-		const { userid } = router.query;
+		let userid=localStorage.getItem("userid");
+		if(router.query.userid){
+			console.log("yes");
+			userid=router.query.userid;
+			localStorage.setItem("userid", userid);
+		}
 		setId(userid);
 		console.log(userid);
 		const my_friends=store.getState().auth.friends;

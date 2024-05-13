@@ -50,6 +50,9 @@ const Update = () => {
             formData.append("password", password);
 
         }
+        if(code!==""){
+            formData.append("code", code);
+        }
         if (avatar!=null&&avatar.size !== 0) {
             formData.append("avatar", avatar);
         }
