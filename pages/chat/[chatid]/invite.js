@@ -13,7 +13,7 @@ function InvitePage() {
     const [memberid, setMemberid] = useState([]);
     const [showModel, setShowModel] = useState(false);
     useEffect(() => {
-        const chatid = localStorage.getItem("chatid");
+        let chatid = localStorage.getItem("chatid");
         if(router.query.chatid){
             chatid=router.query.chatid;
             localStorage.setItem("chatid", chatid);
