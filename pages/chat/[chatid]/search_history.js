@@ -38,7 +38,11 @@ function Beijingdatetotimestamp(date1){
 }  
 function SearchHistory() {
     const router = useRouter();
-    let chatid=0;
+    let chatid = localStorage.getItem("chatid");
+        if(router.query.chatid){
+            chatid=router.query.chatid;
+            localStorage.setItem("chatid", chatid);
+        }
     const [filtertime, setFilterTime] = useState(null);
     const [searchResult, setSearchResult] = useState([]);
     const [firstRender, setFirstRender] = useState(true);
@@ -118,11 +122,6 @@ function SearchHistory() {
 
 
     useEffect(() => {
-        chatid = localStorage.getItem("chatid");
-        if(router.query.chatid){
-            chatid=router.query.chatid;
-            localStorage.setItem("chatid", chatid);
-        }
         if (firstRender) {
             setFirstRender(false);
             request(`${BACKEND_URL}/api/chat/${chatid}/members?user_id=${store.getState().auth.id}`, "GET", true)
