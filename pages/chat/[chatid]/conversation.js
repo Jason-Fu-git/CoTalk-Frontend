@@ -13,11 +13,6 @@ function timestampToBeijingTime(timestamp) {
     // 将时间戳转换为毫秒
     var date = new Date(timestamp * 1000);
 
-    // 获取北京时间的偏移量，北京时间比 UTC 多 8 小时
-    var offset = 8 * 60; // 8 小时 * 60 分钟
-
-    // 调整时区
-    date.setMinutes(date.getMinutes() + offset);
 
     // 获取年、月、日、小时、分钟和秒
     var year = date.getFullYear();
