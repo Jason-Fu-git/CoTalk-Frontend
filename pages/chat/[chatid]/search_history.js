@@ -38,7 +38,11 @@ function Beijingdatetotimestamp(date1){
 }  
 function SearchHistory() {
     const router = useRouter();
-    let chatid=0;
+    let chatid;
+    if(router.query.chatid){
+        chatid=router.query.chatid;
+        localStorage.setItem("chatid", chatid);
+    }
     const [filtertime, setFilterTime] = useState(null);
     const [searchResult, setSearchResult] = useState([]);
     const [firstRender, setFirstRender] = useState(true);
@@ -131,6 +135,7 @@ function SearchHistory() {
                 });
             return;
         }
+
         let inputArea = document.getElementById('search-input');
         const query = inputArea.value;
 
