@@ -12,13 +12,12 @@ function InvitePage() {
     const [friends, setMyFriends] = useState([]);
     const [memberid, setMemberid] = useState([]);
     const [showModel, setShowModel] = useState(false);
-    let chatid=0;
-    useEffect(() => {
-        chatid = localStorage.getItem("chatid");
+    let chatid = localStorage.getItem("chatid");
         if(router.query.chatid){
             chatid=router.query.chatid;
             localStorage.setItem("chatid", chatid);
         }
+    useEffect(() => {
         request(`${BACKEND_URL}/api/user/private/${store.getState().auth.id}/friends`, "GET", true)
             .then((res1) => {
                 request(`${BACKEND_URL}/api/chat/${chatid}/members?user_id=${store.getState().auth.id}`, "GET", true)
