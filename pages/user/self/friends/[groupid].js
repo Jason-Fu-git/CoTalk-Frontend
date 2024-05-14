@@ -14,6 +14,8 @@ export default function Friendgroup() {
     const [memberid, setMemberid] = useState([]);
     const [showModel, setShowModel] = useState(false);
     const [flash, setFlash] = useState(false);
+    const [groupName, setGroupName] = useState("");
+
     let groupid=0;
     useEffect(() => {
         groupid = localStorage.getItem("groupid");
@@ -21,6 +23,7 @@ export default function Friendgroup() {
             groupid = router.query.groupid;
             localStorage.setItem("groupid", groupid);
         }
+        setGroupName(groupid);
 
         request(`${BACKEND_URL}/api/user/private/${store.getState().auth.id}/friends`, "GET", true)
             .then((res1) => {
@@ -50,7 +53,7 @@ export default function Friendgroup() {
             <div className="sm:w-9/12 sm:m-auto pt-16 pb-16">
                 <h1 className="
                     dark:text-white text-4xl font-bold text-center">
-                    {groupid}
+                    分组：{groupName}
                 </h1>
                 <div className="grid gap-8 grid-cols-1 sm:grid-cols-3 mt-14
                             ml-8 mr-8 sm:mr-0 sm:ml-0">
