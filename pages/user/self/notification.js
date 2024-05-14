@@ -60,6 +60,7 @@ export default function Notification() {
                     return element;
                 });
                 const notifications = await Promise.all(promises);
+                notifications.filter((notification) => (notification.header==="好友申请" || notification.header==="群聊邀请"));
                 set_notifications(notifications);
             });
     }, [flash]);

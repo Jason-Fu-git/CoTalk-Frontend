@@ -75,9 +75,17 @@ function Conversation() {
 
         request(`${BACKEND_URL}/api/chat/${chatid}/detail`, "GET", false)
         .then((res) => {
-
-            setChatname(" \"" + res.chat_name + "\"");
+            if (res.chat_name.includes("Private")) {
+                const nums = res.chat_name.split(' ')[1].split('&');
+                const friendid = nums[0] === store.getState().auth.id.toString() ? nums[1] : nums[0];
+                request(`${BACKEND_URL}/api/user/private/${friendid}`, "GET", false)
+                .then((res1) => {
+                    setChatname("私聊 " + res1.user_name);
+                });
+            }else{
+            setChatname("聊天室 " +" \"" +res.chat_name + "\"");
             console.log(chatname)
+            }
         });
 
         const generalUrl = "wss://cotalkbackend-Concord.app.secoder.net/ws/main/" +
@@ -562,11 +570,11 @@ function Conversation() {
             <div className="sm:w-9/12 sm:m-auto pt-16 pb-16" style={{textAlign: "center"}}>
                 <h1 className="
                     dark:text-white text-4xl font-bold text-center" style={{margin: "20px"}}>
-                    聊天室 {chatname}
+                     {chatname}
                 </h1>
-                <Link href={`/chat/${chatid}`} style={{marginRight: "20px"}} passHref>
+                {(!chatname.includes("私聊"))&&(<Link href={`/chat/${chatid}`} style={{marginRight: "20px"}} passHref>
                     群聊信息
-                </Link>
+                </Link>)}
                 <Link href={`/chat/${chatid}/search_history`} passHref>
                     搜索聊天记录
                 </Link>
