@@ -17,6 +17,10 @@ export default function Friendgroup() {
     const [groupName, setGroupName] = useState("");
 
     let groupid=0;
+    if(router.query.groupid){
+        groupid = router.query.groupid;
+        localStorage.setItem("groupid", groupid);
+    }
     useEffect(() => {
         groupid = localStorage.getItem("groupid");
         if(router.query.groupid){

@@ -16,7 +16,10 @@ function Chat() {
     const [notice, setNotice] = useState("没有群公告");
     const [editNotice, setEditNotice] = useState(false);
     let chatid = 0;
-
+    if (router.query.chatid) {
+        chatid = router.query.chatid;
+        localStorage.setItem("chatid", chatid);
+    }
     const my_friends = store.getState().auth.friends;
     const my_id = store.getState().auth.id;
 
