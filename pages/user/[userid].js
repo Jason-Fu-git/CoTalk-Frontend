@@ -9,37 +9,39 @@ import {request} from "@/app/utils/network";
 import {store} from "@/app/redux/store";
 import {setFriends} from "@/app/redux/auth";
 import default_background from "@/public/DefaultBackground.jpg"
-function Account() 
-{
-	const router = useRouter();
-	const [id, setId] = useState(-1);
-	const [name, setName] = useState("");
-	const [email, setEmail] = useState("");
-	const [description, setDescription] = useState("");
-	const [avatar, setAvatar] = useState('');
-	const [is_friend, setIsFriend] = useState(false);
-	useEffect(()=> {
-		let userid=localStorage.getItem("userid");
-		if(router.query.userid){
-			userid=router.query.userid;
-			localStorage.setItem("userid", userid);
-		}
-		setId(userid);
-		console.log(userid);
-		const my_friends=store.getState().auth.friends;
-		setIsFriend(my_friends.includes(Number(userid)));
-		console.log(is_friend);
-		request(`${BACKEND_URL}/api/user/private/${userid}`, "GET", false)
-		.then((res)=>{
-			setName(res.user_name);
-			setEmail((res.user_email === "") ? "邮箱为空" : res.user_email);
-			setDescription((res.description === "") ? "目前还没有个人描述" : res.description);
-		});
-		request(`${BACKEND_URL}/api/user/private/${userid}/avatar`, "GET", false)
-		.then((url) => {
-			setAvatar(url);
-		});
-	}, []);
+function Account() {
+    const router = useRouter();
+    const [id, setId] = useState(-1);
+    const [name, setName] = useState("");
+    const [email, setEmail] = useState("");
+    const [phone, setPhone] = useState("");
+    const [description, setDescription] = useState("");
+    const [avatar, setAvatar] = useState('');
+    const [is_friend, setIsFriend] = useState(false);
+    useEffect(() => {
+        let userid = localStorage.getItem("userid");
+        if (router.query.userid) {
+            userid = router.query.userid;
+            localStorage.setItem("userid", userid);
+        }
+        setId(userid);
+        console.log(userid);
+        const my_friends = store.getState().auth.friends;
+        setIsFriend(my_friends.includes(Number(userid)));
+        console.log(is_friend);
+        request(`${BACKEND_URL}/api/user/private/${userid}`, "GET", false)
+            .then((res) => {
+                setName(res.user_name);
+                setEmail((res.user_email === "") ? "邮箱为空" : res.user_email);
+                setPhone((res.user_phone === "") ? "手机号为空" : res.user_phone);
+                setDescription((res.description === "") ? "目前还没有个人描述" : res.description);
+            });
+        request(`${BACKEND_URL}/api/user/private/${userid}/avatar`, "GET", false)
+            .then((url) => {
+                setAvatar(url);
+            });
+    }, []);
+
 
 
     const apply_friend = () => {
