@@ -9,6 +9,7 @@ export enum NetworkErrorType {
     CORRUPTED_RESPONSE,
     NOTFOUND,
     SERVER_ERROR,
+    PRIVATE_ERROR,
     UNKNOWN_ERROR,
 }
 
@@ -139,6 +140,20 @@ export const request = async (
         );
     }
     
+    //Http status 412
+    if(response.status === 412 && code === -6){
+        throw new NetworkError(
+            NetworkErrorType.PRIVATE_ERROR,
+            "[412] " + data.info,
+        );
+    }
+    else if (response.status === 412) {
+        throw new NetworkError(
+            NetworkErrorType.CORRUPTED_RESPONSE,
+            "[412] " + data.info,
+        );
+    }
+        
     // HTTP status 500
     if (response.status === 500 && code === -4){
         throw new NetworkError(

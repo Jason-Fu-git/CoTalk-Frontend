@@ -188,7 +188,7 @@ function Chat() {
                 </div>
                 <div style={{textAlign: 'center', margin: "20px"}}>
                     {
-                        (my_privilege === 'O') && (!editNotice) && (
+                        ((my_privilege === 'O')||(my_privilege === 'A')) && (!editNotice) && (
                             <>
                                 <button
                                     class="btn btn-secondary"
