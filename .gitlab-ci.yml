@@ -24,7 +24,6 @@ build:
   before_script:
     - yarn config set registry https://registry.npmmirror.com
     - yarn
-    - yarn upgrade
 
 
 unit-test:
