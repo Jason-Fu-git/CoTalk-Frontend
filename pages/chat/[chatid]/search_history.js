@@ -7,16 +7,11 @@ import {request} from "@/app/utils/network";
 import {store} from "@/app/redux/store";
 import UserCard from '@/components/UserCard';
 import Image from "next/image";
+import { data } from 'autoprefixer';
 
 function timestampToBeijingTime(timestamp) {
     // 将时间戳转换为毫秒
     var date = new Date(timestamp * 1000);
-
-    // 获取北京时间的偏移量，北京时间比 UTC 多 8 小时
-    var offset = 8 * 60; // 8 小时 * 60 分钟
-
-    // 调整时区
-    date.setMinutes(date.getMinutes() + offset);
 
     // 获取年、月、日、小时、分钟和秒
     var year = date.getFullYear();
@@ -31,10 +26,20 @@ function timestampToBeijingTime(timestamp) {
 
     return formattedDate;
 }
-
+function Beijingdatetotimestamp(date1){
+    const date=new Date(date1);
+    date.setMinutes(date.getMinutes()-480);
+    const timestamp1 = date.getTime();
+    const timestamp2 = Math.floor(timestamp1 / 1000);
+    //加一天
+    const timestamp3 = timestamp2 + 86400;
+    console.log(timestamp2,timestamp3);
+    return [timestamp2,timestamp3];
+}  
 function SearchHistory() {
     const router = useRouter();
     let chatid=0;
+    const [filtertime, setFilterTime] = useState(null);
     const [searchResult, setSearchResult] = useState([]);
     const [firstRender, setFirstRender] = useState(true);
     const [toggle, setToggle] = useState(true);
@@ -135,6 +140,11 @@ function SearchHistory() {
         if (selectedUser != '') {
             url += "&filter_user=" + selectedUser;
         }
+        if(filtertime!==null){
+            let btime=Beijingdatetotimestamp(filtertime)[1];
+            let etime=Beijingdatetotimestamp(filtertime)[0];
+            url+='&filter_before='+btime+'&filter_after='+etime;
+        }
         console.log("Loading search result: " + url);
 
         request(url, "GET", true)
@@ -190,6 +200,7 @@ function SearchHistory() {
                         </button>
                     </div>
                 </div>
+                <input type="date" onChange={(e) => {setFilterTime(e.target.value);console.log(timestampToBeijingTime(Beijingdatetotimestamp(filtertime)));}} />
                 <div>
                     <div style={{textAlign: 'center', marginTop: '10px'}}>
                         <h5>请选择一个用户：</h5>
