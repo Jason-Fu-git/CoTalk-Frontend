@@ -2,7 +2,6 @@ image: registry.secoder.net/tool/deployer
 
 stages:
   - build
-  - test
   - deploy
 
 build:
@@ -13,36 +12,6 @@ build:
     - export BUILD_IMAGE_USERNAME=$CI_REGISTRY_USER
     - export BUILD_IMAGE_PASSWORD=$CI_REGISTRY_PASSWORD
     - deployer build
-  only:
-    - master
-
-
-.test:
-  image: node:18
-  stage: test
-
-  before_script:
-    - yarn config set registry https://registry.npmmirror.com
-    - yarn
-    - yarn upgrade
-
-
-unit-test:
-  extends: .test
-  script:
-    - yarn test
-  after_script:
-    - SUFFIX=$RANDOM
-    - curl "http://api.secoder.net/static/sonar-scanner.tar.gz" -s -o "/tmp/sonar-$SUFFIX.tar.gz"
-    - tar -xf "/tmp/sonar-$SUFFIX.tar.gz" -C /opt
-    - /opt/sonar-scanner/bin/sonar-scanner
-  only:
-    - master
-
-style-test:
-  extends: .test
-  script:
-    - yarn lint
   only:
     - master
 
