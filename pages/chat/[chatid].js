@@ -13,8 +13,10 @@ function Chat() {
     const [members, setMembers] = useState([]);
     const [my_privilege, setMyPrivilege] = useState("");
     const [toggle, setToggle] = useState(true);
-    const [notice, setNotice] = useState("没有群公告");
+    const [notices, setNotices] = useState([]);
+    const [notice, setNotice] = useState("");
     const [editNotice, setEditNotice] = useState(false);
+
     let chatid = 0;
     if (router.query.chatid) {
         chatid = router.query.chatid;
@@ -39,6 +41,7 @@ function Chat() {
             chatid = router.query.chatid;
             localStorage.setItem("chatid", chatid);
         }
+
         request(`${BACKEND_URL}/api/chat/${chatid}/members?user_id=${store.getState().auth.id}`, "GET", true)
             .then((res) => {
                 res.members.forEach(function (element) {
@@ -54,7 +57,6 @@ function Chat() {
                     }
                 });
                 updateMembers(res.members);
-                console.log(res.members);
             });
 
         const url = `${BACKEND_URL}/api/chat/${chatid}/messages?user_id=` +
@@ -64,73 +66,90 @@ function Chat() {
 
         request(url, "GET", true)
             .then((res) => {
-                console.log(res);
-                if (res.messages.length > 0) {
-                    const ntc = res.messages[res.messages.length - 1].msg_text;
-                    setNotice(ntc);
+                if (res.messages.length>0)
+                {
+                    const ntcs=res.messages.map((element)=>
+                        ({
+                            'text': element.msg_text,
+                            'id': element.msg_id,
+                        }));
+                    setNotices(ntcs);
+                }
+                else
+                {
+                    setNotices([]);
                 }
             });
     }, [toggle]);
 
-    const makeAdmin = function (user_id) {
+    const makeAdmin = function (user_id)
+    {
         // 将user_id指定为管理员
         request(`${BACKEND_URL}/api/chat/${chatid}/management`, "PUT", true, "application/json", {
             "user_id": my_id,
             "member_id": user_id,
             "change_to": "admin"
         })
-            .then((res) => {
-                if (Number(res.code) === 0) {
-                    alert("提拔成功");
-                }
-                setToggle(!toggle);
-            });
+        .then((res) => {
+            if (Number(res.code) === 0) {
+                alert("提拔成功");
+            }
+            setToggle(!toggle);
+        });
     }
 
-    const unmakeAdmin = function (user_id) {
+    const unmakeAdmin = function (user_id)
+    {
         // 将user_id从管理员变成普通成员
         request(`${BACKEND_URL}/api/chat/${chatid}/management`, "PUT", true, "application/json", {
             "user_id": my_id,
             "member_id": user_id,
             "change_to": "member"
         })
-            .then((res) => {
-                if (Number(res.code) === 0) {
-                    alert("降级成功");
-                }
-                setToggle(!toggle);
-            });
+        .then((res) => {
+            if (Number(res.code) === 0) {
+                alert("降级成功");
+            }
+            setToggle(!toggle);
+        });
     }
-    const makeOwner = function (user_id) {
+    const makeOwner = function (user_id) 
+    {
         // 将user_id指定为群主
         request(`${BACKEND_URL}/api/chat/${chatid}/management`, "PUT", true, "application/json", {
             "user_id": my_id,
             "member_id": user_id,
             "change_to": "owner"
         })
-            .then((res) => {
-                if (Number(res.code) === 0) {
-                    alert("移交成功");
-                    setToggle(!toggle);
-                }
-            });
+        .then((res) => {
+                alert("移交成功");
+                setToggle(!toggle);
+        })
+        .catch((err)=>{
+            alert("移交失败");
+        });
     }
-    const kick = function (user_id) {
+    const kick = function (user_id) 
+    {
         // 将user_id踢出群聊
         request(`${BACKEND_URL}/api/chat/${chatid}/members`, "PUT", true, "application/json", {
             "user_id": my_id,
             "member_id": user_id,
             "approve": false
         })
-            .then((res) => {
-                if (Number(res.code) === 0) {
-                    alert("踢出成功");
-                }
-                setToggle(!toggle);
-            });
+        .then((res) => {
+            if (Number(res.code) === 0) {
+                alert("踢出成功");
+            }
+            setToggle(!toggle);
+        })
+        .catch((err)=>
+        {
+            alert("踢出失败");
+        });
     }
-
-    const sendNotice = function () {
+    const sendNotice = function () 
+    {
         // 将message作为群公告发出
         if (notice === '') {
             alert("群公告不能为空");
@@ -144,26 +163,52 @@ function Chat() {
             "msg_text": notice,
             "msg_type": "group_notice"
         })
-            .then((res) => {
-                if (Number(res.code) === 0) {
-                    alert("群公告发布成功");
-                }
-                setEditNotice(false);
-                setToggle(!toggle);
-            });
+        .then((res) => {
+            if (Number(res.code) === 0) {
+                setNotice("");
+                alert("群公告发布成功");
+            }
+            setEditNotice(false);
+            setToggle(!toggle);
+        })
+        .catch((err)=>{
+            alert("发布失败");
+        });
     }
 
-    const exit = function () {
+    const exit = function () 
+    {
         // 退出群聊
         request(`${BACKEND_URL}/api/user/private/${my_id}/chats`, "DELETE", true, "application/json", {
             "chat_id": chatid
         })
-            .then((res) => {
-                if (Number(res.code) === 0) {
-                    alert("退出成功");
-                    router.push("/user/self/chats");
-                }
-            });
+        .then((res) => {
+            if (Number(res.code) === 0) {
+                alert("退出成功");
+                router.push("/user/self/chats");
+            }
+        })
+        .catch((err)=>{
+            alert("退出失败");
+        });
+    }
+
+    const onDelete = function(notice_id)
+    {
+        console.log("DELETE");
+        request(`${BACKEND_URL}/api/message/${notice_id}/management`,
+            "DELETE", true, "application/json",
+            {
+                "user_id": store.getState().auth.id,
+                "is_remove": false,
+            })
+        .then((res) => {
+            alert("成功删除");
+            setToggle(!toggle);
+        })
+        .catch((err) => {
+            alert("删除失败");
+        });
     }
 
     return (
@@ -178,25 +223,41 @@ function Chat() {
                     style={{marginTop: '40px'}}>
                     群公告
                 </h1>
-                <div style={{textAlign: 'center', margin: "20px"}}>
-                    <span style={{
-                        display: "inline-block",
-                        background: '#f2f2f2',
-                        padding: '10px',
-                        borderRadius: '10px'
-                    }}>{notice}</span>
-                </div>
+                {
+                    notices.map((element, index)=>{
+                        return (
+                            <div 
+                                style={{textAlign: 'center', margin: "20px"}}
+                                key={index}>
+                                <span style={{
+                                    display: "inline-block",
+                                    background: '#f2f2f2',
+                                    padding: '10px',
+                                    borderRadius: '10px'
+                                }}>{element.text}</span>
+                                <button 
+                                    type="button" 
+                                    className="btn btn-close"
+                                    onClick={()=>{
+                                        onDelete(element.id);
+                                    }}>
+                                </button>
+                            </div>
+                        )
+                    })
+                }
+
                 <div style={{textAlign: 'center', margin: "20px"}}>
                     {
                         ((my_privilege === 'O')||(my_privilege === 'A')) && (!editNotice) && (
                             <>
                                 <button
-                                    class="btn btn-secondary"
+                                    className="btn btn-secondary"
                                     onClick={() => {
                                         setEditNotice(true);
                                         setToggle(!toggle);
                                     }}>
-                                    发布群公告
+                                发布群公告
                                 </button>
                             </>
                         )}
@@ -210,6 +271,7 @@ function Chat() {
                             <input
                                 className="form-control col_auto"
                                 type="text"
+                                placeHolder="请输入群公告内容"
                                 value={notice}
                                 onChange={handleNoticeChange}
                             />
@@ -219,7 +281,7 @@ function Chat() {
                                     className="btn btn-primary"
                                     onClick={() => sendNotice()}
                                 >
-                                    发送
+                                发送
                                 </button>
                             </div>
                             <div className="col-auto">
@@ -231,7 +293,7 @@ function Chat() {
                                         setToggle(!toggle);
                                     }}
                                 >
-                                    取消
+                                取消
                                 </button>
                             </div>
                         </div>
@@ -244,13 +306,17 @@ function Chat() {
                 <div style={{textAlign: 'center', marginTop: '10px'}}>
                     <button
                         style={{margin: '10px'}}
-                        className="btn btn-secondary"
+                        className="btn btn-link"
                         onClick={() => exit()}>
                         退出群聊
                     </button>
-                    <Link href={`/chat/${chatid}/invite`} style={{margin: '10px'}} passHref>
+                    <button
+                        style={{margin: '10px'}}
+                        className="btn btn-link">
+                    <Link href={`/chat/${chatid}/invite`}  passHref>
                         邀请好友
-                    </Link>
+                    </Link>                   
+                    </button>
                 </div>
 
                 <div className="grid gap-8 grid-cols-1 sm:grid-cols-3 mt-14
@@ -262,17 +328,17 @@ function Chat() {
                                 {
                                     (user.user_id !== my_id) && (my_privilege === 'O')
                                     && (user.privilege === 'M') && (
-                                        <div class="btn-group" role="group">
+                                        <div className="btn-group" role="group">
                                             <button
-                                                type="button" class="btn btn-danger"
+                                                type="button" className="btn btn-danger"
                                                 onClick={() => kick(user.user_id)}>踢出
                                             </button>
                                             <button
-                                                type="button" class="btn btn-success"
+                                                type="button" className="btn btn-success"
                                                 onClick={() => makeAdmin(user.user_id)}>提拔为管理员
                                             </button>
                                             <button
-                                                type="button" class="btn btn-success"
+                                                type="button" className="btn btn-secondary"
                                                 onClick={() => makeOwner(user.user_id)}>转让群主
                                             </button>
                                         </div>
@@ -281,9 +347,9 @@ function Chat() {
                                 {
                                     (user.user_id !== my_id) && (my_privilege === 'A')
                                     && (user.privilege === 'M') && (
-                                        <div class="btn-group" role="group">
+                                        <div className="btn-group" role="group">
                                             <button
-                                                type="button" class="btn btn-danger"
+                                                type="button" className="btn btn-danger"
                                                 onClick={() => kick(user.user_id)}>踢出
                                             </button>
                                         </div>
@@ -292,17 +358,17 @@ function Chat() {
                                 {
                                     (user.user_id !== my_id) && (my_privilege === 'O')
                                     && (user.privilege === 'A') && (
-                                        <div class="btn-group" role="group">
+                                        <div className="btn-group" role="group">
                                             <button
-                                                type="button" class="btn btn-danger"
+                                                type="button" className="btn btn-danger"
                                                 onClick={() => kick(user.user_id)}>踢出
                                             </button>
                                             <button
-                                                type="button" class="btn btn-warning"
+                                                type="button" className="btn btn-warning"
                                                 onClick={() => unmakeAdmin(user.user_id)}>降级为普通成员
                                             </button>
                                             <button
-                                                type="button" class="btn btn-success"
+                                                type="button" className="btn btn-success"
                                                 onClick={() => makeOwner(user.user_id)}>转让群主
                                             </button>
                                         </div>
@@ -310,47 +376,6 @@ function Chat() {
                                 }
                             </div>
                         ))}
-                </div>
-            </div>
-
-            <div
-                class="modal fade"
-                id="noticeModal"
-                tabIndex="-1"
-                aria-labelledby="exampleModalLabel"
-                aria-hidden="true">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title"
-                                id="exampleModalLabel">
-                                发布群公告
-                            </h5>
-                            <button
-                                type="button"
-                                class="btn-close"
-                                data-bs-dismiss="modal"
-                                aria-label="Close">
-                            </button>
-                        </div>
-                        <div class="modal-body">
-						    <textarea
-                                className="form-control col_auto"
-                                type="text"
-                                placeholder="请输入群公告"
-                                id="notice-input"
-                                rows="5"
-                            />
-                        </div>
-                        <div class="modal-footer">
-                            <button
-                                type="button"
-                                class="btn btn-primary"
-                                onClick={() => sendNotice()}>
-                                发布
-                            </button>
-                        </div>
-                    </div>
                 </div>
             </div>
         </>
