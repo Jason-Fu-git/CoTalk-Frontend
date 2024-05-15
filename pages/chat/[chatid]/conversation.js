@@ -37,11 +37,9 @@ function Conversation() {
     let id2name = {};
     let msg2ref = {};
 
-    console.log("#1", chatid);
     if (router.query.chatid) {
         chatid = router.query.chatid;
         localStorage.setItem("chatid", chatid);
-        console.log("#2", chatid);
     }
 
     const [count, setCount] = useState(0);
@@ -66,11 +64,9 @@ function Conversation() {
 
     useEffect(() => {
         chatid = localStorage.getItem("chatid");
-        console.log("#3", chatid);
         if (router.query.chatid) {
             chatid = router.query.chatid;
             localStorage.setItem("chatid", chatid);
-            console.log("#4", chatid);
         }
 
         request(`${BACKEND_URL}/api/chat/${chatid}/detail`, "GET", false)
