@@ -32,15 +32,21 @@ const RegisterPage = () => {
             formData.append("avatar", new File([defaultAvatarBlob], "DefaultAvatar.jpg"));
         }
 
-        if (password !== confirmPassword) {
+        if (password !== confirmPassword) 
+        {
             alert("密码不一致!")
-        } else {
+        } 
+        else
+        {
             request(`${BACKEND_URL}/api/user/register`, "POST", false, "multipart/form-data", formData)
-                .then((res) => {
-                    if (Number(res.code) === 0) {
-                        router.push(`/user/login`);
-                    }
-                })
+            .then((res) => {
+                if (Number(res.code) === 0) {
+                    router.push(`/user/login`);
+                }
+            })
+            .catch((err)=>{
+                alert(err);
+            })
         }
 
     };
