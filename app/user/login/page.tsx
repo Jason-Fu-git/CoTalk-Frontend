@@ -74,6 +74,12 @@ const LoginScreen = () => {
             <p>没有账户?
                 <Link href="/user/register">注册</Link>
             </p>
+            <p>
+                请不要同时登陆同一个账号！
+            </p>
+            <p>
+                请尽量避免在同一浏览器登陆两个账号！
+            </p>
         </>
     );
 };
