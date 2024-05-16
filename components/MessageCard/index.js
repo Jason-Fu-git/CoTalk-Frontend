@@ -204,12 +204,6 @@ class MessageCard extends React.Component {
                                 <button
                                     type="button"
                                     className="list-group-item list-group-item-action"
-                                    onClick={() => this.state.onWithdrew(this.state.message_id)}>
-                                    撤回
-                                </button>
-                                <button
-                                    type="button"
-                                    className="list-group-item list-group-item-action"
                                     onClick={() => this.state.onDelete(this.state.message_id)}>
                                     删除
                                 </button>
