@@ -32,11 +32,14 @@ export default function Notification() {
                         });
 
                     // set the notification's content
-                    switch (element.content.type) {
-                        case ("user.friend.request"):
+                    switch (element.content.type,element.content.status) {
+                        case ("user.friend.request", "make request"):
                             element.header = "好友申请";
                             break;
-                        case ("chat.management"):
+                        case("user.friend.request", "accept request"):
+                            element.header = "好友申请";
+                            break;
+                        case ("chat.management", "make invitation"):
                             element.header = "群聊邀请";
                             break;
                     }
@@ -83,7 +86,6 @@ export default function Notification() {
             })
             .then((res) => {
                 if (Number(res.code) === 0) {
-                    store.dispatch(setChats([...store.getState().auth.chats, chat_id]));
                     alert("已加入聊天室");
                 }
                 request(`${BACKEND_URL}/api/user/private/${store.getState().auth.id}/notification/${notification_id}`, "PUT", true)
