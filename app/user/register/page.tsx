@@ -26,7 +26,7 @@ const RegisterPage = () => {
             formData.append("description", description);
         }
         if(phone !== '') {
-            formData.append("phone", phone);
+            formData.append("user_phone", phone);
         }
         if (avatar != null && avatar.size !== 0) {
             formData.append("avatar", avatar);
