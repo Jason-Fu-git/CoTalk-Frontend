@@ -48,9 +48,6 @@ const RegisterPage = () => {
                     router.push(`/user/login`);
                 }
             })
-            .catch((err)=>{
-                alert(err);
-            })
         }
 
     };
