@@ -8,7 +8,6 @@ interface AuthState {
     phone: string;
     description: string;
     friends: Array<number>;
-    chats: Array<number>;
 }
 
 const initialState: AuthState = {
@@ -19,7 +18,6 @@ const initialState: AuthState = {
     phone: "电话为空",
     description: "目前还没有个人描述",
     friends: [],
-    chats: [],
 };
 
 export const authSlice = createSlice({
@@ -47,9 +45,6 @@ export const authSlice = createSlice({
         setFriends: (state, action: PayloadAction<Array<number>>) => {
             state.friends = action.payload.concat();
         },
-        setChats: (state, action: PayloadAction<Array<number>>) => {
-            state.chats = action.payload.concat();
-        },
         resetAuth: (state) => {
             state.token = "";
             state.name = "";
@@ -57,7 +52,6 @@ export const authSlice = createSlice({
             state.email = "邮箱为空";
             state.description = "目前还没有个人描述";
             state.friends = [];
-            state.chats = [];
         },
     },
 });
@@ -65,6 +59,6 @@ export const authSlice = createSlice({
 export const {
     setToken, setName, setId,
     setEmail, setPhone,
-    setDescription, setFriends, setChats, resetAuth
+    setDescription, setFriends, resetAuth
 } = authSlice.actions;
 export default authSlice.reducer;

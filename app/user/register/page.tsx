@@ -22,8 +22,12 @@ const RegisterPage = () => {
         formData.append("user_name", username);
         formData.append("password", password);
         formData.append("user_email", email);
-        formData.append("description", description);
-        formData.append("user_phone", phone);
+        if(description !== '') {
+            formData.append("description", description);
+        }
+        if(phone !== '') {
+            formData.append("phone", phone);
+        }
         if (avatar != null && avatar.size !== 0) {
             formData.append("avatar", avatar);
         } else {

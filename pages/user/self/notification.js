@@ -12,12 +12,6 @@ export default function Notification() {
     const [flash, set_flash] = useState(false);
     const self_id = store.getState().auth.id;
 
-    request(`${BACKEND_URL}/api/user/private/${store.getState().auth.id}/chats`, "GET", true)
-        .then(async (res) => {
-            for (const chat of res.chats) {
-                store.dispatch(setChats([...store.getState().auth.chats, chat.chat_id]));
-            }
-        });
 
     useEffect(() => {
         const later_than = 0;
@@ -38,23 +32,12 @@ export default function Notification() {
                         });
 
                     // set the notification's content
-                    switch ((element.content.type, element.content.status)) {
-                        case ("user.friend.request", "make request"):
+                    switch (element.content.type) {
+                        case ("user.friend.request"):
                             element.header = "好友申请";
-                            element.message = element.sender_name + " 想成为你的好友";
                             break;
-                        case ("user.friend.request", "accept request"):
-                            element.header = "好友申请";
-                            element.message = element.sender_name + "已同意你的好友申请";
-                            break;
-                        case ("chat.management", "make invitation"):
-                            let chat_name = ""
-                            await request(`${BACKEND_URL}/api/chat/${element.content.chat_id}/detail`, "GET", false)
-                                .then((res) => {
-                                    chat_name = " \"" + res.chat_name + "\"";
-                                })
+                        case ("chat.management"):
                             element.header = "群聊邀请";
-                            element.message = element.sender_name + " 邀请你加入群聊" + chat_name;
                             break;
                     }
                     return element;
@@ -71,19 +54,11 @@ export default function Notification() {
                 if (Number(res.code) === 0) {
                     alert("删除成功");
                 }
+                set_flash(!flash);
             });
     }
 
-    const markAsRead = (notification_id) => {
-        request(`${BACKEND_URL}/api/user/private/${store.getState().auth.id}/notification/${notification_id}`, "PUT", true)
-            .then((res) => {
-                if (Number(res.code) === 0) {
-                    alert("标记成功");
-                }
-            });
-    }
-
-    const approveFriend = (friend_id) => {
+    const approveFriend = (friend_id,notification_id) => {
         request(`${BACKEND_URL}/api/user/private/${store.getState().auth.id}/friends`, "PUT", true, "application/json",
             {
                 "friend_id": friend_id,
@@ -94,10 +69,12 @@ export default function Notification() {
                     store.dispatch(setFriends([...store.getState().auth.friends, friend_id]));
                     alert("好友申请已同意");
                 }
-            });
+                request(`${BACKEND_URL}/api/user/private/${store.getState().auth.id}/notification/${notification_id}`, "PUT", true)
+                set_flash(!flash);
+            });     
     }
 
-    const approveChat = (chat_id, sender_id) => {
+    const approveChat = (chat_id,notification_id) => {
         request(`${BACKEND_URL}/api/chat/${chat_id}/members`, "PUT", true, "application/json",
             {
                 "user_id": self_id,
@@ -109,6 +86,8 @@ export default function Notification() {
                     store.dispatch(setChats([...store.getState().auth.chats, chat_id]));
                     alert("已加入聊天室");
                 }
+                request(`${BACKEND_URL}/api/user/private/${store.getState().auth.id}/notification/${notification_id}`, "PUT", true)
+                set_flash(!flash);
             });
     }
 
@@ -133,39 +112,12 @@ export default function Notification() {
                                 {notification.header}
                             </div>
                             <div className="card-body">
-                                <h5 className="card-title">{notification.message}</h5>
+                                <h5 className="card-title">{notification.content.text}</h5>
                             </div>
                             <div className="row gx-1">
                                 <div className="col" style={{marginBottom: "10px"}}>
                                     {
-                                        notification.is_read === false &&
-                                        (
-                                            <button
-                                                name="markAsRead"
-                                                style={{marginRight: "10px", marginLeft: "10px"}}
-                                                className="btn btn-secondary"
-                                                onClick={() => {
-                                                    markAsRead(notification.notification_id);
-                                                    set_flash(!flash);
-                                                }}
-                                            >
-                                                标记为已读
-                                            </button>
-                                        )
-                                    }
-                                    {
-                                        notification.is_read === true && (
-                                            <span style={{
-                                                marginRight: "10px",
-                                                marginLeft: "10px",
-                                                background: "#49a353",
-                                                color: "white",
-                                                padding: "5px",
-                                                borderRadius: "5px"
-                                            }}>已读</span>
-                                        )}
-                                    {
-                                        !store.getState().auth.friends.includes(notification.sender_id) &&
+                                        !notification.is_read&&
                                         notification.content.status === "make request" &&
                                         (
                                             <button
@@ -173,9 +125,7 @@ export default function Notification() {
                                                 style={{marginRight: "10px"}}
                                                 className="btn btn-success"
                                                 onClick={() => {
-                                                    approveFriend(notification.sender_id);
-                                                    markAsRead(notification.notification_id);
-                                                    set_flash(!flash);
+                                                    approveFriend(notification.sender_id,notification.notification_id);
                                                 }}
                                             >
                                                 同意
@@ -183,7 +133,7 @@ export default function Notification() {
                                         )
                                     }
                                     {
-                                        store.getState().auth.friends.includes(notification.sender_id) &&
+                                        notification.is_read &&
                                         notification.content.status === "make request" &&
                                         (
                                             <span style={{
@@ -196,16 +146,14 @@ export default function Notification() {
                                     }
                                     {
                                         notification.content.status === "make invitation" &&
-                                        !store.getState().auth.chats.includes(notification.content.chat_id) &&
+                                        !notification.is_read &&
                                         (
                                             <button
                                                 name="approve_chat"
                                                 style={{marginRight: "10px"}}
                                                 className="btn btn-success"
                                                 onClick={() => {
-                                                    approveChat(notification.content.chat_id, notification.sender_id);
-                                                    markAsRead(notification.notification_id);
-                                                    set_flash(!flash);
+                                                    approveChat(notification.content.chat_id,notification.notification_id);
                                                 }}
                                             >
                                                 同意聊天室邀请
@@ -214,7 +162,7 @@ export default function Notification() {
                                     }
                                     {
                                         notification.content.status === "make invitation" &&
-                                        store.getState().auth.chats.includes(notification.content.chat_id) &&
+                                        notification.is_read &&
                                         (<span style={{
                                             marginRight: "10px",
                                             background: "#49a353",
@@ -228,7 +176,6 @@ export default function Notification() {
                                         className="btn btn-primary"
                                         onClick={() => {
                                             deleteNotification(notification.notification_id);
-                                            set_flash(!flash);
                                         }}>
                                         删除此条通知
                                     </button>
