@@ -33,9 +33,6 @@ const LoginScreen = () => {
                     router.push(`/user/self`);
                 }
             })
-            .catch((err) => {
-                alert(err);
-            })
     };
     dispatch(resetAuth());
     return (
